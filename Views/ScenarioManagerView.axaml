@@ -17,5 +17,7 @@
             FontSize="24"
             FontWeight="Bold"
             Text="Welcome to the Scenario Manager Page!" />
+        <Button Content="Open Modal Dialog" Click="OpenDialog" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </StackPanel>
+    
 </UserControl>

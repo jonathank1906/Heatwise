@@ -1,14 +1,25 @@
-using FluentAvalonia.UI.Windowing;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 
-using Sem2Proj.ViewModels;
-namespace Sem2Proj.Views;
-
-public partial class ScenarioManagerView : UserControl
+namespace Sem2Proj.Views
 {
-    public ScenarioManagerView()
+    public partial class ScenarioManagerView : UserControl
     {
-        InitializeComponent();
-        DataContext = new ScenarioManagerViewModel(); 
+        public ScenarioManagerView()
+        {
+            InitializeComponent();
+        }
+
+        private async void OpenDialog(object? sender, RoutedEventArgs e)
+        {
+            var dialog = new DialogWindow();
+            var result = await dialog.ShowDialog<bool>(GetWindow());
+            // Handle the result if needed
+        }
+
+        private Window GetWindow()
+        {
+            return (Window)this.VisualRoot;
+        }
     }
 }

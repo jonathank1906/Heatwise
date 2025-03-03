@@ -1,0 +1,16 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Sem2Proj.Views.DialogWindow"
+        Title="Modal Dialog"
+        WindowStartupLocation="CenterOwner"
+        Width="300" Height="200">
+      
+        
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+        <TextBlock Text="Do you confirm?" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+            <Button Content="OK" Click="Confirm" />
+            <Button Content="Cancel" Click="Cancel" />
+        </StackPanel>
+    </StackPanel>
+</Window>
