@@ -15,8 +15,8 @@
     d:DesignWidth="1250"
     x:DataType="vm:MainWindowViewModel"
     Background="Transparent"
+    ExtendClientAreaTitleBarHeightHint="0"
     ExtendClientAreaToDecorationsHint="True"
-    Icon="/Assets/avalonia-logo.ico"
     TransparencyLevelHint="AcrylicBlur"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -82,8 +82,10 @@
         </Style>
     </Window.Styles>
 
+
+
     <!--  Panel acts as a container and the background  -->
-    <Panel>
+    <Panel PointerPressed="OnPointerPressed">
         <!--  Adjusting the "background"  -->
         <ExperimentalAcrylicBorder IsHitTestVisible="False">
             <ExperimentalAcrylicBorder.Material>
@@ -95,14 +97,6 @@
             </ExperimentalAcrylicBorder.Material>
         </ExperimentalAcrylicBorder>
 
-        <!--  Header Testing  -->
-        <Image
-            Width="2500"
-            Height="45"
-            VerticalAlignment="Top"
-            Source="../Assets/header.png"
-            Stretch="UniformToFill" />
-
         <!--  Pages (Views)  -->
         <Grid>
             <Grid.RowDefinitions>
@@ -110,7 +104,37 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex}">
+            <!--  Header Overlay  -->
+            <Border
+                Height="45"
+                VerticalAlignment="Top"
+                PointerPressed="OnPointerPressed"
+                ZIndex="1">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Offset="0" Color="#FF7043" />
+
+                        <GradientStop Offset="0.3" Color="#FF5722" />
+
+                        <GradientStop Offset="0.6" Color="#F44336" />
+
+                        <GradientStop Offset="1" Color="#D32F2F" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="10"
+                        OffsetX="2"
+                        OffsetY="2"
+                        Opacity="0.5"
+                        Color="#F44336" />
+                </Border.Effect>
+            </Border>
+
+            <TabControl
+                Grid.Row="0"
+                SelectedIndex="{Binding SelectedTabIndex}"
+                ZIndex="2">
                 <TabControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Columns="4" />
