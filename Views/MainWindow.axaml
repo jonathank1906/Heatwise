@@ -60,7 +60,7 @@
                     TintOpacity="1" />
             </ExperimentalAcrylicBorder.Material>
         </ExperimentalAcrylicBorder>
-
+        
         <!--  Header Testing  -->
         <Image
             Width="2500"
@@ -75,6 +75,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+            
 
  <TabControl Grid.Row="1">
                 <TabControl.ItemsPanel>
@@ -107,5 +108,7 @@
                 </TabItem>
             </TabControl>
         </Grid>
+
     </Panel>
+    
 </Window>

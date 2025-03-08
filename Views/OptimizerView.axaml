@@ -5,17 +5,19 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Sem2Proj.ViewModels"
+    x:DataType="vm:OptimizerViewModel"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+  <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+      <Grid ColumnDefinitions="*,*" RenderOptions.BitmapInterpolationMode="HighQuality">
 
-    <StackPanel>
-        <TextBlock
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Margin="0,350,0,0"
-            FontSize="24"
-            FontWeight="Bold"
-            Text="Welcome to the Optimizer Page!" />
-    </StackPanel>
+         <Image Grid.Column="0" Source="avares://Sem2Proj/Assets/GasBoiler1.jpg" MaxWidth="300" />
+        <Image Grid.Column="1" Source="{Binding ImageFromBinding}" MaxWidth="300" />
+    </Grid>
+    
 </UserControl>
