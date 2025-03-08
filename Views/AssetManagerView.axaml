@@ -60,11 +60,10 @@
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Gas Consumption" Foreground="White" Margin="5" HorizontalAlignment="Right"/>
                     <ProgressBar Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="100" Value="60" Margin="5" Width="200" HorizontalAlignment="Left"/>
+
+                    <Image Grid.Row="5" Grid.ColumnSpan="2" Source="{Binding ImageFromBinding}" Stretch="Uniform" Margin="10" HorizontalAlignment="Center"/>
                 </Grid>
             </SplitView.Content>
         </SplitView>
-
-        <!-- Bind Image Source to SelectedImageSource property -->
-        <Image Source="{Binding SelectedImageSource}" Stretch="Uniform" Margin="10" HorizontalAlignment="Center" Width="100" Height="150"/>
     </Grid>
 </UserControl>

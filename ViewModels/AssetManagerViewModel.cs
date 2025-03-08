@@ -2,11 +2,30 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 
 namespace Sem2Proj.ViewModels
 {
     public class AssetManagerViewModel : INotifyPropertyChanged
     {
+        private Bitmap? _imageFromBinding;
+        public Bitmap? ImageFromBinding
+        {
+            get => _imageFromBinding;
+            private set
+            {
+                _imageFromBinding = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string _selectedImageSource;
         public string SelectedImageSource
         {
@@ -15,6 +34,7 @@ namespace Sem2Proj.ViewModels
             {
                 _selectedImageSource = value;
                 OnPropertyChanged();
+                LoadImageFromSource(value);
             }
         }
 
@@ -48,7 +68,19 @@ namespace Sem2Proj.ViewModels
         {
             if (SelectedListItem != null)
             {
-                SelectedImageSource = SelectedListItem.ImageSource;
+                LoadImageFromSource(SelectedListItem.ImageSource);
+            }
+        }
+
+        private void LoadImageFromSource(string imageSource)
+        {
+            var path = $"c:/Users/jonat/Desktop/Sem2Proj{imageSource}";
+            if (File.Exists(path))
+            {
+                using (var stream = File.OpenRead(path))
+                {
+                    ImageFromBinding = new Bitmap(stream);
+                }
             }
         }
 
