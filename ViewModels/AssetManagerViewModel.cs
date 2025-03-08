@@ -74,7 +74,18 @@ namespace Sem2Proj.ViewModels
 
         private void LoadImageFromSource(string imageSource)
         {
-            var path = $"c:/Users/jonat/Desktop/Sem2Proj{imageSource}";
+            // Ensure imageSource doesn't have a leading slash
+            if (imageSource.StartsWith("/"))
+            {
+                imageSource = imageSource.TrimStart('/');
+            }
+
+            // Get the base directory (where the app is running)
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Construct the full path to the image inside the Assets folder
+            string path = Path.Combine(basePath, imageSource);
+
             if (File.Exists(path))
             {
                 using (var stream = File.OpenRead(path))
@@ -82,7 +93,12 @@ namespace Sem2Proj.ViewModels
                     ImageFromBinding = new Bitmap(stream);
                 }
             }
+            else
+            {
+                Console.WriteLine($"Image not found: {path}");
+            }
         }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
