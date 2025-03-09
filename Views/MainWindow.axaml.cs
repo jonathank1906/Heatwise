@@ -11,6 +11,4 @@ public partial class MainWindow : AppWindow
         InitializeComponent();
         this.DataContext = new MainWindowViewModel();
     }
-        //TitleBar.ExtendsContentIntoTitleBar = true;
-        //TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
 }

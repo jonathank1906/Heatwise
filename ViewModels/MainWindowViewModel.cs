@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-
+using Sem2Proj.Models;
 
 namespace Sem2Proj.ViewModels;
 
@@ -23,5 +23,6 @@ public partial class MainWindowViewModel : ViewModelBase
         AssetManagerViewModel = new AssetManagerViewModel();
         OptimizerViewModel = new OptimizerViewModel();
         HomeViewModel = new HomeViewModel();
+        AssetManager assetManager = new AssetManager();
     }
 }

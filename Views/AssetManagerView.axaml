@@ -35,7 +35,6 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="{x:Type vm:ListItemTemplate}">
                                 <StackPanel Spacing="17" Orientation="Horizontal">
-                                    <!-- Remove PathIcon binding -->
                                     <TextBlock Text="{Binding Label}" />
                                 </StackPanel>
                             </DataTemplate>
