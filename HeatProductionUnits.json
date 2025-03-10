@@ -1,0 +1,46 @@
+{
+    "GasBoilers": [
+      {
+        "Name": "Gas Boiler 1",
+        "MaxHeat": 100,
+        "ProductionCosts": 50,
+        "CO2Emissions": 200,
+        "GasConsumption": 1.2
+      },
+      {
+        "Name": "Gas Boiler 2",
+        "MaxHeat": 110,
+        "ProductionCosts": 55,
+        "CO2Emissions": 210,
+        "GasConsumption": 1.3
+      }
+    ],
+    "OilBoilers": [
+      {
+        "Name": "Oil Boiler 1",
+        "MaxHeat": 120,
+        "ProductionCosts": 60,
+        "CO2Emissions": 250,
+        "OilConsumption": 1.5
+      }
+    ],
+    "GasMotors": [
+      {
+        "Name": "Gas Motor 1",
+        "MaxHeat": 150,
+        "ProductionCosts": 70,
+        "CO2Emissions": 300,
+        "MaxElectricity": 50,
+        "GasConsumption": 1.8
+      }
+    ],
+    "HeatPumps": [
+      {
+        "Name": "Heat Pump 1",
+        "MaxHeat": 200,
+        "ProductionCosts": 40,
+        "CO2Emissions": 100,
+        "MaxElectricity": 60
+      }
+    ]
+  }

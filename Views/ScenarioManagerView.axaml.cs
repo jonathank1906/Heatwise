@@ -4,11 +4,11 @@ using Avalonia.Controls;
 using Sem2Proj.ViewModels;
 namespace Sem2Proj.Views;
 
-public partial class MainWindow : AppWindow
+public partial class ScenarioManagerView : UserControl
 {
-    public MainWindow()
+    public ScenarioManagerView()
     {
         InitializeComponent();
-        this.DataContext = new MainWindowViewModel();
+        DataContext = new ScenarioManagerViewModel(); 
     }
 }
