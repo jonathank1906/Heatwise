@@ -9,6 +9,5 @@ public partial class ScenarioManagerView : UserControl
     public ScenarioManagerView()
     {
         InitializeComponent();
-        DataContext = new ScenarioManagerViewModel(); 
     }
 }

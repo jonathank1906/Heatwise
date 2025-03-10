@@ -1,11 +1,3 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
 using Sem2Proj.Models;
 
 namespace Sem2Proj.ViewModels;
@@ -23,6 +15,11 @@ public partial class MainWindowViewModel : ViewModelBase
         AssetManagerViewModel = new AssetManagerViewModel();
         OptimizerViewModel = new OptimizerViewModel();
         HomeViewModel = new HomeViewModel();
+
+        Console.WriteLine(OperatingSystem.IsMacOS());
+        Console.WriteLine(OperatingSystem.IsWindows());
+        Console.WriteLine(OperatingSystem.IsLinux());
+
         AssetManager assetManager = new AssetManager();
     }
 }

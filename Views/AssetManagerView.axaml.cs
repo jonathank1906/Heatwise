@@ -9,6 +9,5 @@ public partial class AssetManagerView : UserControl
     public AssetManagerView()
     {
         InitializeComponent();
-        DataContext = new AssetManagerViewModel(); 
     }
 }

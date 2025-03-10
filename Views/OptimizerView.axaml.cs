@@ -9,6 +9,5 @@ public partial class OptimizerView : UserControl
     public OptimizerView()
     {
         InitializeComponent();
-        DataContext = new OptimizerViewModel(); 
     }
 }
