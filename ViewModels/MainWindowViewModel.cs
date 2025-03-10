@@ -16,10 +16,6 @@ public partial class MainWindowViewModel : ViewModelBase
         OptimizerViewModel = new OptimizerViewModel();
         HomeViewModel = new HomeViewModel();
 
-        Console.WriteLine(OperatingSystem.IsMacOS());
-        Console.WriteLine(OperatingSystem.IsWindows());
-        Console.WriteLine(OperatingSystem.IsLinux());
-
         AssetManager assetManager = new AssetManager();
     }
 }
