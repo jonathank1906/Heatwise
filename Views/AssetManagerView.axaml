@@ -7,15 +7,62 @@
     xmlns:vm="using:Sem2Proj.ViewModels"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    x:DataType="vm:AssetManagerViewModel">
 
-    <StackPanel>
-        <TextBlock
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Margin="0,350,0,0"
-            FontSize="24"
-            FontWeight="Bold"
-            Text="Welcome to the Asset Manager Page!" />
-    </StackPanel>
+    <Grid>
+        <SplitView
+            IsPaneOpen="True"
+            DisplayMode="CompactInline"
+            OpenPaneLength="180"
+            CompactPaneLength="46"
+            Background="#1e1e1e"
+            PaneBackground="#1e1e1e">
+            
+            <SplitView.Pane>
+                <StackPanel Orientation="Vertical"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Top"
+                            Spacing="1"
+                            Margin="2">
+                    <ListBox Margin="0 0 -100 0" Padding="0" ItemsSource="{Binding Items}"
+                             SelectedItem="{Binding SelectedListItem}">
+                        <ListBox.Styles>
+                            <Style Selector="ListBoxItem">
+                                <Setter Property="Padding" Value="12 8"></Setter>
+                            </Style>
+                        </ListBox.Styles>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:ListItemTemplate}">
+                                <StackPanel Spacing="17" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Label}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </SplitView.Pane>
+            
+            <SplitView.Content>
+                <Grid Background="Black" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,5*"
+                      ColumnDefinitions="Auto,Auto">
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding SelectedListItem.Label}" Foreground="White" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Max Heat" Foreground="White" Margin="5" HorizontalAlignment="Right"/>
+                    <ProgressBar Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="100" Value="60" Margin="5" Width="200" HorizontalAlignment="Left"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Production Costs" Foreground="White" Margin="5" HorizontalAlignment="Right"/>
+                    <ProgressBar Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="100" Value="60" Margin="5" Width="200" HorizontalAlignment="Left"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="CO2 Emissions" Foreground="White" Margin="5" HorizontalAlignment="Right"/>
+                    <ProgressBar Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="100" Value="60" Margin="5" Width="200" HorizontalAlignment="Left"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Gas Consumption" Foreground="White" Margin="5" HorizontalAlignment="Right"/>
+                    <ProgressBar Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="100" Value="60" Margin="5" Width="200" HorizontalAlignment="Left"/>
+
+                    <Image Grid.Row="5" Grid.ColumnSpan="2" Source="{Binding ImageFromBinding}" Stretch="Uniform" Margin="10" HorizontalAlignment="Center"/>
+                </Grid>
+            </SplitView.Content>
+        </SplitView>
+    </Grid>
 </UserControl>

@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+using Sem2Proj.Models;
 
 namespace Sem2Proj.ViewModels;
 
@@ -20,5 +19,7 @@ public partial class MainWindowViewModel : ViewModelBase
         Console.WriteLine(OperatingSystem.IsMacOS());
         Console.WriteLine(OperatingSystem.IsWindows());
         Console.WriteLine(OperatingSystem.IsLinux());
+
+        AssetManager assetManager = new AssetManager();
     }
 }

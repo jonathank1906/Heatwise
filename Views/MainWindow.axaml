@@ -101,6 +101,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+            
 
             <!--  Top Header (Dark Overlay)  -->
             <Border
@@ -200,5 +201,7 @@
                 Stretch="Fill"
                 ZIndex="2" />
         </Grid>
+
     </Panel>
+    
 </Window>
