@@ -85,7 +85,7 @@
 
 
     <!--  Panel acts as a container and the background  -->
-    <Panel PointerPressed="OnPointerPressed">
+    <Panel>
         <!--  Adjusting the "background"  -->
         <ExperimentalAcrylicBorder IsHitTestVisible="False">
             <ExperimentalAcrylicBorder.Material>
@@ -97,18 +97,39 @@
             </ExperimentalAcrylicBorder.Material>
         </ExperimentalAcrylicBorder>
 
-        <!--  Pages (Views)  -->
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!--  Header Overlay  -->
+            <!--  Top Header (Dark Overlay)  -->
             <Border
-                Height="45"
+                Name="TopHeader"
+                Height="31"
+                Margin="0,0,0,0"
+                HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
                 PointerPressed="OnPointerPressed"
+                ZIndex="3">
+
+                <Border.Background>
+                    <SolidColorBrush Color="#35000000" /> 
+                </Border.Background>
+
+                <Border
+                    Height="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom">
+                    <Border.Background>
+                        <SolidColorBrush Color="#40000000" /> 
+                    </Border.Background>
+                </Border>
+            </Border>
+
+            <!--  Bottom/Main Header (Red Overlay)  -->
+            <Border
+                Height="75"
+                VerticalAlignment="Top"
                 ZIndex="1">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -131,21 +152,22 @@
                 </Border.Effect>
             </Border>
 
+            <!--  Pages (Views)  -->
             <TabControl
                 Grid.Row="0"
-                SelectedIndex="{Binding SelectedTabIndex}"
+                Margin="0,15,0,0"
+                TabStripPlacement="Top"
                 ZIndex="2">
                 <TabControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="4" />
+                        <UniformGrid Margin="0,0,350,0" Columns="3" />
                     </ItemsPanelTemplate>
                 </TabControl.ItemsPanel>
 
-                <!--  Define the HeaderTemplate for the TabItems  -->
+                <!--  HeaderTemplate for the TabItems  -->
                 <TabControl.Resources>
                     <DataTemplate x:Key="TabHeaderTemplate">
                         <TextBlock
-                            Padding="70,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Text="{Binding}" />
@@ -163,24 +185,20 @@
                 <TabItem Header="Optimizer" HeaderTemplate="{StaticResource TabHeaderTemplate}">
                     <local:OptimizerView DataContext="{Binding OptimizerViewModel}" />
                 </TabItem>
-
-                <TabItem>
-                    <TabItem.Header>
-                        <Border
-                            Width="50"
-                            Height="50"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
-                            <Image
-                                Width="100"
-                                Height="100"
-                                Source="avares://Sem2Proj/Assets/black-danfoss-logo.png"
-                                Stretch="Uniform" />
-                        </Border>
-                    </TabItem.Header>
-                    <local:HomeView DataContext="{Binding HomeViewModel}" />
-                </TabItem>
             </TabControl>
+
+
+            <!--  Danfoss logo  -->
+            <Image
+                Grid.Row="0"
+                Width="95"
+                Height="95"
+                Margin="0,8,40,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Source="../Assets/black-danfoss-logo.png"
+                Stretch="Fill"
+                ZIndex="2" />
         </Grid>
     </Panel>
 </Window>
