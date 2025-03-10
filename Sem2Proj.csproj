@@ -13,6 +13,14 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
+
+   <ItemGroup>
+   <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+
+
+
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.1" />
@@ -24,6 +32,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.1" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.2.0.2" />
     <PackageReference Include="Avalonia.Xaml.Interactions" Version="11.2.0.13" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="FluentAvaloniaUI" Version="2.2.0" />
