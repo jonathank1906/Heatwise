@@ -9,10 +9,10 @@
     Title="TitleShouldNotBeVisible"
     Width="1250"
     Height="800"
-    MinWidth="950"
+    MinWidth="620"
     MinHeight="80"
-    d:DesignHeight="800"
     d:DesignWidth="1250"
+    d:DesignHeight="800"
     x:DataType="vm:MainWindowViewModel"
     Background="Transparent"
     ExtendClientAreaTitleBarHeightHint="0"
@@ -37,9 +37,9 @@
         <Style Selector="TabItem:selected">
             <Setter Property="Background">
                 <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <GradientStop Offset="0" Color="#80000000" />
-                        <GradientStop Offset="1" Color="#20000000" />
+                    <LinearGradientBrush StartPoint="0,50" EndPoint="0,100">
+                        <GradientStop Offset="0" Color="#3F000000" />
+                        <GradientStop Offset="1" Color="#10000000" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
@@ -53,14 +53,14 @@
         <Style Selector="TabItem:pointerover">
             <Setter Property="Background">
                 <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <LinearGradientBrush StartPoint="0,50" EndPoint="0,100">
                         <GradientStop Offset="0" Color="#20000000" />
                         <GradientStop Offset="1" Color="#10000000" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
             <Setter Property="Foreground" Value="Black" />
-            <Setter Property="BorderBrush" Value="#40FFFFFF" />
+            <Setter Property="BorderBrush" Value="#30FFFFFF" />
             <Setter Property="BorderThickness" Value="0,0,0,3" />
             <Setter Property="FontSize" Value="23" />
         </Style>
@@ -69,9 +69,9 @@
         <Style Selector="TabItem:selected:pointerover">
             <Setter Property="Background">
                 <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <GradientStop Offset="0" Color="#80000000" />
-                        <GradientStop Offset="1" Color="#20000000" />
+                    <LinearGradientBrush StartPoint="0,50" EndPoint="0,100">
+                        <GradientStop Offset="0" Color="#3F000000" />
+                        <GradientStop Offset="1" Color="#10000000" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
@@ -103,7 +103,7 @@
             </Grid.RowDefinitions>
 
 
-            <!--  Top Header (Dark Overlay)  -->
+            <!--  Top Header / Title Bar  -->
             <Border
                 Name="TopHeader"
                 Grid.Row="0"
@@ -114,9 +114,9 @@
                 PointerPressed="OnPointerPressed"
                 ZIndex="3">
                 <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <GradientStop Offset="0" Color="#FF555555" />
-                        <GradientStop Offset="1" Color="#FF222222" />
+                    <LinearGradientBrush StartPoint="0,15" EndPoint="0,6">
+                        <GradientStop Offset="0" Color="#FF222222" />
+                        <GradientStop Offset="1" Color="#FF333333" />
                     </LinearGradientBrush>
                 </Border.Background>
                 <Border
@@ -129,12 +129,23 @@
                         BlurRadius="12"
                         OffsetX="0"
                         OffsetY="2"
-                        Opacity="0.6"
+                        Opacity="0.7"
                         Color="Black" />
                 </Border.Effect>
             </Border>
 
-            <!--  Bottom/Main Header (Red Overlay)  -->
+            <!--  Danfoss logo  -->
+            <Image
+                Name="DanfossLogo"
+                Grid.Row="0"
+                Width="50"
+                Height="50"
+                VerticalAlignment="Top"
+                Source="../Assets/white-danfoss-logo.png"
+                Stretch="Fill"
+                ZIndex="4" />
+
+            <!--  Bottom Header / Menu Overlay  -->
             <Border
                 Grid.Row="1"
                 Height="45"
@@ -148,7 +159,7 @@
 
                         <GradientStop Offset="0.6" Color="#F44336" />
 
-                        <GradientStop Offset="1" Color="#D32F2F" />
+                        <GradientStop Offset="1" Color="#E32F2F" />
                     </LinearGradientBrush>
                 </Border.Background>
                 <Border.Effect>
@@ -156,7 +167,7 @@
                         BlurRadius="10"
                         OffsetX="2"
                         OffsetY="2"
-                        Opacity="0.5"
+                        Opacity="0.6"
                         Color="#F44336" />
                 </Border.Effect>
             </Border>
@@ -164,12 +175,11 @@
             <!--  Pages (Views)  -->
             <TabControl
                 Grid.Row="1"
-                Margin="0,0,0,0"
                 TabStripPlacement="Top"
                 ZIndex="2">
                 <TabControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Margin="0,0,350,0" Columns="3" />
+                        <UniformGrid Columns="3" />
                     </ItemsPanelTemplate>
                 </TabControl.ItemsPanel>
 
@@ -195,21 +205,7 @@
                     <local:OptimizerView DataContext="{Binding OptimizerViewModel}" />
                 </TabItem>
             </TabControl>
-
-
-            <!--  Danfoss logo  -->
-            <Image
-                Grid.Row="1"
-                Width="100"
-                Height="100"
-                Margin="0,-27,40,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Source="../Assets/black-danfoss-logo.png"
-                Stretch="Fill"
-                ZIndex="2" />
         </Grid>
-
     </Panel>
 
 </Window>

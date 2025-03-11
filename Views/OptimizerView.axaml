@@ -11,9 +11,9 @@
 
     <StackPanel>
         <TextBlock
+            Margin="0,350,0,0"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Margin="0,350,0,0"
             FontSize="24"
             FontWeight="Bold"
             Text="Welcome to the Optimizer Page!" />
