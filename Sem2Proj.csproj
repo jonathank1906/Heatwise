@@ -42,7 +42,7 @@
     <Content Include="Assets\*.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="HeatProductionUnits.json">
+    <Content Include="AppData/*.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> 
     </Content>
   </ItemGroup>

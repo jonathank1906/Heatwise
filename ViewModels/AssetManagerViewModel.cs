@@ -8,9 +8,8 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 namespace Sem2Proj.ViewModels
 {
     public class AssetManagerViewModel : INotifyPropertyChanged
@@ -104,7 +103,7 @@ namespace Sem2Proj.ViewModels
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -116,3 +115,5 @@ namespace Sem2Proj.ViewModels
         public string ImageSource { get; set; }
     }
 }
+
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.

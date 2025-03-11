@@ -1,3 +1,4 @@
+using System;
 using Sem2Proj.Models;
 
 namespace Sem2Proj.ViewModels;
@@ -20,6 +21,6 @@ public partial class MainWindowViewModel : ViewModelBase
         Console.WriteLine(OperatingSystem.IsWindows());
         Console.WriteLine(OperatingSystem.IsLinux());
 
-        AssetManager assetManager = new AssetManager();
+        //AssetManager assetManager = new AssetManager();
     }
 }

@@ -9,8 +9,8 @@
     Title="TitleShouldNotBeVisible"
     Width="1250"
     Height="800"
-    MinWidth="1250"
-    MinHeight="45"
+    MinWidth="950"
+    MinHeight="80"
     d:DesignHeight="800"
     d:DesignWidth="1250"
     x:DataType="vm:MainWindowViewModel"
@@ -29,7 +29,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="Foreground" Value="Black" />
-            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontSize" Value="22" />
             <Setter Property="FontWeight" Value="Bold" />
         </Style>
 
@@ -46,7 +46,7 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="BorderThickness" Value="0,0,0,3" />
-            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontSize" Value="23" />
         </Style>
 
         <!--  Style for hovered TabItem  -->
@@ -62,7 +62,7 @@
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="BorderBrush" Value="#40FFFFFF" />
             <Setter Property="BorderThickness" Value="0,0,0,3" />
-            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontSize" Value="23" />
         </Style>
 
         <!--  Style for selected and hovered TabItem  -->
@@ -78,10 +78,9 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="BorderThickness" Value="0,0,0,3" />
-            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontSize" Value="23" />
         </Style>
     </Window.Styles>
-
 
 
     <!--  Panel acts as a container and the background  -->
@@ -99,37 +98,46 @@
 
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            
+
 
             <!--  Top Header (Dark Overlay)  -->
             <Border
                 Name="TopHeader"
-                Height="31"
+                Grid.Row="0"
+                Height="30"
                 Margin="0,0,0,0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
                 PointerPressed="OnPointerPressed"
                 ZIndex="3">
-
                 <Border.Background>
-                    <SolidColorBrush Color="#35000000" /> 
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#FF555555" />
+                        <GradientStop Offset="1" Color="#FF222222" />
+                    </LinearGradientBrush>
                 </Border.Background>
-
                 <Border
                     Height="1"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Bottom">
-                    <Border.Background>
-                        <SolidColorBrush Color="#40000000" /> 
-                    </Border.Background>
-                </Border>
+                    VerticalAlignment="Bottom"
+                    Background="#99F04444" />
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="12"
+                        OffsetX="0"
+                        OffsetY="2"
+                        Opacity="0.6"
+                        Color="Black" />
+                </Border.Effect>
             </Border>
 
             <!--  Bottom/Main Header (Red Overlay)  -->
             <Border
-                Height="75"
+                Grid.Row="1"
+                Height="45"
                 VerticalAlignment="Top"
                 ZIndex="1">
                 <Border.Background>
@@ -155,8 +163,8 @@
 
             <!--  Pages (Views)  -->
             <TabControl
-                Grid.Row="0"
-                Margin="0,15,0,0"
+                Grid.Row="1"
+                Margin="0,0,0,0"
                 TabStripPlacement="Top"
                 ZIndex="2">
                 <TabControl.ItemsPanel>
@@ -191,10 +199,10 @@
 
             <!--  Danfoss logo  -->
             <Image
-                Grid.Row="0"
-                Width="95"
-                Height="95"
-                Margin="0,8,40,0"
+                Grid.Row="1"
+                Width="100"
+                Height="100"
+                Margin="0,-27,40,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Source="../Assets/black-danfoss-logo.png"
@@ -203,5 +211,5 @@
         </Grid>
 
     </Panel>
-    
+
 </Window>

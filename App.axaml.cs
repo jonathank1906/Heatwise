@@ -17,7 +17,11 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new SplashWindow(() =>
+            desktop.MainWindow = new MainWindow()
+            {
+                DataContext = new MainWindowViewModel()
+            };
+            /*desktop.MainWindow = new SplashWindow(() =>
             {
                 
                 var mainWindow = new MainWindow()
@@ -29,7 +33,7 @@ public partial class App : Application
                 mainWindow.Focus();
                 
                 desktop.MainWindow = mainWindow;
-            });
+            });*/
         }
 
         base.OnFrameworkInitializationCompleted();
