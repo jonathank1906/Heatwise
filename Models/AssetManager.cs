@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 
 namespace Sem2Proj.Models;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 public class HeatAsset
 {
     public string Name { get; set; } = ""; // Name of the asset
@@ -102,3 +103,4 @@ public class AssetData
     public List<HeatAsset.GasMotor> GasMotors { get; set; }
     public List<HeatAsset.HeatPump> HeatPumps { get; set; }
 }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.

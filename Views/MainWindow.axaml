@@ -9,10 +9,10 @@
     Title="TitleShouldNotBeVisible"
     Width="1250"
     Height="800"
-    MinWidth="1250"
-    MinHeight="45"
-    d:DesignHeight="800"
+    MinWidth="620"
+    MinHeight="80"
     d:DesignWidth="1250"
+    d:DesignHeight="800"
     x:DataType="vm:MainWindowViewModel"
     Background="Transparent"
     ExtendClientAreaTitleBarHeightHint="0"
@@ -29,7 +29,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="Foreground" Value="Black" />
-            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontSize" Value="22" />
             <Setter Property="FontWeight" Value="Bold" />
         </Style>
 
@@ -37,51 +37,50 @@
         <Style Selector="TabItem:selected">
             <Setter Property="Background">
                 <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <GradientStop Offset="0" Color="#80000000" />
-                        <GradientStop Offset="1" Color="#20000000" />
+                    <LinearGradientBrush StartPoint="0,50" EndPoint="0,100">
+                        <GradientStop Offset="0" Color="#3F000000" />
+                        <GradientStop Offset="1" Color="#10000000" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
             <Setter Property="Foreground" Value="White" />
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="BorderThickness" Value="0,0,0,3" />
-            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontSize" Value="23" />
         </Style>
 
         <!--  Style for hovered TabItem  -->
         <Style Selector="TabItem:pointerover">
             <Setter Property="Background">
                 <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <LinearGradientBrush StartPoint="0,50" EndPoint="0,100">
                         <GradientStop Offset="0" Color="#20000000" />
                         <GradientStop Offset="1" Color="#10000000" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
             <Setter Property="Foreground" Value="Black" />
-            <Setter Property="BorderBrush" Value="#40FFFFFF" />
+            <Setter Property="BorderBrush" Value="#30FFFFFF" />
             <Setter Property="BorderThickness" Value="0,0,0,3" />
-            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontSize" Value="23" />
         </Style>
 
         <!--  Style for selected and hovered TabItem  -->
         <Style Selector="TabItem:selected:pointerover">
             <Setter Property="Background">
                 <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <GradientStop Offset="0" Color="#80000000" />
-                        <GradientStop Offset="1" Color="#20000000" />
+                    <LinearGradientBrush StartPoint="0,50" EndPoint="0,100">
+                        <GradientStop Offset="0" Color="#3F000000" />
+                        <GradientStop Offset="1" Color="#10000000" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
             <Setter Property="Foreground" Value="White" />
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="BorderThickness" Value="0,0,0,3" />
-            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontSize" Value="23" />
         </Style>
     </Window.Styles>
-
 
 
     <!--  Panel acts as a container and the background  -->
@@ -99,37 +98,57 @@
 
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            
 
-            <!--  Top Header (Dark Overlay)  -->
+
+            <!--  Top Header / Title Bar  -->
             <Border
                 Name="TopHeader"
-                Height="31"
+                Grid.Row="0"
+                Height="30"
                 Margin="0,0,0,0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
                 PointerPressed="OnPointerPressed"
                 ZIndex="3">
-
                 <Border.Background>
-                    <SolidColorBrush Color="#35000000" /> 
+                    <LinearGradientBrush StartPoint="0,15" EndPoint="0,6">
+                        <GradientStop Offset="0" Color="#FF222222" />
+                        <GradientStop Offset="1" Color="#FF333333" />
+                    </LinearGradientBrush>
                 </Border.Background>
-
                 <Border
                     Height="1"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Bottom">
-                    <Border.Background>
-                        <SolidColorBrush Color="#40000000" /> 
-                    </Border.Background>
-                </Border>
+                    VerticalAlignment="Bottom"
+                    Background="#99F04444" />
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="12"
+                        OffsetX="0"
+                        OffsetY="2"
+                        Opacity="0.7"
+                        Color="Black" />
+                </Border.Effect>
             </Border>
 
-            <!--  Bottom/Main Header (Red Overlay)  -->
+            <!--  Danfoss logo  -->
+            <Image
+                Name="DanfossLogo"
+                Grid.Row="0"
+                Width="50"
+                Height="50"
+                VerticalAlignment="Top"
+                Source="../Assets/white-danfoss-logo.png"
+                Stretch="Fill"
+                ZIndex="4" />
+
+            <!--  Bottom Header / Menu Overlay  -->
             <Border
-                Height="75"
+                Grid.Row="1"
+                Height="45"
                 VerticalAlignment="Top"
                 ZIndex="1">
                 <Border.Background>
@@ -140,7 +159,7 @@
 
                         <GradientStop Offset="0.6" Color="#F44336" />
 
-                        <GradientStop Offset="1" Color="#D32F2F" />
+                        <GradientStop Offset="1" Color="#E32F2F" />
                     </LinearGradientBrush>
                 </Border.Background>
                 <Border.Effect>
@@ -148,20 +167,19 @@
                         BlurRadius="10"
                         OffsetX="2"
                         OffsetY="2"
-                        Opacity="0.5"
+                        Opacity="0.6"
                         Color="#F44336" />
                 </Border.Effect>
             </Border>
 
             <!--  Pages (Views)  -->
             <TabControl
-                Grid.Row="0"
-                Margin="0,15,0,0"
+                Grid.Row="1"
                 TabStripPlacement="Top"
                 ZIndex="2">
                 <TabControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Margin="0,0,350,0" Columns="3" />
+                        <UniformGrid Columns="2" />
                     </ItemsPanelTemplate>
                 </TabControl.ItemsPanel>
 
@@ -175,9 +193,6 @@
                     </DataTemplate>
                 </TabControl.Resources>
 
-                <TabItem Header="Scenario Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
-                    <local:ScenarioManagerView DataContext="{Binding ScenarioManagerViewModel}" />
-                </TabItem>
 
                 <TabItem Header="Asset Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
                     <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
@@ -187,21 +202,7 @@
                     <local:OptimizerView DataContext="{Binding OptimizerViewModel}" />
                 </TabItem>
             </TabControl>
-
-
-            <!--  Danfoss logo  -->
-            <Image
-                Grid.Row="0"
-                Width="95"
-                Height="95"
-                Margin="0,8,40,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Source="../Assets/black-danfoss-logo.png"
-                Stretch="Fill"
-                ZIndex="2" />
         </Grid>
-
     </Panel>
-    
+
 </Window>
