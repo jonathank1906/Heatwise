@@ -138,10 +138,10 @@
             <Image
                 Name="DanfossLogo"
                 Grid.Row="0"
-                Width="50"
-                Height="50"
+                Width="58"
+                Height="23"
                 VerticalAlignment="Top"
-                Source="../Assets/white-danfoss-logo.png"
+                Source="{SvgImage Assets/white-danfoss-logo.svg}"
                 Stretch="Fill"
                 ZIndex="4" />
 

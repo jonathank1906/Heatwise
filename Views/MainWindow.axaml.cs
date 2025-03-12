@@ -21,17 +21,17 @@ protected override void OnLoaded(RoutedEventArgs e)
     {
         if (OperatingSystem.IsWindows())
         {
-            DanfossLogo.Margin = new Thickness(15, -10, 0, 0);
+            DanfossLogo.Margin = new Thickness(15, 3, 0, 0);
             DanfossLogo.HorizontalAlignment = HorizontalAlignment.Left;
         }
         else if (OperatingSystem.IsLinux())
         {
-            DanfossLogo.Margin = new Thickness(15, -10, 0, 0);
+            DanfossLogo.Margin = new Thickness(15, 3, 0, 0);
             DanfossLogo.HorizontalAlignment = HorizontalAlignment.Left;
         }
         else if (OperatingSystem.IsMacOS())
         {
-            DanfossLogo.Margin = new Thickness(0, -10, 15, 0);
+            DanfossLogo.Margin = new Thickness(0, 3, 15, 0);
             DanfossLogo.HorizontalAlignment = HorizontalAlignment.Right;
         }
     }
