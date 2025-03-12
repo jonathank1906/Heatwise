@@ -179,7 +179,7 @@
                 ZIndex="2">
                 <TabControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="3" />
+                        <UniformGrid Columns="2" />
                     </ItemsPanelTemplate>
                 </TabControl.ItemsPanel>
 
@@ -193,9 +193,6 @@
                     </DataTemplate>
                 </TabControl.Resources>
 
-                <TabItem Header="Scenario Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
-                    <local:ScenarioManagerView DataContext="{Binding ScenarioManagerViewModel}" />
-                </TabItem>
 
                 <TabItem Header="Asset Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
                     <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
