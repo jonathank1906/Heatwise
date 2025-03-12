@@ -19,6 +19,7 @@
     ExtendClientAreaToDecorationsHint="True"
     TransparencyLevelHint="AcrylicBlur"
     WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
     mc:Ignorable="d">
 
     <!--  Custom styles  -->
@@ -138,11 +139,9 @@
             <Image
                 Name="DanfossLogo"
                 Grid.Row="0"
-                Width="50"
-                Height="50"
-                VerticalAlignment="Top"
-                Source="../Assets/white-danfoss-logo.png"
-                Stretch="Fill"
+                Width="60"
+                Source="{SvgImage ../Assets/Danfoss-Logo.svg}"
+                Stretch="Uniform"
                 ZIndex="4" />
 
             <!--  Bottom Header / Menu Overlay  -->
