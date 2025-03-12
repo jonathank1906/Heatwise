@@ -17,5 +17,8 @@ public partial class MainWindowViewModel : ViewModelBase
         AssetManagerViewModel = new AssetManagerViewModel();
         OptimizerViewModel = new OptimizerViewModel();
         HomeViewModel = new HomeViewModel();
+        
+        AssetManager assetManager = new AssetManager();
+
     }
 }
