@@ -11,7 +11,5 @@ namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
- 
-    public Bitmap? ImageFromBinding { get; } = ImageHelper.LoadFromResource(new ("avares://Sem2Proj/Assets/GasBoiler1.png"));
     
 }

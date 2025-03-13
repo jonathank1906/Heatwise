@@ -55,11 +55,11 @@ namespace Sem2Proj.ViewModels
         {
             Items = new ObservableCollection<ListItemTemplate>
             {
-                new ListItemTemplate { Label = "Gas Boiler 1", ImageSource = "/Assets/GasBoiler1&2.jpeg" },
-                new ListItemTemplate { Label = "Gas Boiler 2", ImageSource = "/Assets/GasBoiler1.png" },
-                new ListItemTemplate { Label = "Oil Boiler 1", ImageSource = "/Assets/OilBoiler1.png" },
-                new ListItemTemplate { Label = "Gas Motor 1", ImageSource = "/Assets/GasMotor1.png" },
-                new ListItemTemplate { Label = "Heat Pump 1", ImageSource = "/Assets/HeatPump1.png" },
+                new ListItemTemplate { Label = "Gas Boiler 1", ImageSource = "/Assets/GasBoiler.jpeg" },
+                new ListItemTemplate { Label = "Gas Boiler 2", ImageSource = "/Assets/GasBoiler.jpeg" },
+                new ListItemTemplate { Label = "Oil Boiler 1", ImageSource = "/Assets/OilBoiler.jpeg" },
+                new ListItemTemplate { Label = "Gas Motor 1", ImageSource = "/Assets/GasMotor.jpg" },
+                new ListItemTemplate { Label = "Heat Pump 1", ImageSource = "/Assets/HeatPump.jpg" },
                 // Add more items as needed
             };
             SelectedListItem = Items[0];
