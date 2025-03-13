@@ -37,12 +37,29 @@ public class HeatAsset
         public double MaxElectricity { get; set; } // in MW
     }
 }
+
+public class Preset
+{
+    public string Name { get; set; }
+    public List<string> Machines { get; set; }
+}
+
+public class AssetData
+{
+    public List<HeatAsset.GasBoiler> GasBoilers { get; set; }
+    public List<HeatAsset.OilBoiler> OilBoilers { get; set; }
+    public List<HeatAsset.GasMotor> GasMotors { get; set; }
+    public List<HeatAsset.HeatPump> HeatPumps { get; set; }
+    public List<Preset> Presets { get; set; }
+}
+
 public class AssetManager
 {
     public List<HeatAsset.GasBoiler> GasBoilers { get; set; }
     public List<HeatAsset.OilBoiler> OilBoilers { get; set; }
     public List<HeatAsset.GasMotor> GasMotors { get; set; }
     public List<HeatAsset.HeatPump> HeatPumps { get; set; }
+    public List<Preset> Presets { get; set; }
 
     public AssetManager()
     {
@@ -74,6 +91,7 @@ public class AssetManager
                     OilBoilers = assets.OilBoilers;
                     GasMotors = assets.GasMotors;
                     HeatPumps = assets.HeatPumps;
+                    Presets = assets.Presets;
                     Console.WriteLine("Assets loaded successfully.");
                 }
                 else
@@ -95,12 +113,5 @@ public class AssetManager
             Console.WriteLine($"Failed to load assets: {ex.Message}");
         }
     }
-}
-public class AssetData
-{
-    public List<HeatAsset.GasBoiler> GasBoilers { get; set; }
-    public List<HeatAsset.OilBoiler> OilBoilers { get; set; }
-    public List<HeatAsset.GasMotor> GasMotors { get; set; }
-    public List<HeatAsset.HeatPump> HeatPumps { get; set; }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.

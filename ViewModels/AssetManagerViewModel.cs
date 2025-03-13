@@ -3,53 +3,38 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Platform;
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+using Sem2Proj.Models;
+using System.Linq;
+using System.Collections.Generic;
+
 namespace Sem2Proj.ViewModels
 {
-    public class AssetManagerViewModel : INotifyPropertyChanged
+    public partial class AssetManagerViewModel : ObservableObject
     {
+        [ObservableProperty]
         private Bitmap? _imageFromBinding;
-        public Bitmap? ImageFromBinding
-        {
-            get => _imageFromBinding;
-            private set
-            {
-                _imageFromBinding = value;
-                OnPropertyChanged();
-            }
-        }
 
+        [ObservableProperty]
         private string _selectedImageSource;
-        public string SelectedImageSource
-        {
-            get => _selectedImageSource;
-            set
-            {
-                _selectedImageSource = value;
-                OnPropertyChanged();
-                LoadImageFromSource(value);
-            }
-        }
 
+        [ObservableProperty]
         private ListItemTemplate _selectedListItem;
-        public ListItemTemplate SelectedListItem
-        {
-            get => _selectedListItem;
-            set
-            {
-                _selectedListItem = value;
-                OnPropertyChanged();
-                UpdateSelectedImageSource();
-            }
-        }
+
+        [ObservableProperty]
+        private Preset _selectedPreset;
 
         public ObservableCollection<ListItemTemplate> Items { get; set; }
+        public ObservableCollection<Preset> Presets { get; set; }
+        public ObservableCollection<ListItemTemplate> PresetItems { get; set; }
+
+        public IRelayCommand<ListItemTemplate> RemoveCommand { get; }
 
         public AssetManagerViewModel()
         {
@@ -62,8 +47,45 @@ namespace Sem2Proj.ViewModels
                 new ListItemTemplate { Label = "Heat Pump 1", ImageSource = "/Assets/HeatPump.jpg" },
                 // Add more items as needed
             };
+            Presets = new ObservableCollection<Preset>
+            {
+                new Preset { Name = "Scenario 1", Machines = new List<string> { "Gas Boiler 1", "Gas Boiler 2", "Oil Boiler 1" } },
+                new Preset { Name = "Scenario 2", Machines = new List<string> { "Gas Motor 1", "Heat Pump 1" } }
+            };
+            PresetItems = new ObservableCollection<ListItemTemplate>();
+
             SelectedListItem = Items[0];
             SelectedImageSource = Items[0].ImageSource;
+
+            RemoveCommand = new RelayCommand<ListItemTemplate>(RemoveItem);
+        }
+
+        private void RemoveItem(ListItemTemplate item)
+        {
+            if (Items.Contains(item))
+            {
+                Items.Remove(item);
+                if (SelectedListItem == item)
+                {
+                    SelectedListItem = Items.Count > 0 ? Items[0] : null;
+                    SelectedImageSource = SelectedListItem?.ImageSource;
+                }
+            }
+        }
+
+        partial void OnSelectedListItemChanged(ListItemTemplate value)
+        {
+            UpdateSelectedImageSource();
+        }
+
+        partial void OnSelectedImageSourceChanged(string value)
+        {
+            LoadImageFromSource(value);
+        }
+
+        partial void OnSelectedPresetChanged(Preset value)
+        {
+            UpdatePresetItems();
         }
 
         private void UpdateSelectedImageSource()
@@ -101,11 +123,20 @@ namespace Sem2Proj.ViewModels
             }
         }
 
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        private void UpdatePresetItems()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PresetItems.Clear();
+            if (SelectedPreset != null)
+            {
+                foreach (var machineName in SelectedPreset.Machines)
+                {
+                    var item = Items.FirstOrDefault(i => i.Label == machineName);
+                    if (item != null)
+                    {
+                        PresetItems.Add(item);
+                    }
+                }
+            }
         }
     }
 
@@ -115,5 +146,3 @@ namespace Sem2Proj.ViewModels
         public string ImageSource { get; set; }
     }
 }
-
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
