@@ -54,29 +54,31 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedListItem.Name}" Foreground="White" Margin="5" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.ColumnSpan="3"/>
+                     <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedListItem.Name}" Foreground="White" Margin="5" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.ColumnSpan="3"/>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Max Heat" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding SelectedListItem.MaxHeat}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding SelectedListItem.MaxHeat}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Max Heat" Foreground="White" Margin="6" HorizontalAlignment="Left"/>
+                    <ProgressBar Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="5" Value="{Binding SelectedListItem.MaxHeat}" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding SelectedListItem.MaxHeat, StringFormat={}{0:F1}}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Production Costs" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding SelectedListItem.ProductionCosts}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding SelectedListItem.ProductionCosts}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                    <ProgressBar Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="990" Value="{Binding SelectedListItem.ProductionCosts}" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding SelectedListItem.ProductionCosts, StringFormat={}{0:F1}}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
 
-                   
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="CO₂ Emissions" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                    <ProgressBar Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="650" Value="{Binding SelectedListItem.Emissions}" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding SelectedListItem.Emissions, StringFormat={}{0:F1}}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Gas Consumption" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding SelectedListItem.GasConsumption}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding SelectedListItem.GasConsumption}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                    <ProgressBar Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="1.8" Value="{Binding SelectedListItem.GasConsumption}" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding SelectedListItem.GasConsumption, StringFormat={}{0:F1}}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
 
                     <TextBlock Grid.Row="5" Grid.Column="0" Text="Oil Consumption" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="5" Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding SelectedListItem.OilConsumption}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding SelectedListItem.OilConsumption}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                    <ProgressBar Grid.Row="5" Grid.Column="1" Minimum="0" Maximum="1.5" Value="{Binding SelectedListItem.OilConsumption}" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding SelectedListItem.OilConsumption, StringFormat={}{0:F1}}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
 
                     <TextBlock Grid.Row="6" Grid.Column="0" Text="Max Electricity" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="6" Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding SelectedListItem.MaxElectricity}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="6" Grid.Column="2" Text="{Binding SelectedListItem.MaxElectricity}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                    <ProgressBar Grid.Row="6" Grid.Column="1" Minimum="0" Maximum="-6" Value="{Binding SelectedListItem.MaxElectricity}" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="6" Grid.Column="2" Text="{Binding SelectedListItem.MaxElectricity, StringFormat={}{0:F1}}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
                 </Grid>
             </Grid>
         </Grid>

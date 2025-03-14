@@ -3,29 +3,29 @@
       {
         "Name": "Gas Boiler 1",
         "ImageSource": "/Assets/GasBoiler.jpeg",
-        "MaxHeat": 100,
-        "ProductionCosts": 50,
-        "CO2Emissions": 200,
-        "GasConsumption": 1.2,
+        "MaxHeat": 4.0,
+        "ProductionCosts": 520,
+        "Emissions": 175,
+        "GasConsumption": 0.9,
         "OilConsumption": 0,
         "MaxElectricity": 0
       },
       {
         "Name": "Gas Boiler 2",
         "ImageSource": "/Assets/GasBoiler.jpeg",
-        "MaxHeat": 110,
-        "ProductionCosts": 55,
-        "CO2Emissions": 210,
-        "GasConsumption": 1.3,
+        "MaxHeat": 3.0,
+        "ProductionCosts": 560,
+        "Emissions": 130,
+        "GasConsumption": 0.7,
         "OilConsumption": 0,
         "MaxElectricity": 0
       },
       {
         "Name": "Oil Boiler 1",
         "ImageSource": "/Assets/OilBoiler.jpeg",
-        "MaxHeat": 120,
-        "ProductionCosts": 60,
-        "CO2Emissions": 250,
+        "MaxHeat": 4.0,
+        "ProductionCosts": 670,
+        "Emissions": 330,
         "GasConsumption": 0,
         "OilConsumption": 1.5,
         "MaxElectricity": 0
@@ -33,22 +33,22 @@
       {
         "Name": "Gas Motor 1",
         "ImageSource": "/Assets/GasMotor.jpg",
-        "MaxHeat": 150,
-        "ProductionCosts": 70,
-        "CO2Emissions": 300,
+        "MaxHeat": 3.5,
+        "ProductionCosts": 990,
+        "Emissions": 650,
         "GasConsumption": 1.8,
         "OilConsumption": 0,
-        "MaxElectricity": 50
+        "MaxElectricity": 2.6
       },
       {
         "Name": "Heat Pump 1",
         "ImageSource": "/Assets/HeatPump.jpg",
-        "MaxHeat": 200,
-        "ProductionCosts": 40,
-        "CO2Emissions": 100,
+        "MaxHeat": 6.0,
+        "ProductionCosts": 60,
+        "Emissions": 100,
         "GasConsumption": 0,
         "OilConsumption": 0,
-        "MaxElectricity": 60
+        "MaxElectricity": -6.0
       }
     ],
     "Presets": [

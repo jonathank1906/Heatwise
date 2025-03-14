@@ -22,7 +22,7 @@ namespace Sem2Proj.Models
         private double productionCosts;
 
         [ObservableProperty]
-        private double co2Emissions;
+        private double emissions;
 
         [ObservableProperty]
         private double gasConsumption;

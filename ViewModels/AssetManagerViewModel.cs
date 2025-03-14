@@ -30,10 +30,10 @@ namespace Sem2Proj.ViewModels
 
         public AssetManagerViewModel()
         {
-            _assetManager = new AssetManager();
+            //_assetManager = new AssetManager();
             Assets = new ObservableCollection<AssetModel>(_assetManager.LoadAssetsFromJson());
             SelectedListItem = Assets[0];
-                SelectedImageSource = Assets[0].ImageSource;
+            SelectedImageSource = Assets[0].ImageSource;
         }
 
         partial void OnSelectedListItemChanged(AssetModel value)
