@@ -13,6 +13,8 @@ using Avalonia.Platform;
 using Sem2Proj.Models;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace Sem2Proj.ViewModels
 {
@@ -34,42 +36,37 @@ namespace Sem2Proj.ViewModels
         public ObservableCollection<Preset> Presets { get; set; }
         public ObservableCollection<ListItemTemplate> PresetItems { get; set; }
 
-        public IRelayCommand<ListItemTemplate> RemoveCommand { get; }
+        public ICommand RemovePresetItemCommand { get; }
 
         public AssetManagerViewModel()
         {
             Items = new ObservableCollection<ListItemTemplate>
-            {
-                new ListItemTemplate { Label = "Gas Boiler 1", ImageSource = "/Assets/GasBoiler.jpeg" },
-                new ListItemTemplate { Label = "Gas Boiler 2", ImageSource = "/Assets/GasBoiler.jpeg" },
-                new ListItemTemplate { Label = "Oil Boiler 1", ImageSource = "/Assets/OilBoiler.jpeg" },
-                new ListItemTemplate { Label = "Gas Motor 1", ImageSource = "/Assets/GasMotor.jpg" },
-                new ListItemTemplate { Label = "Heat Pump 1", ImageSource = "/Assets/HeatPump.jpg" },
-                // Add more items as needed
-            };
+        {
+            new ListItemTemplate { Label = "Gas Boiler 1", ImageSource = "/Assets/GasBoiler.jpeg", MaxHeat = 80, ProductionCosts = 50, CO2Emissions = 20, GasConsumption = 30 },
+            new ListItemTemplate { Label = "Gas Boiler 2", ImageSource = "/Assets/GasBoiler.jpeg", MaxHeat = 85, ProductionCosts = 55, CO2Emissions = 22, GasConsumption = 32 },
+            new ListItemTemplate { Label = "Oil Boiler 1", ImageSource = "/Assets/OilBoiler.jpeg", MaxHeat = 90, ProductionCosts = 60, CO2Emissions = 25, GasConsumption = 35 },
+            new ListItemTemplate { Label = "Gas Motor 1", ImageSource = "/Assets/GasMotor.jpg", MaxHeat = 95, ProductionCosts = 65, CO2Emissions = 28, GasConsumption = 38 },
+            new ListItemTemplate { Label = "Heat Pump 1", ImageSource = "/Assets/HeatPump.jpg", MaxHeat = 100, ProductionCosts = 70, CO2Emissions = 30, GasConsumption = 40 },
+            // Add more items as needed
+        };
             Presets = new ObservableCollection<Preset>
-            {
-                new Preset { Name = "Scenario 1", Machines = new List<string> { "Gas Boiler 1", "Gas Boiler 2", "Oil Boiler 1" } },
-                new Preset { Name = "Scenario 2", Machines = new List<string> { "Gas Motor 1", "Heat Pump 1" } }
-            };
+        {
+            new Preset { Name = "Scenario 1", Machines = new List<string> { "Gas Boiler 1", "Gas Boiler 2", "Oil Boiler 1" } },
+            new Preset { Name = "Scenario 2", Machines = new List<string> { "Gas Motor 1", "Heat Pump 1" } }
+        };
             PresetItems = new ObservableCollection<ListItemTemplate>();
+
+            RemovePresetItemCommand = new RelayCommand<ListItemTemplate>(RemovePresetItem);
 
             SelectedListItem = Items[0];
             SelectedImageSource = Items[0].ImageSource;
-
-            RemoveCommand = new RelayCommand<ListItemTemplate>(RemoveItem);
         }
 
-        private void RemoveItem(ListItemTemplate item)
+        private void RemovePresetItem(ListItemTemplate item)
         {
-            if (Items.Contains(item))
+            if (item != null)
             {
-                Items.Remove(item);
-                if (SelectedListItem == item)
-                {
-                    SelectedListItem = Items.Count > 0 ? Items[0] : null;
-                    SelectedImageSource = SelectedListItem?.ImageSource;
-                }
+                PresetItems.Remove(item);
             }
         }
 
@@ -140,9 +137,13 @@ namespace Sem2Proj.ViewModels
         }
     }
 
-    public class ListItemTemplate
-    {
-        public string Label { get; set; }
-        public string ImageSource { get; set; }
-    }
+   public class ListItemTemplate
+{
+    public string Label { get; set; }
+    public string ImageSource { get; set; }
+    public double MaxHeat { get; set; }
+    public double ProductionCosts { get; set; }
+    public double CO2Emissions { get; set; }
+    public double GasConsumption { get; set; }
+}
 }
