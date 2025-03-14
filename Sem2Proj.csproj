@@ -43,5 +43,8 @@
     <Content Include="AppData/*">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> 
     </Content>
+     <Content Include="HeatProductionUnits.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> 
+    </Content>
   </ItemGroup>
 </Project>
