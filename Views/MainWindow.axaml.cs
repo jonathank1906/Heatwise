@@ -17,7 +17,7 @@ public partial class MainWindow : AppWindow
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
     }
 
-protected override void OnLoaded(RoutedEventArgs e)
+    protected override void OnLoaded(RoutedEventArgs e)
     {
         if (OperatingSystem.IsWindows())
         {

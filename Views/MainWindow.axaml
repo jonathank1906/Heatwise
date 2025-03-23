@@ -30,7 +30,6 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="FontSize" Value="22" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Width" Value="200" /> <!-- Set a fixed width for the tabs -->
             <Setter Property="Height" Value="45" /> <!-- Default height for all tabs -->
         </Style>
 
@@ -96,33 +95,6 @@
                 Stretch="Uniform"
                 ZIndex="4" />
 
-            <!-- Darker Square Behind Home Button -->
-            <Border
-                Grid.Row="1"
-                Width="50"
-                Height="50"
-                Margin="0"
-                Background="#b5000c" 
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                ZIndex="2" />
-
-            <!-- Home Button (Single, Outside Tabs) -->
-            <Button
-                Grid.Row="1"
-                Width="40"
-                Height="45"
-                Margin="5,4"
-                Background="Transparent"
-                BorderThickness="0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                ZIndex="3">
-                <Button.Content>
-                    <PathIcon Data="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-                </Button.Content>
-            </Button>
-
             <!-- Bottom Header / Menu Overlay (Red Bar) -->
             <Border
                 Grid.Row="1"
@@ -135,7 +107,6 @@
             <!-- Pages (Views) -->
             <Grid Grid.Row="1" ZIndex="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" /> <!-- Home Button Column -->
                     <ColumnDefinition Width="*" />   <!-- Tabs Column -->
                 </Grid.ColumnDefinitions>
 
@@ -157,14 +128,37 @@
                                 VerticalAlignment="Center"
                                 Text="{Binding}" />
                         </DataTemplate>
+
+                        <!-- Custom HeaderTemplate for Home Tab with Icon -->
+                        <DataTemplate x:Key="HomeTabHeaderTemplate">
+                            <PathIcon
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+                                Foreground="White" />
+                        </DataTemplate>
                     </TabControl.Resources>
 
-                    <!-- Tabs -->
-                    <TabItem Header="Asset Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}" Margin="50,0,0,0">
+                    <!-- Home Tab with Icon -->
+                    <TabItem
+                        HeaderTemplate="{StaticResource HomeTabHeaderTemplate}"
+                        Width="50"> <!-- Custom width for the Home tab -->
+                        <local:HomeView DataContext="{Binding HomeViewModel}" />
+                    </TabItem>
+
+                    <!-- Asset Manager Tab -->
+                    <TabItem
+                        Header="Asset Manager"
+                        HeaderTemplate="{StaticResource TabHeaderTemplate}"
+                        Width="200"> <!-- Custom width for the Asset Manager tab -->
                         <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
                     </TabItem>
 
-                    <TabItem Header="Optimizer" HeaderTemplate="{StaticResource TabHeaderTemplate}">
+                    <!-- Optimizer Tab -->
+                    <TabItem
+                        Header="Optimizer"
+                        HeaderTemplate="{StaticResource TabHeaderTemplate}"
+                        Width="150"> <!-- Custom width for the Optimizer tab -->
                         <local:OptimizerView DataContext="{Binding OptimizerViewModel}" />
                     </TabItem>
                 </TabControl>
