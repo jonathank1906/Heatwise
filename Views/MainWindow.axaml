@@ -11,8 +11,8 @@
     Height="800"
     MinWidth="620"
     MinHeight="80"
-    d:DesignWidth="1250"
     d:DesignHeight="800"
+    d:DesignWidth="1250"
     x:DataType="vm:MainWindowViewModel"
     Background="Transparent"
     ExtendClientAreaTitleBarHeightHint="0"
@@ -22,7 +22,7 @@
     WindowState="Maximized"
     mc:Ignorable="d">
 
-    <!-- Custom styles -->
+    <!--  Custom styles  -->
     <Window.Styles>
         <Style Selector="TabItem">
             <Setter Property="Padding" Value="0,-10" />
@@ -30,21 +30,26 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="FontSize" Value="22" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Height" Value="45" /> <!-- Default height for all tabs -->
+            <Setter Property="Height" Value="45" /> 
+            <!--  Default height for all tabs  -->
         </Style>
 
         <Style Selector="TabItem:selected">
-            <Setter Property="Height" Value="50" /> <!-- Ensure this is less than or equal to the red bar's height -->
+            <Setter Property="Height" Value="50" /> 
+            <!--  Ensure this is less than or equal to the red bar's height  -->
             <Setter Property="Background">
                 <Setter.Value>
-                    <!-- Darker shade for selected tab -->
+                    <!--  Darker shade for selected tab  -->
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Offset="0" Color="#FF7043" /> <!-- Darker shade -->
-                        <GradientStop Offset="1" Color="#800008" /> <!-- Even darker shade -->
+                        <GradientStop Offset="0" Color="#FF7043" /> 
+                        <!--  Darker shade  -->
+                        <GradientStop Offset="1" Color="#800008" /> 
+                        <!--  Even darker shade  -->
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Foreground" Value="White" /> <!-- Text color for selected tab -->
+            <Setter Property="Foreground" Value="White" /> 
+            <!--  Text color for selected tab  -->
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="BorderThickness" Value="0,0,0,0" />
             <Setter Property="FontSize" Value="23" />
@@ -52,7 +57,7 @@
     </Window.Styles>
 
     <Panel>
-        <!-- Background Effect -->
+        <!--  Background Effect  -->
         <ExperimentalAcrylicBorder IsHitTestVisible="False">
             <ExperimentalAcrylicBorder.Material>
                 <ExperimentalAcrylicMaterial
@@ -69,7 +74,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Top Header / Title Bar -->
+            <!--  Top Header / Title Bar  -->
             <Border
                 Name="TopHeader"
                 Grid.Row="0"
@@ -86,7 +91,7 @@
                 </Border.Background>
             </Border>
 
-            <!-- Danfoss Logo -->
+            <!--  Danfoss Logo  -->
             <Image
                 Name="DanfossLogo"
                 Grid.Row="0"
@@ -95,24 +100,22 @@
                 Stretch="Uniform"
                 ZIndex="4" />
 
-            <!-- Bottom Header / Menu Overlay (Red Bar) -->
+            <!--  Bottom Header / Menu Overlay (Red Bar)  -->
             <Border
                 Grid.Row="1"
-                Height="50" 
+                Height="50"
                 VerticalAlignment="Top"
-                ZIndex="1"
-                Background="#b5000c">
-            </Border>
+                Background="#b5000c"
+                ZIndex="1" />
 
-            <!-- Pages (Views) -->
+            <!--  Pages (Views)  -->
             <Grid Grid.Row="1" ZIndex="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />   <!-- Tabs Column -->
-                </Grid.ColumnDefinitions>
 
-                <!-- Tabs -->
+
+                <!--  Tabs  -->
                 <TabControl
                     Grid.Column="1"
+                    Padding="0,0,0,0"
                     TabStripPlacement="Top">
                     <TabControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -120,7 +123,7 @@
                         </ItemsPanelTemplate>
                     </TabControl.ItemsPanel>
 
-                    <!-- Custom HeaderTemplate for Tabs -->
+                    <!--  Custom HeaderTemplate for Tabs  -->
                     <TabControl.Resources>
                         <DataTemplate x:Key="TabHeaderTemplate">
                             <TextBlock
@@ -129,7 +132,7 @@
                                 Text="{Binding}" />
                         </DataTemplate>
 
-                        <!-- Custom HeaderTemplate for Home Tab with Icon -->
+                        <!--  Custom HeaderTemplate for Home Tab with Icon  -->
                         <DataTemplate x:Key="HomeTabHeaderTemplate">
                             <PathIcon
                                 HorizontalAlignment="Center"
@@ -139,26 +142,27 @@
                         </DataTemplate>
                     </TabControl.Resources>
 
-                    <!-- Home Tab with Icon -->
-                    <TabItem
-                        HeaderTemplate="{StaticResource HomeTabHeaderTemplate}"
-                        Width="50"> <!-- Custom width for the Home tab -->
+                    <!--  Home Tab with Icon  -->
+                    <TabItem Width="50" HeaderTemplate="{StaticResource HomeTabHeaderTemplate}"> 
+                        <!--  Custom width for the Home tab  -->
                         <local:HomeView DataContext="{Binding HomeViewModel}" />
                     </TabItem>
 
-                    <!-- Asset Manager Tab -->
+                    <!--  Asset Manager Tab  -->
                     <TabItem
+                        Width="200"
                         Header="Asset Manager"
-                        HeaderTemplate="{StaticResource TabHeaderTemplate}"
-                        Width="200"> <!-- Custom width for the Asset Manager tab -->
+                        HeaderTemplate="{StaticResource TabHeaderTemplate}"> 
+                        <!--  Custom width for the Asset Manager tab  -->
                         <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
                     </TabItem>
 
-                    <!-- Optimizer Tab -->
+                    <!--  Optimizer Tab  -->
                     <TabItem
+                        Width="150"
                         Header="Optimizer"
-                        HeaderTemplate="{StaticResource TabHeaderTemplate}"
-                        Width="150"> <!-- Custom width for the Optimizer tab -->
+                        HeaderTemplate="{StaticResource TabHeaderTemplate}"> 
+                        <!--  Custom width for the Optimizer tab  -->
                         <local:OptimizerView DataContext="{Binding OptimizerViewModel}" />
                     </TabItem>
                 </TabControl>
