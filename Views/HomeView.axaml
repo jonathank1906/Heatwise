@@ -1,67 +1,86 @@
-<UserControl
-    x:Class="Sem2Proj.Views.HomeView"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="using:Sem2Proj.ViewModels"
-    d:DesignHeight="450"
-    d:DesignWidth="1000"
-    mc:Ignorable="d">
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Sem2Proj.Views.HomeWindow"
+        Title="Heatington - Welcome"
+        Width="900"
+        Height="500"
+        WindowStartupLocation="CenterOwner"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        SystemDecorations="BorderOnly"
+        CanResize="False">
 
-   <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>  
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <!-- Background Image -->
+        <Image Source="/Assets/background.jpg"
+               Stretch="UniformToFill"/>
+        
+        <!-- Main Content -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/> <!-- Title bar area -->
+                <RowDefinition Height="*"/>  
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Top -->
-        <DockPanel Grid.Row="0" Background="#AB2323">
-            <TextBlock 
-                Text="DanBOSS or Maybe Logo?"
-                FontSize="20"  
-                Foreground="White" 
-                FontWeight="Bold"
-                VerticalAlignment="Center"
-                Margin="10,0,0,0"/>
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                <Button
-                    Content="About" 
-                    Margin="5"/>
-                <Button 
-                    Content="Group" 
-                    Margin="5"/>
+            <!-- Custom Title Bar -->
+            <Grid Grid.Row="0" Background="Transparent"
+                  PointerPressed="WindowDragMove">
+                <!-- Close Button - Perfectly aligned to top-right -->
+                <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Button Canvas.Right="0"
+                            Width="46"  
+                            Height="30"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="CloseWindow"
+                            Padding="10,0,10,0">  
+                        <PathIcon Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                Foreground="White"
+                                Width="12" Height="12"/>
+                    </Button>
+                </Canvas>
+            </Grid>
+
+            <!-- Middle Content -->
+            <StackPanel Grid.Row="1" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"
+                       Spacing="20">
+                <!-- Welcome Text -->
+                <TextBlock Text="Welcome to Heatington" 
+                           FontSize="28" 
+                           FontWeight="Bold" 
+                           Foreground="White"
+                           HorizontalAlignment="Center"/>
+                
+                <!-- Rounded Image Container -->
+                <Border Width="450"
+                        Height="300"
+                        CornerRadius="15"
+                        HorizontalAlignment="Center">
+                    <Border.Clip>
+                        <RectangleGeometry Rect="0,0,450,300" RadiusX="15" RadiusY="15"/>
+                    </Border.Clip>
+                    <Image Source="/Assets/map.png"
+                           Width="450"
+                           Height="300"
+                           Stretch="UniformToFill"/>
+                </Border>
             </StackPanel>
-        </DockPanel>
 
-        <!-- Mid-->
-        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock 
-                Text="Welcome to Heatington" 
-                FontSize="28" FontWeight="Bold" 
-                HorizontalAlignment="Center"/>
-            <TextBlock 
-                Text="Maybe some Description!" 
-                FontSize="18" 
-                HorizontalAlignment="Center" 
-                Margin="0,10"/>
-            <Button 
-                Content="Go to MainWindow" 
-                Background="#AB2323" 
-                Foreground="White" 
-                Padding="10,5" 
-                Margin="0,20"
-                HorizontalAlignment="Center"/>
-        </StackPanel>
-
-        <!-- Bottom -->
-        <DockPanel Grid.Row="2" Background="#AB2323">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="2025 2nd Semester Project" Foreground="White" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                <TextBlock Text="Group 21" Foreground="White" Margin="5"/>
-                <TextBlock Text="Another text?" Foreground="White" Margin="5"/>
-            </StackPanel>
-        </DockPanel>
+            <!-- Bottom Footer -->
+            <DockPanel Grid.Row="2" Background="#AB2323">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="2025 2nd Semester Project" 
+                               Foreground="White" 
+                               VerticalAlignment="Center" 
+                               Margin="10,0,0,0"/>
+                    <TextBlock Text="Group 21" 
+                               Foreground="White" 
+                               Margin="5"/>
+                </StackPanel>
+            </DockPanel>
+        </Grid>
     </Grid>
-</UserControl>
+</Window>

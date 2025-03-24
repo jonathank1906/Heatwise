@@ -1,13 +1,28 @@
-using FluentAvalonia.UI.Windowing;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using System;
 
-using Sem2Proj.ViewModels;
-namespace Sem2Proj.Views;
-
-public partial class HomeView : UserControl
+namespace Sem2Proj.Views
 {
-    public HomeView()
+    public partial class HomeWindow : Window
     {
-        InitializeComponent();
+        public HomeWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void WindowDragMove(object sender, PointerPressedEventArgs e)
+        {
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                BeginMoveDrag(e);
+            }
+        }
+
+        private void CloseWindow(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

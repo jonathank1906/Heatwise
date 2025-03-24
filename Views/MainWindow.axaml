@@ -11,8 +11,8 @@
     Height="800"
     MinWidth="620"
     MinHeight="80"
-    d:DesignHeight="800"
     d:DesignWidth="1250"
+    d:DesignHeight="800"
     x:DataType="vm:MainWindowViewModel"
     Background="Transparent"
     ExtendClientAreaTitleBarHeightHint="0"
@@ -24,40 +24,69 @@
 
     <!--  Custom styles  -->
     <Window.Styles>
+        <!--  Style for TabItem  -->
         <Style Selector="TabItem">
             <Setter Property="Padding" Value="0,-10" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
             <Setter Property="FontSize" Value="22" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Height" Value="45" /> 
-            <!--  Default height for all tabs  -->
         </Style>
 
+        <!--  Style for selected TabItem  -->
         <Style Selector="TabItem:selected">
-            <Setter Property="Height" Value="50" /> 
-            <!--  Ensure this is less than or equal to the red bar's height  -->
             <Setter Property="Background">
                 <Setter.Value>
-                    <!--  Darker shade for selected tab  -->
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Offset="0" Color="#FF7043" /> 
-                        <!--  Darker shade  -->
-                        <GradientStop Offset="1" Color="#800008" /> 
-                        <!--  Even darker shade  -->
+                    <LinearGradientBrush StartPoint="0,50" EndPoint="0,100">
+                        <GradientStop Offset="0" Color="#3F000000" />
+                        <GradientStop Offset="1" Color="#10000000" />
                     </LinearGradientBrush>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Foreground" Value="White" /> 
-            <!--  Text color for selected tab  -->
+            <Setter Property="Foreground" Value="White" />
             <Setter Property="BorderBrush" Value="White" />
-            <Setter Property="BorderThickness" Value="0,0,0,0" />
+            <Setter Property="BorderThickness" Value="0,0,0,3" />
+            <Setter Property="FontSize" Value="23" />
+        </Style>
+
+        <!--  Style for hovered TabItem  -->
+        <Style Selector="TabItem:pointerover">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,50" EndPoint="0,100">
+                        <GradientStop Offset="0" Color="#20000000" />
+                        <GradientStop Offset="1" Color="#10000000" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderBrush" Value="#30FFFFFF" />
+            <Setter Property="BorderThickness" Value="0,0,0,3" />
+            <Setter Property="FontSize" Value="23" />
+        </Style>
+
+        <!--  Style for selected and hovered TabItem  -->
+        <Style Selector="TabItem:selected:pointerover">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,50" EndPoint="0,100">
+                        <GradientStop Offset="0" Color="#3F000000" />
+                        <GradientStop Offset="1" Color="#10000000" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="0,0,0,3" />
             <Setter Property="FontSize" Value="23" />
         </Style>
     </Window.Styles>
 
+
+    <!--  Panel acts as a container and the background  -->
     <Panel>
-        <!--  Background Effect  -->
+        <!--  Adjusting the "background"  -->
         <ExperimentalAcrylicBorder IsHitTestVisible="False">
             <ExperimentalAcrylicBorder.Material>
                 <ExperimentalAcrylicMaterial
@@ -74,11 +103,13 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
+
             <!--  Top Header / Title Bar  -->
             <Border
                 Name="TopHeader"
                 Grid.Row="0"
-                Height="32"
+                Height="30"
+                Margin="0,0,0,0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
                 PointerPressed="OnPointerPressed"
@@ -89,84 +120,108 @@
                         <GradientStop Offset="1" Color="#FF333333" />
                     </LinearGradientBrush>
                 </Border.Background>
+                <Border
+                    Height="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom"
+                    Background="#99F04444" />
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="12"
+                        OffsetX="0"
+                        OffsetY="2"
+                        Opacity="0.7"
+                        Color="Black" />
+                </Border.Effect>
             </Border>
 
-            <!--  Danfoss Logo  -->
-            <Image
-                Name="DanfossLogo"
+            <!--  Danfoss logo and home button container  -->
+            <StackPanel
                 Grid.Row="0"
-                Width="60"
-                Source="{SvgImage ../Assets/Danfoss-Logo.svg}"
-                Stretch="Uniform"
-                ZIndex="4" />
+                HorizontalAlignment="Left"
+                Orientation="Horizontal"
+                ZIndex="4">
+                <!--  Danfoss logo  -->
+                <Image
+                    Name="DanfossLogo"
+                    Width="60"
+                    Source="{SvgImage ../Assets/Danfoss-Logo.svg}"
+                    Stretch="Uniform" />
+                
+                <!--  Home button with PathIcon  -->
+                <Button
+                    Width="30"
+                    Height="30"
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="OnHomeButtonClick">
+                    <PathIcon
+                        Width="20"
+                        Height="20"
+                        Data="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+                        Foreground="White" />
+                </Button>
+            </StackPanel>
 
-            <!--  Bottom Header / Menu Overlay (Red Bar)  -->
+            <!--  Bottom Header / Menu Overlay  -->
             <Border
                 Grid.Row="1"
-                Height="50"
+                Height="45"
                 VerticalAlignment="Top"
-                Background="#b5000c"
-                ZIndex="1" />
+                ZIndex="1">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Offset="0" Color="#FF7043" />
+                        <GradientStop Offset="0.3" Color="#FF5722" />
+                        <GradientStop Offset="0.6" Color="#F44336" />
+                        <GradientStop Offset="1" Color="#E32F2F" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="10"
+                        OffsetX="2"
+                        OffsetY="2"
+                        Opacity="0.6"
+                        Color="#F44336" />
+                </Border.Effect>
+            </Border>
 
             <!--  Pages (Views)  -->
-            <Grid Grid.Row="1" ZIndex="2">
+            <TabControl
+                Grid.Row="1"
+                Padding="0,0,0,0"
+                TabStripPlacement="Top"
+                ZIndex="2">
+                <TabControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" />
+                    </ItemsPanelTemplate>
+                </TabControl.ItemsPanel>
+
+                <!--  HeaderTemplate for the TabItems  -->
+                <TabControl.Resources>
+                    <DataTemplate x:Key="TabHeaderTemplate">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="{Binding}" />
+                    </DataTemplate>
+                </TabControl.Resources>
 
 
-                <!--  Tabs  -->
-                <TabControl
-                    Grid.Column="1"
-                    Padding="0,0,0,0"
-                    TabStripPlacement="Top">
-                    <TabControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </TabControl.ItemsPanel>
+                <TabItem Header="Asset Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
+                    <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
+                </TabItem>
 
-                    <!--  Custom HeaderTemplate for Tabs  -->
-                    <TabControl.Resources>
-                        <DataTemplate x:Key="TabHeaderTemplate">
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Text="{Binding}" />
-                        </DataTemplate>
-
-                        <!--  Custom HeaderTemplate for Home Tab with Icon  -->
-                        <DataTemplate x:Key="HomeTabHeaderTemplate">
-                            <PathIcon
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Data="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
-                                Foreground="White" />
-                        </DataTemplate>
-                    </TabControl.Resources>
-
-                    <!--  Home Tab with Icon  -->
-                    <TabItem Width="50" HeaderTemplate="{StaticResource HomeTabHeaderTemplate}"> 
-                        <!--  Custom width for the Home tab  -->
-                        <local:HomeView DataContext="{Binding HomeViewModel}" />
-                    </TabItem>
-
-                    <!--  Asset Manager Tab  -->
-                    <TabItem
-                        Width="200"
-                        Header="Asset Manager"
-                        HeaderTemplate="{StaticResource TabHeaderTemplate}"> 
-                        <!--  Custom width for the Asset Manager tab  -->
-                        <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
-                    </TabItem>
-
-                    <!--  Optimizer Tab  -->
-                    <TabItem
-                        Width="150"
-                        Header="Optimizer"
-                        HeaderTemplate="{StaticResource TabHeaderTemplate}"> 
-                        <!--  Custom width for the Optimizer tab  -->
-                        <local:OptimizerView DataContext="{Binding OptimizerViewModel}" />
-                    </TabItem>
-                </TabControl>
-            </Grid>
+                <TabItem Header="Optimizer" HeaderTemplate="{StaticResource TabHeaderTemplate}">
+                    <local:OptimizerView DataContext="{Binding OptimizerViewModel}" />
+                </TabItem>
+            </TabControl>
         </Grid>
     </Panel>
+
 </Window>

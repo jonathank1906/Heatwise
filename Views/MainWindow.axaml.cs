@@ -43,4 +43,10 @@ public partial class MainWindow : AppWindow
             BeginMoveDrag(e);
         }
     }
+
+    private async void OnHomeButtonClick(object sender, RoutedEventArgs e)
+    {
+        var homeWindow = new HomeWindow();
+        await homeWindow.ShowDialog(this);
+    }
 }
