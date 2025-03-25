@@ -12,24 +12,10 @@ public partial class MainWindowViewModel : ObservableObject
     public OptimizerViewModel OptimizerViewModel { get; }
     public HomeViewModel HomeViewModel { get; }
 
-    [ObservableProperty]
-    private bool isHomePopupVisible;
-
-    public ICommand ToggleHomePopupCommand { get; }
-    public ICommand CloseHomePopupCommand { get; }
-
     public MainWindowViewModel()
     {
         AssetManagerViewModel = new AssetManagerViewModel();
         OptimizerViewModel = new OptimizerViewModel();
         HomeViewModel = new HomeViewModel();
-        
-        ToggleHomePopupCommand = new RelayCommand(ToggleHomePopup);
-        CloseHomePopupCommand = new RelayCommand(() => IsHomePopupVisible = false);
-    }
-
-    private void ToggleHomePopup()
-    {
-        IsHomePopupVisible = !IsHomePopupVisible;
     }
 }
