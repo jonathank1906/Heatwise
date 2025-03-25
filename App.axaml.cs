@@ -14,36 +14,36 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
     }
-public override void OnFrameworkInitializationCompleted()
-{
-    if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+    public override void OnFrameworkInitializationCompleted()
     {
-        DisableAvaloniaDataAnnotationValidation();
-        
-        desktop.MainWindow = new SplashWindow(() =>
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Create and show MainWindow first
-            var mainWindow = new MainWindow()
-            {
-                DataContext = new MainWindowViewModel()
-            };
-            
-            // Create and show HomeWindow as a modal dialog
-            var homeWindow = new HomeWindow();
-            
-            // Show main window first (non-blocking)
-            mainWindow.Show();
-            
-            // Show home window as modal (blocking)
-            homeWindow.ShowDialog(mainWindow);
-            
-            // Set the main window after both are shown
-            desktop.MainWindow = mainWindow;
-        });
-    }
+            DisableAvaloniaDataAnnotationValidation();
 
-    base.OnFrameworkInitializationCompleted();
-}
+            desktop.MainWindow = new SplashWindow(() =>
+            {
+                // Create and show MainWindow first
+                var mainWindow = new MainWindow()
+                {
+                    DataContext = new MainWindowViewModel()
+                };
+
+                // Create and show HomeWindow as a modal dialog
+                var homeWindow = new HomeWindow();
+
+                // Show main window first (non-blocking)
+                mainWindow.Show();
+
+                // Show home window as modal (blocking)
+                homeWindow.ShowDialog(mainWindow);
+
+                // Set the main window after both are shown
+                desktop.MainWindow = mainWindow;
+            });
+        }
+
+        base.OnFrameworkInitializationCompleted();
+    }
 
     private void DisableAvaloniaDataAnnotationValidation()
     {
