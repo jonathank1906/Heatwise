@@ -161,12 +161,15 @@
 
             <!--  Danfoss logo and home button container  -->
             <StackPanel
+                Name="TopHeaderContainer"
                 Grid.Row="0"
                 HorizontalAlignment="Left"
+                VerticalAlignment="Center"
                 Orientation="Horizontal"
                 ZIndex="4">
                 <!--  Danfoss logo  -->
                 <Image
+                    Margin="0,3,0,0"
                     Name="DanfossLogo"
                     Width="60"
                     Source="{SvgImage ../Assets/Danfoss-Logo.svg}"

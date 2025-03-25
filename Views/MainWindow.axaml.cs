@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Layout;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 namespace Sem2Proj.Views;
 
@@ -19,20 +20,25 @@ public partial class MainWindow : AppWindow
 
     protected override void OnLoaded(RoutedEventArgs e)
     {
-        if (OperatingSystem.IsWindows())
+        var stackPanel = this.FindControl<StackPanel>("TopHeaderContainer");
+
+        if (OperatingSystem.IsMacOS())
         {
-            DanfossLogo.Margin = new Thickness(15, 3, 0, 0);
-            DanfossLogo.HorizontalAlignment = HorizontalAlignment.Left;
-        }
-        else if (OperatingSystem.IsLinux())
-        {
-            DanfossLogo.Margin = new Thickness(15, 3, 0, 0);
-            DanfossLogo.HorizontalAlignment = HorizontalAlignment.Left;
-        }
-        else if (OperatingSystem.IsMacOS())
-        {
-            DanfossLogo.Margin = new Thickness(0, 3, 15, 0);
-            DanfossLogo.HorizontalAlignment = HorizontalAlignment.Right;
+            if (stackPanel == null) return;
+            stackPanel.HorizontalAlignment = HorizontalAlignment.Right;
+            stackPanel.Children.Clear();
+
+            var danfossLogo = this.FindControl<Image>("DanfossLogo");
+            var homeButton = this.FindControl<Button>("homeButton");
+            var settingsButton = this.FindControl<Button>("settingsButton");
+
+            if (danfossLogo != null && homeButton != null && settingsButton != null)
+            {
+                stackPanel.Children.Add(homeButton);
+                danfossLogo.Margin = new Thickness(0, 3, 3, 0);
+                stackPanel.Children.Add(settingsButton);
+                stackPanel.Children.Add(danfossLogo);
+            }
         }
     }
 

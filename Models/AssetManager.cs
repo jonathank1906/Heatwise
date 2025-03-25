@@ -71,7 +71,7 @@ namespace Sem2Proj.Models
             }
 
             string jsonString = File.ReadAllText(jsonFilePath);
-            Console.WriteLine($"JSON content: {jsonString}");
+            //.WriteLine($"JSON content: {jsonString}");
 
             AssetData assetData;
             try
