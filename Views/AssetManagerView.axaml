@@ -12,7 +12,7 @@
     
     <Grid Background="#1e1e1e" ColumnDefinitions="200,*" RowDefinitions="Auto,*">
         <!-- Left Column: Navigation -->
-        <StackPanel Grid.Row="1" Background="#3D3D3D" Width="200">
+        <StackPanel Grid.Row="1" Background="#252526" Width="200">
             <TextBlock Text="All Assets" Foreground="White" FontWeight="SemiBold" FontSize="18" Margin="10"/>
           
             <ListBox Margin="0 0 0 10" Padding="0" ItemsSource="{Binding Assets}" SelectedItem="{Binding SelectedListItem}">

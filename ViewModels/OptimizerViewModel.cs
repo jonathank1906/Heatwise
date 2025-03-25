@@ -6,7 +6,7 @@ namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
-    private const int OpenWidth = 200;
+    private const int OpenWidth = 275;
     private const int ClosedWidth = 0;
     
     [ObservableProperty]
