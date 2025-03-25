@@ -7,15 +7,62 @@
     xmlns:vm="using:Sem2Proj.ViewModels"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    x:DataType="vm:OptimizerViewModel">
 
-    <StackPanel>
-        <TextBlock
-            Margin="0,350,0,0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            FontSize="24"
-            FontWeight="Bold"
-            Text="Welcome to the Optimizer Page!" />
-    </StackPanel>
+    <Design.DataContext>
+        <vm:OptimizerViewModel/>
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Collapsible Side Menu -->
+        <Border Grid.Column="0" 
+                Background="#7F7F7F"
+                BorderBrush="LightGray"
+                BorderThickness="0 0 1 0"
+                Width="{Binding PaneWidth}">
+            <StackPanel Margin="40,10,10,10" 
+                        Spacing="10"
+                        IsVisible="{Binding IsPaneOpen}">
+                <TextBlock Text="Menu Content" 
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Border Grid.Column="1"
+                Background="Black">
+            <Grid>
+                <TextBlock Text="Main Content Area" 
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
+                
+                <!-- Toggle Button in main content when pane is closed -->
+                <Button HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="5"
+                        Width="30"
+                        Height="30"
+                        Content="{Binding ToggleSymbol}"
+                        Command="{Binding TriggerPaneCommand}"
+                        IsVisible="{Binding !IsPaneOpen}"/>
+            </Grid>
+        </Border>
+
+        <!-- Toggle Button in side panel when pane is open -->
+        <Button Grid.Column="0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,5,5,0"
+                Width="30"
+                Height="30"
+                Content="{Binding ToggleSymbol}"
+                Command="{Binding TriggerPaneCommand}"
+                IsVisible="{Binding IsPaneOpen}"/>
+    </Grid>
 </UserControl>
