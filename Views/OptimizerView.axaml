@@ -32,7 +32,25 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Spacing="10">
-                    <TextBlock Text="Menu Content" />
+                    
+                    <TextBlock
+                    Grid.Row="0"
+                    Margin="0,10"
+                    HorizontalAlignment="Left"
+                    Text="Optimization Period"
+                    FontSize="18" />
+                    <RadioButton Content="Summer" GroupName="SeasonGroup" />
+                    <RadioButton Content="Winter" GroupName="SeasonGroup" />
+
+                    <TextBlock
+                    Grid.Row="0"
+                    Margin="0,10"
+                    HorizontalAlignment="Left"
+                    Text="Optimization Preference"
+                    FontSize="18" />
+                    <RadioButton Content="Cost" GroupName="OptimizationGroup" />
+                    <RadioButton Content="CO2" GroupName="OptimizationGroup" />
+
                     <Button
                         Width="110"
                         Height="50"
@@ -43,29 +61,13 @@
                             <Style Selector="Button.FancyGreenButton">
                                 <Setter Property="Background" Value="#2ecc71" />
                                 <Setter Property="Foreground" Value="White" />
-                         
                                 <Setter Property="Padding" Value="15,5" />
                                 <Setter Property="FontSize" Value="16" />
                                 <Setter Property="FontWeight" Value="Bold" />
-                                <Setter Property="CornerRadius" Value="8" />                               
+                                <Setter Property="CornerRadius" Value="8" />
                             </Style>
                         </Button.Styles>
                     </Button>
-
-
-                    <StackPanel
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Orientation="Vertical">
-                        <TextBlock FontSize="16" Text="Winter" />
-                        <TextBlock FontSize="16" Text="Summer" />
-                    </StackPanel>
-                    <!--  Toggle Switch (Winter/Summer)  -->
-                    
-
-                    <!--  Toggle Switch (Cost/CO2)  -->
-                   
-                  
                 </StackPanel>
             </Grid>
         </Border>
@@ -86,7 +88,7 @@
                     XAxes="{Binding XAxes}"
                     YAxes="{Binding YAxes}" />
 
-                <!--  Keep the toggle button  -->
+                <!--  Toggle Button in main content  -->
                 <Button
                     Width="30"
                     Height="30"
@@ -100,7 +102,7 @@
             </Grid>
         </Border>
 
-        <!--  Toggle Button in side panel when pane is open  -->
+        <!--  Toggle Button in side panel when panel is open  -->
         <Button
             Grid.Column="0"
             Width="30"
