@@ -34,7 +34,7 @@
                     Spacing="10">
                     <TextBlock Text="Menu Content" />
                     <Button
-                        Width="200"
+                        Width="110"
                         Height="50"
                         HorizontalAlignment="Center"
                         Classes="FancyGreenButton"
@@ -43,45 +43,33 @@
                             <Style Selector="Button.FancyGreenButton">
                                 <Setter Property="Background" Value="#2ecc71" />
                                 <Setter Property="Foreground" Value="White" />
-                                <Setter Property="BorderBrush" Value="#27ae60" />
-                                <Setter Property="BorderThickness" Value="2" />
+                         
                                 <Setter Property="Padding" Value="15,5" />
                                 <Setter Property="FontSize" Value="16" />
                                 <Setter Property="FontWeight" Value="Bold" />
-                                <Setter Property="CornerRadius" Value="8" />
-                                <Setter Property="Cursor" Value="Hand" />
-
-                                <Setter Property="Transitions">
-                                    <Transitions>
-                                        <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
-                                        <ThicknessTransition Property="BorderThickness" Duration="0:0:0.2" />
-                                    </Transitions>
-                                </Setter>
-                            </Style>
-
-                            <Style Selector="Button.FancyGreenButton:pointerover">
-                                <Setter Property="Background" Value="#27ae60" />
-                                <Setter Property="BorderBrush" Value="#219955" />
-                                <Setter Property="Opacity" Value="0.9" />
-                                <Setter Property="BorderThickness" Value="3" />
-                            </Style>
-
-                            <Style Selector="Button.FancyGreenButton:pressed">
-                                <Setter Property="Background" Value="#219955" />
-                                <Setter Property="BorderBrush" Value="#1d8348" />
-                                <Setter Property="RenderTransform">
-                                    <Setter.Value>
-                                        <ScaleTransform ScaleX="0.98" ScaleY="0.98" />
-                                    </Setter.Value>
-                                </Setter>
+                                <Setter Property="CornerRadius" Value="8" />                               
                             </Style>
                         </Button.Styles>
                     </Button>
+
+
+                    <StackPanel
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Orientation="Vertical">
+                        <TextBlock FontSize="16" Text="Winter" />
+                        <TextBlock FontSize="16" Text="Summer" />
+                    </StackPanel>
+                    <!--  Toggle Switch (Winter/Summer)  -->
+                    
+
+                    <!--  Toggle Switch (Cost/CO2)  -->
+                   
+                  
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!--  Main Content Area  -->
         <!--  Main Content Area  -->
         <Border Grid.Column="1" Background="#1e1e1e">
             <Grid RowDefinitions="Auto,*">

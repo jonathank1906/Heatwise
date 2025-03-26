@@ -11,19 +11,17 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using LiveChartsCore.Defaults;
 
+
 namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
     private const int OpenWidth = 275;
     private const int ClosedWidth = 0;
-    
+
     [ObservableProperty]
     private double _paneWidth = OpenWidth;
-    
-    [ObservableProperty]
-    private string _toggleSymbol = "←";
-    
+
     [ObservableProperty]
     private bool _isPaneOpen = true;
 
@@ -31,20 +29,15 @@ public partial class OptimizerViewModel : ViewModelBase
     private async Task TriggerPane()
     {
         IsPaneOpen = !IsPaneOpen;
-        ToggleSymbol = IsPaneOpen ? "←" : "≡";
-        
-        // Animate the width change
-        var targetWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
-        var step = (targetWidth - PaneWidth) / 10;
-        
-        for (int i = 0; i < 10; i++)
-        {
-            PaneWidth += step;
-            await Task.Delay(10);
-        }
-        PaneWidth = targetWidth; // Ensure exact final value
+        PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
     }
+[ObservableProperty]
+private string _paneStateClass = "Open"; // "Open" or "Closed"
 
+partial void OnIsPaneOpenChanged(bool value)
+{
+    PaneStateClass = value ? "Open" : "Closed";
+}
 
     private readonly DatabaseHandler _dbHandler;
 
@@ -62,9 +55,6 @@ public partial class OptimizerViewModel : ViewModelBase
 
     public OptimizerViewModel()
     {
-        // For LiveCharts version 2.0.0-rc5.4, we don't need to configure the mapper
-        // We'll use DateTimeAxis directly
-
         _dbHandler = new DatabaseHandler();
         LoadData();
         InitializeAxes();
@@ -79,7 +69,7 @@ public partial class OptimizerViewModel : ViewModelBase
             {
                 Console.WriteLine($"GraphViewModel received {data.Count} data points");
                 Console.WriteLine($"First point: {data[0].timestamp}, {data[0].value}");
-                Console.WriteLine($"Last point: {data[data.Count-1].timestamp}, {data[data.Count-1].value}");
+                Console.WriteLine($"Last point: {data[data.Count - 1].timestamp}, {data[data.Count - 1].value}");
 
                 // Create a LineSeries with the data points
                 var lineSeries = new LineSeries<ObservablePoint>
@@ -113,7 +103,7 @@ public partial class OptimizerViewModel : ViewModelBase
                 Name = "Time",
                 NamePaint = new SolidColorPaint(SKColors.Black),
                 LabelsPaint = new SolidColorPaint(SKColors.Black),
-                Labeler = value => 
+                Labeler = value =>
                 {
                     try
                     {
@@ -139,5 +129,4 @@ public partial class OptimizerViewModel : ViewModelBase
             }
         };
     }
-    
 }

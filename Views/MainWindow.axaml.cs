@@ -55,4 +55,10 @@ public partial class MainWindow : AppWindow
         var homeWindow = new HomeWindow();
         await homeWindow.ShowDialog(this);
     }
+
+    private async void OnSettingsButtonClick(object sender, RoutedEventArgs e)
+    {
+        var settingsWindow = new SettingsWindow();
+        await settingsWindow.ShowDialog(this);
+    }
 }
