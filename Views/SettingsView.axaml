@@ -41,12 +41,7 @@
                        HorizontalAlignment="Center" 
                        VerticalAlignment="Center"
                        Spacing="20">
-        
-                
-               
             </StackPanel>
-
-           
         </Grid>
     </Grid>
 </Window>

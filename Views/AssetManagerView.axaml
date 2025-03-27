@@ -1,90 +1,307 @@
 <UserControl
+    x:Class="Sem2Proj.Views.AssetManagerView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    x:Class="Sem2Proj.Views.AssetManagerView"
     xmlns:vm="using:Sem2Proj.ViewModels"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    mc:Ignorable="d"
-    x:DataType="vm:AssetManagerViewModel">
-    
-    <Grid Background="#1e1e1e" ColumnDefinitions="200,*" RowDefinitions="Auto,*">
-        <!-- Left Column: Navigation -->
-        <StackPanel Grid.Row="1" Background="#252526" Width="200">
-            <TextBlock Text="All Assets" Foreground="White" FontWeight="SemiBold" FontSize="18" Margin="10"/>
-          
-            <ListBox Margin="0 0 0 10" Padding="0" ItemsSource="{Binding Assets}" SelectedItem="{Binding SelectedListItem}">
+    x:DataType="vm:AssetManagerViewModel"
+    mc:Ignorable="d">
+
+    <UserControl.Styles>
+        <Style Selector="ProgressBar.thick-track">
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="#444444" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
+                        <Grid>
+                            <Border
+                                Name="PART_Track"
+                                Height="20"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{TemplateBinding CornerRadius}" />
+                            <Border
+                                Name="PART_Indicator"
+                                Height="16"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="{TemplateBinding CornerRadius}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+         
+        <Style Selector="Button#editButton > Path">
+            <Setter Property="Fill" Value="#808080" />
+        </Style>
+
+        <Style Selector="Button#editButton:pointerover > Path">
+            <Setter Property="Fill" Value="White" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid
+        Background="#1e1e1e"
+        ColumnDefinitions="200,*"
+        RowDefinitions="Auto,*">
+        <!--  Left Column: Navigation  -->
+        <StackPanel
+            Grid.Row="1"
+            Width="200"
+            Background="#252526">
+            <TextBlock
+                Margin="10"
+                FontSize="18"
+                FontWeight="SemiBold"
+                Foreground="White"
+                Text="All Assets" />
+
+            <ListBox
+                Margin="0,0,0,10"
+                Padding="0"
+                ItemsSource="{Binding Assets}"
+                SelectedItem="{Binding SelectedListItem}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Name}" FontSize="16" Margin="5"/>
+                        <TextBlock
+                            Margin="5"
+                            FontSize="16"
+                            Text="{Binding Name}" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
         </StackPanel>
 
-        <!-- Right Column: Content -->
-   <Grid Grid.Row="1" Grid.Column="1" Margin="20">
+        <!--  Right Column: Content  -->
+        <Grid
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="20">
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                
-                <!-- Image Section -->
-                <Border Grid.Column="0" ClipToBounds="True" CornerRadius="15">
+
+                <!--  Image Section  -->
+                <Border
+                    Grid.Column="0"
+                    ClipToBounds="True"
+                    CornerRadius="15">
                     <Border.Effect>
-                        <DropShadowEffect Color="Black" BlurRadius="10" />
+                        <DropShadowEffect BlurRadius="10" Color="Black" />
                     </Border.Effect>
-                    <Image Source="{Binding ImageFromBinding}" Stretch="Uniform" Height="300" HorizontalAlignment="Center"/>
+                    <Image
+                        Height="300"
+                        HorizontalAlignment="Center"
+                        Source="{Binding ImageFromBinding}"
+                        Stretch="Uniform" />
                 </Border>
 
-                <!-- Progress Bars Section -->
-                <Grid Grid.Column="2" Margin="0,0,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                <!--  Progress Bars Section  -->
+                <Border
+                    Grid.Column="2"
+                    Background="#252526"
+                    ClipToBounds="True"
+                    CornerRadius="15">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" Color="Black" />
+                    </Border.Effect>
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedListItem.Name}" Foreground="White" Margin="5" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.ColumnSpan="3"/>
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3"
+                            Margin="5"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            FontSize="20"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            Text="{Binding SelectedListItem.Name}" />
+                            
+                          <!-- Edit Button in top right corner -->
+                        <Button
+                            Name="editButton"
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            Width="30"
+                            Height="30"
+                            Padding="0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Background="Transparent"
+                            BorderThickness="0">
+                            <Path
+                                Width="20"
+                                Height="20"
+                                Data="M110.06,41.71l-5.27-5.27a10.49,10.49,0,0,0-14.85,0L87.3,39.07l-33,33a1.54,1.54,0,0,0-.32.49,1.31,1.31,0,0,0-.09.28,1.53,1.53,0,0,0,0,.3v18a1.51,1.51,0,0,0,1.5,1.5h18a1.51,1.51,0,0,0,1.07-.45l33-33,2.64-2.64a10.48,10.48,0,0,0,0-14.84ZM72.74,89.64H56.86V76.75l9.44,9.44a1.49,1.49,0,0,0,2.13,0,1.51,1.51,0,0,0,0-2.12L57.49,73.14,88.36,42.25l15.88,15.89Zm35.2-35.2L106.36,56,90.48,40.14l1.58-1.59a7.52,7.52,0,0,1,10.61,0l5.27,5.28a7.5,7.5,0,0,1,0,10.61Z M106.36,92.63h-24a1.5,1.5,0,0,1,0-3h24a1.5,1.5,0,1,1,0,3Z"
+                                Stretch="Uniform" />
+                        </Button>
+                        
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Max Heat" Foreground="White" Margin="6" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="1" Grid.Column="1" Height="20" Minimum="0" Maximum="5" Value="{Binding SelectedListItem.MaxHeat}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding SelectedListItem.MaxHeat, StringFormat={}{0:F1} MW}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                        <!--  Progress Bars with common thick-track style  -->
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="6"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="Max Heat" />
+                        <ProgressBar
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            HorizontalAlignment="Left"
+                            Classes="thick-track"
+                            Maximum="5"
+                            Minimum="0"
+                            Value="{Binding SelectedListItem.MaxHeat}" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="{Binding SelectedListItem.MaxHeat, StringFormat={}{0:F1} MW}" />
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Production Costs" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="2" Grid.Column="1" Height="20" Minimum="0" Maximum="990" Value="{Binding SelectedListItem.ProductionCosts}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding SelectedListItem.ProductionCosts, StringFormat={}{0:F1} DKK / MWh(th)}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="Production Costs" />
+                        <ProgressBar
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            HorizontalAlignment="Left"
+                            Classes="thick-track"
+                            Maximum="990"
+                            Minimum="0"
+                            Value="{Binding SelectedListItem.ProductionCosts}" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="{Binding SelectedListItem.ProductionCosts, StringFormat={}{0:F1} DKK / MWh(th)}" />
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="CO₂ Emissions" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="3" Grid.Column="1" Height="20" Minimum="0" Maximum="650" Value="{Binding SelectedListItem.Emissions}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding SelectedListItem.Emissions, StringFormat={}{0:F1} kg / MWh(th)}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="CO₂ Emissions" />
+                        <ProgressBar
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            HorizontalAlignment="Left"
+                            Classes="thick-track"
+                            Maximum="650"
+                            Minimum="0"
+                            Value="{Binding SelectedListItem.Emissions}" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="2"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="{Binding SelectedListItem.Emissions, StringFormat={}{0:F1} kg / MWh(th)}" />
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Gas Consumption" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="4" Grid.Column="1" Height="20" Minimum="0" Maximum="1.8" Value="{Binding SelectedListItem.GasConsumption}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding SelectedListItem.GasConsumption, StringFormat={}{0:F1} MWh(gas) / MWh(th)}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="0"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="Gas Consumption" />
+                        <ProgressBar
+                            Grid.Row="4"
+                            Grid.Column="1"
+                            HorizontalAlignment="Left"
+                            Classes="thick-track"
+                            Maximum="1.8"
+                            Minimum="0"
+                            Value="{Binding SelectedListItem.GasConsumption}" />
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="2"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="{Binding SelectedListItem.GasConsumption, StringFormat={}{0:F1} MWh(gas) / MWh(th)}" />
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Oil Consumption" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="5" Grid.Column="1" Height="20" Minimum="0" Maximum="1.5" Value="{Binding SelectedListItem.OilConsumption}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding SelectedListItem.OilConsumption, StringFormat={}{0:F1} MWh(oil) / MWh(th)}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
+                        <TextBlock
+                            Grid.Row="5"
+                            Grid.Column="0"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="Oil Consumption" />
+                        <ProgressBar
+                            Grid.Row="5"
+                            Grid.Column="1"
+                            HorizontalAlignment="Left"
+                            Classes="thick-track"
+                            Maximum="1.5"
+                            Minimum="0"
+                            Value="{Binding SelectedListItem.OilConsumption}" />
+                        <TextBlock
+                            Grid.Row="5"
+                            Grid.Column="2"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="{Binding SelectedListItem.OilConsumption, StringFormat={}{0:F1} MWh(oil) / MWh(th)}" />
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Max Electricity" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                    <ProgressBar Grid.Row="6" Grid.Column="1" Height="20" Minimum="0" Maximum="-6" Value="{Binding SelectedListItem.MaxElectricity}" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Row="6" Grid.Column="2" Text="{Binding SelectedListItem.MaxElectricity, StringFormat={}{0:F1} MW}" Foreground="White" Margin="5" HorizontalAlignment="Left"/>
-                </Grid>
+                        <TextBlock
+                            Grid.Row="6"
+                            Grid.Column="0"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="Max Electricity" />
+                        <ProgressBar
+                            Grid.Row="6"
+                            Grid.Column="1"
+                            HorizontalAlignment="Left"
+                            Classes="thick-track"
+                            Maximum="-6"
+                            Minimum="0"
+                            Value="{Binding SelectedListItem.MaxElectricity}" />
+                        <TextBlock
+                            Grid.Row="6"
+                            Grid.Column="2"
+                            Margin="5"
+                            HorizontalAlignment="Left"
+                            Foreground="White"
+                            Text="{Binding SelectedListItem.MaxElectricity, StringFormat={}{0:F1} MW}" />
+                    </Grid>
+                </Border>
             </Grid>
         </Grid>
     </Grid>
