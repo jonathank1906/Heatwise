@@ -1,0 +1,17 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:vm="using:Sem2Proj.ViewModels"
+    x:DataType="vm:SourceDataManagerViewModel"
+    x:Class="Sem2Proj.Views.SourceDataManagerView">
+    
+    <!-- Basic empty view with a placeholder text -->
+    <TextBlock
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        FontSize="16"
+        Text="Source Data Manager (Work in Progress)" />
+</UserControl>

@@ -162,9 +162,9 @@
                 ZIndex="4">
                 <!--  Danfoss logo  -->
                 <Image
-                    Margin="0,3,0,0"
                     Name="DanfossLogo"
                     Width="60"
+                    Margin="0,3,0,0"
                     Source="{SvgImage ../Assets/Danfoss-Logo.svg}"
                     Stretch="Uniform" />
 
@@ -244,7 +244,7 @@
                 ZIndex="2">
                 <TabControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="2" />
+                        <UniformGrid Columns="3" />
                     </ItemsPanelTemplate>
                 </TabControl.ItemsPanel>
 
@@ -261,6 +261,10 @@
 
                 <TabItem Header="Asset Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
                     <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
+                </TabItem>
+
+                <TabItem Header="Source Data Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
+                    <local:SourceDataManagerView DataContext="{Binding SourceDataManagerViewModel}" />
                 </TabItem>
 
                 <TabItem Header="Optimizer" HeaderTemplate="{StaticResource TabHeaderTemplate}">

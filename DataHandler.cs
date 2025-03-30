@@ -1,102 +1,118 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Diagnostics;
 
 public class DatabaseHandler
 {
-    private string dbPath = "Data Source=heat_optimization.db;Version=3;";
+    private readonly string dbPath = "Data Source=heat_optimization.db;Version=3;";
 
     public void InitializeDatabase()
     {
         using (var conn = new SQLiteConnection(dbPath))
         {
             conn.Open();
-            string createTableQuery = @"CREATE TABLE IF NOT EXISTS sensor_data (
-                                        id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, 
-                                        value REAL)";
-            using (var cmd = new SQLiteCommand(createTableQuery, conn))
+            
+            // Create tables with proper schema if they don't exist
+            using (var transaction = conn.BeginTransaction())
             {
-                cmd.ExecuteNonQuery();
+                try
+                {
+                    // SDM table matching your actual schema
+                    var createSDMTable = @"CREATE TABLE IF NOT EXISTS SDM (
+                                        [Time From (Winter)] TEXT NOT NULL,
+                                        [Time To (Winter)] TEXT NOT NULL,
+                                        [Heat Demand (Winter)] REAL NOT NULL,
+                                        [Electricity Price (Winter)] REAL,
+                                        [Time From (Summer)] TEXT,
+                                        [Time To (Summer)] TEXT,
+                                        [Heat Demand (Summer)] REAL,
+                                        [Electricity Price (Summer)] REAL)";
+
+                    using (var cmd = new SQLiteCommand(createSDMTable, conn, transaction))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
         }
     }
 
-    public void InsertData(double value)
-    {
-        using (var conn = new SQLiteConnection(dbPath))
-        {
-            conn.Open();
-            string insertQuery = "INSERT INTO sensor_data (value) VALUES (@value)";
-            using (var cmd = new SQLiteCommand(insertQuery, conn))
-            {
-                cmd.Parameters.AddWithValue("@value", value);
-                cmd.ExecuteNonQuery();
-            }
-        }
-    }
-
-    public List<(DateTime timestamp, double value)> GetData()
+    public List<(DateTime timestamp, double value)> GetWinterHeatDemandData()
     {
         var data = new List<(DateTime timestamp, double value)>();
+        
         try
         {
             using (var conn = new SQLiteConnection(dbPath))
             {
                 conn.Open();
-                Console.WriteLine("Database connection opened successfully");
-
+                Debug.WriteLine("Database connection opened successfully");
                 
-                // Column 1: Winter period
-                // Column 2: Time from (DKK local time)
-                // Column 3: Time to (DKK local time)
-                // Column 4: Heat Demand (MWh)
-                string selectQuery = "SELECT * FROM SDM";
+                const string selectQuery = @"SELECT 
+                                          [Time From (Winter)] AS Timestamp,
+                                          [Heat Demand (Winter)] AS HeatDemand
+                                          FROM SDM
+                                          WHERE [Time From (Winter)] IS NOT NULL
+                                          AND [Heat Demand (Winter)] IS NOT NULL
+                                          ORDER BY [Time From (Winter)]";
+
                 using (var cmd = new SQLiteCommand(selectQuery, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
+                    Debug.WriteLine("Executing query...");
+                    int pointCount = 0;
+                    
                     while (reader.Read())
                     {
                         try
                         {
-                            var dateStr = reader.GetString(1);  // "Time from" column
-                            var valueStr = reader.GetString(3); // Get as string first
+                            var dateStr = reader["Timestamp"].ToString();
+                            var value = Convert.ToDouble(reader["HeatDemand"]);
                             
-                            DateTime timestamp;
-                            double value;
-                            
-                            if (DateTime.TryParse(dateStr, out timestamp) && 
-                                double.TryParse(valueStr, out value))
+                            if (DateTime.TryParse(dateStr, out DateTime timestamp))
                             {
                                 data.Add((timestamp, value));
-                                Console.WriteLine($"Added point: {timestamp}, {value}");
+                                pointCount++;
+                                
+                                // Display first 5 and last 5 points for verification
+                                if (pointCount <= 5 || pointCount >= data.Count - 5)
+                                {
+                                    Debug.WriteLine($"Point {pointCount}: {timestamp} = {value} MWh");
+                                }
+                                else if (pointCount == 6)
+                                {
+                                    Debug.WriteLine($"... (showing first/last 5 points)");
+                                }
                             }
                             else
                             {
-                                Console.WriteLine($"Failed to parse: date={dateStr}, value={valueStr}");
+                                Debug.WriteLine($"Failed to parse timestamp: {dateStr}");
                             }
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Error reading row: {ex.Message}");
+                            Debug.WriteLine($"Error processing row: {ex.Message}");
                         }
                     }
+                    
+                    Debug.WriteLine($"Total points retrieved: {pointCount}");
+                    
                 }
-            }
-            
-            // Debug output
-            Console.WriteLine($"Retrieved {data.Count} data points");
-            if (data.Count > 0)
-            {
-                Console.WriteLine($"First point: {data[0].timestamp}, {data[0].value}");
-                Console.WriteLine($"Last point: {data[data.Count-1].timestamp}, {data[data.Count-1].value}");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error retrieving data: {ex.Message}");
-            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            Debug.WriteLine($"Database error: {ex.Message}");
         }
+        
         return data;
     }
 }

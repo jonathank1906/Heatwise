@@ -47,6 +47,10 @@
      <Content Include="HeatProductionUnits.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> 
     </Content>
+     <PackageReference Include="ScottPlot.Avalonia" Version="5.0.55" />
      <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
+     <None Update="heat_optimization.db">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
