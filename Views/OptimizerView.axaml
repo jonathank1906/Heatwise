@@ -75,14 +75,8 @@
         <!--  Main Content Area  -->
         <Border Grid.Column="1" Background="#1e1e1e">
             <Grid RowDefinitions="Auto,*">
-                <TextBlock
-                    Grid.Row="0"
-                    Margin="0,10"
-                    HorizontalAlignment="Center"
-                    FontSize="24"
-                    Text="{Binding Title}" />
+         
 
-       
 
                 <!--  Toggle Button in main content  -->
                 <Button

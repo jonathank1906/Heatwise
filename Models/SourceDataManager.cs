@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
 
-public class DatabaseHandler
+
+public class SourceDataManager
 {
     private readonly string dbPath = "Data Source=heat_optimization.db;Version=3;";
 

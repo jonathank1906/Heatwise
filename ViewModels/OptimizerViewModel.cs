@@ -27,15 +27,10 @@ public partial class OptimizerViewModel : ViewModelBase
         PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
     }
 
-    private readonly DatabaseHandler _dbHandler;
-    private AvaPlot? _plotView;
 
-    [ObservableProperty]
-    private string title = "Heat Demand Over Time";
 
     public OptimizerViewModel()
     {
-        _dbHandler = new DatabaseHandler();
-     
+        
     }
 }
