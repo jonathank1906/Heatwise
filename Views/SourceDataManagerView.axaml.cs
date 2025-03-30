@@ -23,7 +23,7 @@ public partial class SourceDataManagerView : UserControl
         double[] values = heatDemandData.Select(x => x.value).ToArray();
 
         AvaPlot HeatDemand = this.Find<AvaPlot>("HeatDemand");
-
+        HeatDemand.UserInputProcessor.DoubleLeftClickBenchmark(false);  
         HeatDemand.Plot.Clear();
 
         var bgColor = new Color("#1e1e1e");
