@@ -12,7 +12,7 @@
     
     <StackPanel >
        
-        <ScottPlot:AvaPlot Name="HeatDemand"  Height="300" Width="500"/>
-
+        <ScottPlot:AvaPlot Name="HeatDemand"  Height="500" Width="900"/>
+<Button Content="Reset View" HorizontalAlignment="Center" Click="ResetButton_Click"/>
     </StackPanel>
 </UserControl>
