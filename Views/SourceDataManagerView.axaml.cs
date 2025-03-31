@@ -11,7 +11,7 @@ namespace Sem2Proj.Views;
 public partial class SourceDataManagerView : UserControl
 {
     private readonly SourceDataManager _sourceDataManager = new SourceDataManager();
-
+    
     public SourceDataManagerView()
     {
         InitializeComponent();
@@ -22,28 +22,37 @@ public partial class SourceDataManagerView : UserControl
     private void InitializePlots()
     {
         // Winter data
-        PlotData(this.Find<AvaPlot>("WinterHeatPlot"),
-                _sourceDataManager.GetWinterHeatDemandData(),
-                Colors.LightSkyBlue, "Heat Demand");
-
-        PlotData(this.Find<AvaPlot>("WinterElectricityPlot"),
-                _sourceDataManager.GetWinterElectricityPriceData(),
-                Colors.LightGreen, "Electricity Price");
-
+        PlotData(this.Find<AvaPlot>("WinterHeatPlot"), 
+                _sourceDataManager.GetWinterHeatDemandData(), 
+                Colors.LightSkyBlue, 
+                "Heat Demand",
+                "Heat Demand (MWh)");
+                
+        PlotData(this.Find<AvaPlot>("WinterElectricityPlot"), 
+                _sourceDataManager.GetWinterElectricityPriceData(), 
+                Colors.LightGreen, 
+                "Electricity Price",
+                "Electricity Price (DKK/MWh)");
+        
         // Summer data
-        PlotData(this.Find<AvaPlot>("SummerHeatPlot"),
-                _sourceDataManager.GetSummerHeatDemandData(),
-                Colors.LightSkyBlue, "Heat Demand");
-
-        PlotData(this.Find<AvaPlot>("SummerElectricityPlot"),
-                _sourceDataManager.GetSummerElectricityPriceData(),
-                Colors.LightGreen, "Electricity Price");
+        PlotData(this.Find<AvaPlot>("SummerHeatPlot"), 
+                _sourceDataManager.GetSummerHeatDemandData(), 
+                Colors.LightSkyBlue, 
+                "Heat Demand",
+                "Heat Demand (MWh)");
+                
+        PlotData(this.Find<AvaPlot>("SummerElectricityPlot"), 
+                _sourceDataManager.GetSummerElectricityPriceData(), 
+                Colors.LightGreen, 
+                "Electricity Price",
+                "Electricity Price (DKK/MWh)");
     }
 
-    private void PlotData(AvaPlot plot, IEnumerable<(DateTime timestamp, double value)> data, Color color, string label)
+    private void PlotData(AvaPlot plot, IEnumerable<(DateTime timestamp, double value)> data, 
+                        Color color, string label, string yAxisLabel)
     {
         plot.Plot.Clear();
-
+        
         double[] timestamps = data.Select(x => x.timestamp.ToOADate()).ToArray();
         double[] values = data.Select(x => x.value).ToArray();
 
@@ -57,13 +66,20 @@ public partial class SourceDataManagerView : UserControl
         var bgColor = new Color("#1e1e1e");
         plot.Plot.FigureBackground.Color = bgColor;
         plot.Plot.DataBackground.Color = bgColor;
+        
+        // Axis labels and styling
+        plot.Plot.XLabel("Time & Date");
+        plot.Plot.YLabel(yAxisLabel);
+        plot.Plot.Title(label);
+  
+        
         plot.Plot.Axes.DateTimeTicksBottom();
         plot.Plot.Axes.Color(new Color("#FFFFFF"));
         plot.Plot.Grid.XAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
         plot.Plot.Grid.YAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
         plot.Plot.Grid.XAxisStyle.MajorLineStyle.Width = 1.5f;
         plot.Plot.Grid.YAxisStyle.MajorLineStyle.Width = 1.5f;
-
+        
         plot.Plot.Axes.AutoScale();
         plot.Refresh();
     }
@@ -75,14 +91,16 @@ public partial class SourceDataManagerView : UserControl
             this.Find<AvaPlot>("WinterHeatPlot"),
             _sourceDataManager.GetWinterHeatDemandData(),
             Colors.LightSkyBlue,
-            "Heat Demand");
-
+            "Heat Demand",
+            "Heat Demand (MWh)");
+            
         FilterData(
             this.Find<Calendar>("WinterCalendar"),
             this.Find<AvaPlot>("WinterElectricityPlot"),
             _sourceDataManager.GetWinterElectricityPriceData(),
             Colors.LightGreen,
-            "Electricity Price");
+            "Electricity Price",
+            "Electricity Price (DKK/MWh)");
     }
 
     private void SetSummerRange_Click(object sender, RoutedEventArgs e)
@@ -92,44 +110,54 @@ public partial class SourceDataManagerView : UserControl
             this.Find<AvaPlot>("SummerHeatPlot"),
             _sourceDataManager.GetSummerHeatDemandData(),
             Colors.LightSkyBlue,
-            "Heat Demand");
-
+            "Heat Demand",
+            "Heat Demand (MWh)");
+            
         FilterData(
             this.Find<Calendar>("SummerCalendar"),
             this.Find<AvaPlot>("SummerElectricityPlot"),
             _sourceDataManager.GetSummerElectricityPriceData(),
             Colors.LightGreen,
-            "Electricity Price");
+            "Electricity Price",
+            "Electricity Price (DKK/MWh)");
     }
 
     private void ResetWinterView_Click(object sender, RoutedEventArgs e)
     {
-        PlotData(this.Find<AvaPlot>("WinterHeatPlot"),
-                _sourceDataManager.GetWinterHeatDemandData(),
-                Colors.LightSkyBlue, "Heat Demand");
-
-        PlotData(this.Find<AvaPlot>("WinterElectricityPlot"),
-                _sourceDataManager.GetWinterElectricityPriceData(),
-                Colors.LightGreen, "Electricity Price");
+        PlotData(this.Find<AvaPlot>("WinterHeatPlot"), 
+                _sourceDataManager.GetWinterHeatDemandData(), 
+                Colors.LightSkyBlue, 
+                "Heat Demand",
+                "Heat Demand (MWh)");
+                
+        PlotData(this.Find<AvaPlot>("WinterElectricityPlot"), 
+                _sourceDataManager.GetWinterElectricityPriceData(), 
+                Colors.LightGreen, 
+                "Electricity Price",
+                "Electricity Price (DKK/MWh)");
     }
 
     private void ResetSummerView_Click(object sender, RoutedEventArgs e)
     {
-        PlotData(this.Find<AvaPlot>("SummerHeatPlot"),
-                _sourceDataManager.GetSummerHeatDemandData(),
-                Colors.LightSkyBlue, "Heat Demand");
-
-        PlotData(this.Find<AvaPlot>("SummerElectricityPlot"),
-                _sourceDataManager.GetSummerElectricityPriceData(),
-                Colors.LightGreen, "Electricity Price");
+        PlotData(this.Find<AvaPlot>("SummerHeatPlot"), 
+                _sourceDataManager.GetSummerHeatDemandData(), 
+                Colors.LightSkyBlue, 
+                "Heat Demand",
+                "Heat Demand (MWh)");
+                
+        PlotData(this.Find<AvaPlot>("SummerElectricityPlot"), 
+                _sourceDataManager.GetSummerElectricityPriceData(), 
+                Colors.LightGreen, 
+                "Electricity Price",
+                "Electricity Price (DKK/MWh)");
     }
 
-    private void FilterData(Calendar calendar, AvaPlot plot,
+    private void FilterData(Calendar calendar, AvaPlot plot, 
                           IEnumerable<(DateTime timestamp, double value)> fullData,
-                          Color color, string label)
+                          Color color, string label, string yAxisLabel)
     {
         if (calendar.SelectedDates.Count == 0) return;
-
+        
         var selectedDates = calendar.SelectedDates.OrderBy(d => d).ToList();
         DateTime startDate = selectedDates.First();
         DateTime endDate = selectedDates.Last().AddDays(1);
@@ -140,7 +168,7 @@ public partial class SourceDataManagerView : UserControl
 
         if (filteredData.Count == 0) return;
 
-        PlotData(plot, filteredData, color, label);
+        PlotData(plot, filteredData, color, label, yAxisLabel);
         plot.Plot.Axes.SetLimitsX(startDate.ToOADate(), endDate.ToOADate());
         plot.Refresh();
     }

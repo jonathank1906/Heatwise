@@ -30,8 +30,8 @@
                         Foreground="White"
                         SelectionMode="MultipleRange" />
                         
-                    <Button Width="60" Click="SetWinterRange_Click" Content="Set Range" />
-                    <Button Width="60" Click="ResetWinterView_Click" Content="Reset" />
+                    <Button Width="100" Click="SetWinterRange_Click" Content="Set Range" />
+                    <Button Width="100" Click="ResetWinterView_Click" Content="Reset View" />
                 </StackPanel>
             </StackPanel>
         </TabItem>
@@ -57,8 +57,8 @@
                         Foreground="White"
                         SelectionMode="MultipleRange" />
                         
-                    <Button Width="60" Click="SetSummerRange_Click" Content="Set Range" />
-                    <Button Width="60" Click="ResetSummerView_Click" Content="Reset" />
+                    <Button Width="100" Click="SetSummerRange_Click" Content="Set Range" />
+                    <Button Width="100" Click="ResetSummerView_Click" Content="Reset View" />
                 </StackPanel>
             </StackPanel>
         </TabItem>
