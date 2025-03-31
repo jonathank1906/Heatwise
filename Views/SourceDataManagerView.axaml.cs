@@ -30,7 +30,7 @@ public partial class SourceDataManagerView : UserControl
         HeatDemand.Plot.FigureBackground.Color = bgColor;
         HeatDemand.Plot.DataBackground.Color = bgColor;
         HeatDemand.Plot.Axes.DateTimeTicksBottom();
-        HeatDemand.Plot.Axes.Color(new Color("#888888"));
+        HeatDemand.Plot.Axes.Color(new Color("#FFFFFF"));
 
         HeatDemand.Plot.Grid.XAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
         HeatDemand.Plot.Grid.YAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);

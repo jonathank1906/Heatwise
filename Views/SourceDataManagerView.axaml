@@ -13,7 +13,7 @@
     <StackPanel >
        
         <ScottPlot:AvaPlot Name="HeatDemand"  Height="500" Width="900"/>
-        <Calendar SelectionMode="MultipleRange" HorizontalAlignment="Left"/>
+        
 <Button Content="Reset View" HorizontalAlignment="Center" Click="ResetButton_Click"/>
     </StackPanel>
 </UserControl>
