@@ -3,208 +3,184 @@ using ScottPlot.Avalonia;
 using ScottPlot;
 using System.Linq;
 using Avalonia.Interactivity;
-using Avalonia.Controls;
-using ScottPlot.Avalonia;
-using ScottPlot;
-using System.Linq;
-using Avalonia.Interactivity;
 using System;
-using Avalonia.Controls.Primitives;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Sem2Proj.Views;
 
 public partial class SourceDataManagerView : UserControl
 {
     private readonly SourceDataManager _sourceDataManager = new SourceDataManager();
+
     public SourceDataManagerView()
     {
         InitializeComponent();
-        PlotHeatDemandData();
+        InitializePlots();
         LoadBlackoutDates();
     }
 
-    private void PlotHeatDemandData()
+    private void InitializePlots()
     {
-        var dataManager = new SourceDataManager();
-        var heatDemandData = dataManager.GetWinterHeatDemandData();
+        // Winter data
+        PlotData(this.Find<AvaPlot>("WinterHeatPlot"),
+                _sourceDataManager.GetWinterHeatDemandData(),
+                Colors.LightSkyBlue, "Heat Demand");
 
-        double[] timestamps = heatDemandData.Select(x => x.timestamp.ToOADate()).ToArray();
-        double[] values = heatDemandData.Select(x => x.value).ToArray();
+        PlotData(this.Find<AvaPlot>("WinterElectricityPlot"),
+                _sourceDataManager.GetWinterElectricityPriceData(),
+                Colors.LightGreen, "Electricity Price");
 
-        AvaPlot HeatDemand = this.Find<AvaPlot>("HeatDemand");
-        HeatDemand.UserInputProcessor.DoubleLeftClickBenchmark(false);
-        HeatDemand.Plot.Clear();
+        // Summer data
+        PlotData(this.Find<AvaPlot>("SummerHeatPlot"),
+                _sourceDataManager.GetSummerHeatDemandData(),
+                Colors.LightSkyBlue, "Heat Demand");
 
-        var bgColor = new Color("#1e1e1e");
-        HeatDemand.Plot.FigureBackground.Color = bgColor;
-        HeatDemand.Plot.DataBackground.Color = bgColor;
-        HeatDemand.Plot.Axes.DateTimeTicksBottom();
-        HeatDemand.Plot.Axes.Color(new Color("#FFFFFF"));
-
-        HeatDemand.Plot.Grid.XAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
-        HeatDemand.Plot.Grid.YAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
-        HeatDemand.Plot.Grid.XAxisStyle.MajorLineStyle.Width = 1.5f;
-        HeatDemand.Plot.Grid.YAxisStyle.MajorLineStyle.Width = 1.5f;
-
-        if (timestamps.Length > 0 && values.Length > 0)
-        {
-            var scatter = HeatDemand.Plot.Add.Scatter(timestamps, values);
-            scatter.Color = Colors.LightSkyBlue;
-            scatter.MarkerSize = 5;
-            scatter.LineWidth = 2;
-            HeatDemand.Refresh();
-        }
+        PlotData(this.Find<AvaPlot>("SummerElectricityPlot"),
+                _sourceDataManager.GetSummerElectricityPriceData(),
+                Colors.LightGreen, "Electricity Price");
     }
 
-    private void ResetButton_Click(object sender, RoutedEventArgs e)
+    private void PlotData(AvaPlot plot, IEnumerable<(DateTime timestamp, double value)> data, Color color, string label)
     {
-        ResetPlotView();
-    }
-       private void ResetZoomButton_Click(object sender, RoutedEventArgs e)
-    {
-        ResetPlotZoom();
-    }
+        plot.Plot.Clear();
 
+        double[] timestamps = data.Select(x => x.timestamp.ToOADate()).ToArray();
+        double[] values = data.Select(x => x.value).ToArray();
 
-    private void SetButton_Click(object sender, RoutedEventArgs e)
-    {
-        var calendar = this.Find<Calendar>("MyCalendar");
-        var HeatDemand = this.Find<AvaPlot>("HeatDemand");
-
-        if (calendar.SelectedDates.Count > 0)
-        {
-            var selectedDates = calendar.SelectedDates.OrderBy(d => d).ToList();
-            DateTime startDate = selectedDates.First();
-            DateTime endDate = selectedDates.Last().AddDays(1); // Include the entire last day
-
-            // Get the original data
-            var dataManager = new SourceDataManager();
-            var heatDemandData = dataManager.GetWinterHeatDemandData();
-
-            // Filter the data to only include points within the selected date range
-            var filteredData = heatDemandData
-                .Where(x => x.timestamp >= startDate && x.timestamp <= endDate)
-                .ToList();
-
-            if (filteredData.Count == 0)
-            {
-                // No data in selected range - show message or handle appropriately
-                return;
-            }
-
-            double[] timestamps = filteredData.Select(x => x.timestamp.ToOADate()).ToArray();
-            double[] values = filteredData.Select(x => x.value).ToArray();
-
-            // Clear and replot with filtered data
-            HeatDemand.Plot.Clear();
-
-            var scatter = HeatDemand.Plot.Add.Scatter(timestamps, values);
-            scatter.Color = Colors.LightSkyBlue;
-            scatter.MarkerSize = 5;
-            scatter.LineWidth = 2;
-
-            // Set axis limits to exactly match the selected range
-            HeatDemand.Plot.Axes.SetLimitsX(startDate.ToOADate(), endDate.ToOADate());
-
-            // Maintain the same styling
-            var bgColor = new Color("#1e1e1e");
-            HeatDemand.Plot.FigureBackground.Color = bgColor;
-            HeatDemand.Plot.DataBackground.Color = bgColor;
-            HeatDemand.Plot.Axes.DateTimeTicksBottom();
-            HeatDemand.Plot.Axes.Color(new Color("#FFFFFF"));
-            HeatDemand.Plot.Grid.XAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
-            HeatDemand.Plot.Grid.YAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
-            HeatDemand.Plot.Grid.XAxisStyle.MajorLineStyle.Width = 1.5f;
-            HeatDemand.Plot.Grid.YAxisStyle.MajorLineStyle.Width = 1.5f;
-
-            HeatDemand.Refresh();
-        }
-    }
-
-    private void ResetPlotZoom()
-    {
-        AvaPlot HeatDemand = this.Find<AvaPlot>("HeatDemand");
-        HeatDemand.Plot.Axes.AutoScale();
-        HeatDemand.Refresh();
-    }
-
-    private void ResetPlotView()
-    {
-
-        AvaPlot HeatDemand = this.Find<AvaPlot>("HeatDemand");
-
-        // Replot the original full dataset
-        var dataManager = new SourceDataManager();
-        var heatDemandData = dataManager.GetWinterHeatDemandData();
-
-        double[] timestamps = heatDemandData.Select(x => x.timestamp.ToOADate()).ToArray();
-        double[] values = heatDemandData.Select(x => x.value).ToArray();
-
-        HeatDemand.Plot.Clear();
-
-        var scatter = HeatDemand.Plot.Add.Scatter(timestamps, values);
-        scatter.Color = Colors.LightSkyBlue;
+        var scatter = plot.Plot.Add.Scatter(timestamps, values);
+        scatter.Color = color;
+        scatter.Label = label;
         scatter.MarkerSize = 5;
         scatter.LineWidth = 2;
 
-        // Reapply styling
+        // Apply consistent styling
         var bgColor = new Color("#1e1e1e");
-        HeatDemand.Plot.FigureBackground.Color = bgColor;
-        HeatDemand.Plot.DataBackground.Color = bgColor;
-        HeatDemand.Plot.Axes.DateTimeTicksBottom();
-        HeatDemand.Plot.Axes.Color(new Color("#FFFFFF"));
-        HeatDemand.Plot.Grid.XAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
-        HeatDemand.Plot.Grid.YAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
-        HeatDemand.Plot.Grid.XAxisStyle.MajorLineStyle.Width = 1.5f;
-        HeatDemand.Plot.Grid.YAxisStyle.MajorLineStyle.Width = 1.5f;
+        plot.Plot.FigureBackground.Color = bgColor;
+        plot.Plot.DataBackground.Color = bgColor;
+        plot.Plot.Axes.DateTimeTicksBottom();
+        plot.Plot.Axes.Color(new Color("#FFFFFF"));
+        plot.Plot.Grid.XAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
+        plot.Plot.Grid.YAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
+        plot.Plot.Grid.XAxisStyle.MajorLineStyle.Width = 1.5f;
+        plot.Plot.Grid.YAxisStyle.MajorLineStyle.Width = 1.5f;
 
-        HeatDemand.Plot.Axes.AutoScale();
-        HeatDemand.Refresh();
+        plot.Plot.Axes.AutoScale();
+        plot.Refresh();
+    }
 
+    private void SetWinterRange_Click(object sender, RoutedEventArgs e)
+    {
+        FilterData(
+            this.Find<Calendar>("WinterCalendar"),
+            this.Find<AvaPlot>("WinterHeatPlot"),
+            _sourceDataManager.GetWinterHeatDemandData(),
+            Colors.LightSkyBlue,
+            "Heat Demand");
+
+        FilterData(
+            this.Find<Calendar>("WinterCalendar"),
+            this.Find<AvaPlot>("WinterElectricityPlot"),
+            _sourceDataManager.GetWinterElectricityPriceData(),
+            Colors.LightGreen,
+            "Electricity Price");
+    }
+
+    private void SetSummerRange_Click(object sender, RoutedEventArgs e)
+    {
+        FilterData(
+            this.Find<Calendar>("SummerCalendar"),
+            this.Find<AvaPlot>("SummerHeatPlot"),
+            _sourceDataManager.GetSummerHeatDemandData(),
+            Colors.LightSkyBlue,
+            "Heat Demand");
+
+        FilterData(
+            this.Find<Calendar>("SummerCalendar"),
+            this.Find<AvaPlot>("SummerElectricityPlot"),
+            _sourceDataManager.GetSummerElectricityPriceData(),
+            Colors.LightGreen,
+            "Electricity Price");
+    }
+
+    private void ResetWinterView_Click(object sender, RoutedEventArgs e)
+    {
+        PlotData(this.Find<AvaPlot>("WinterHeatPlot"),
+                _sourceDataManager.GetWinterHeatDemandData(),
+                Colors.LightSkyBlue, "Heat Demand");
+
+        PlotData(this.Find<AvaPlot>("WinterElectricityPlot"),
+                _sourceDataManager.GetWinterElectricityPriceData(),
+                Colors.LightGreen, "Electricity Price");
+    }
+
+    private void ResetSummerView_Click(object sender, RoutedEventArgs e)
+    {
+        PlotData(this.Find<AvaPlot>("SummerHeatPlot"),
+                _sourceDataManager.GetSummerHeatDemandData(),
+                Colors.LightSkyBlue, "Heat Demand");
+
+        PlotData(this.Find<AvaPlot>("SummerElectricityPlot"),
+                _sourceDataManager.GetSummerElectricityPriceData(),
+                Colors.LightGreen, "Electricity Price");
+    }
+
+    private void FilterData(Calendar calendar, AvaPlot plot,
+                          IEnumerable<(DateTime timestamp, double value)> fullData,
+                          Color color, string label)
+    {
+        if (calendar.SelectedDates.Count == 0) return;
+
+        var selectedDates = calendar.SelectedDates.OrderBy(d => d).ToList();
+        DateTime startDate = selectedDates.First();
+        DateTime endDate = selectedDates.Last().AddDays(1);
+
+        var filteredData = fullData
+            .Where(x => x.timestamp >= startDate && x.timestamp <= endDate)
+            .ToList();
+
+        if (filteredData.Count == 0) return;
+
+        PlotData(plot, filteredData, color, label);
+        plot.Plot.Axes.SetLimitsX(startDate.ToOADate(), endDate.ToOADate());
+        plot.Refresh();
     }
 
     private void LoadBlackoutDates()
     {
-        var calendar = this.Find<Calendar>("MyCalendar");
+        LoadCalendarBlackoutDates(this.Find<Calendar>("WinterCalendar"));
+        LoadCalendarBlackoutDates(this.Find<Calendar>("SummerCalendar"));
+    }
+
+    private void LoadCalendarBlackoutDates(Calendar calendar)
+    {
         if (calendar == null) return;
 
-        // Get both winter and summer data
         var winterDataPoints = _sourceDataManager.GetWinterHeatDemandData();
         var summerDataPoints = _sourceDataManager.GetSummerHeatDemandData();
 
-        // Combine all dates that have data
         var datesWithData = winterDataPoints.Select(x => x.timestamp.Date)
-                             .Concat(summerDataPoints.Select(x => x.timestamp.Date))
-                             .Distinct()
-                             .ToList();
+                         .Concat(summerDataPoints.Select(x => x.timestamp.Date))
+                         .Distinct()
+                         .ToList();
 
         if (!datesWithData.Any()) return;
 
         var minDate = datesWithData.Min();
         var maxDate = datesWithData.Max();
 
-        // Set calendar display range
         calendar.DisplayDateStart = minDate;
         calendar.DisplayDateEnd = maxDate;
-
-        // Clear existing blackout dates
         calendar.BlackoutDates.Clear();
 
-        // Generate all dates in the range
         var allDates = new List<DateTime>();
         for (var date = minDate; date <= maxDate; date = date.AddDays(1))
         {
             allDates.Add(date);
         }
 
-        // Find dates WITHOUT data (in either winter or summer datasets)
         var datesWithoutData = allDates.Except(datesWithData).ToList();
-
         if (datesWithoutData.Count == 0) return;
 
-        // Group consecutive missing dates into ranges
         DateTime? rangeStart = null;
         DateTime? rangeEnd = null;
 
@@ -217,18 +193,16 @@ public partial class SourceDataManagerView : UserControl
             }
             else if (date == rangeEnd.Value.AddDays(1))
             {
-                rangeEnd = date; // Extend the current range
+                rangeEnd = date;
             }
             else
             {
-                // Add the current range to blackout dates
                 calendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
                 rangeStart = date;
                 rangeEnd = date;
             }
         }
 
-        // Add the final range if it exists
         if (rangeStart.HasValue)
         {
             calendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
