@@ -18,7 +18,7 @@ namespace Sem2Proj.Views;
 
 public partial class SourceDataManagerView : UserControl
 {
-     private readonly SourceDataManager _sourceDataManager = new SourceDataManager();
+    private readonly SourceDataManager _sourceDataManager = new SourceDataManager();
     public SourceDataManagerView()
     {
         InitializeComponent();
@@ -35,7 +35,7 @@ public partial class SourceDataManagerView : UserControl
         double[] values = heatDemandData.Select(x => x.value).ToArray();
 
         AvaPlot HeatDemand = this.Find<AvaPlot>("HeatDemand");
-        HeatDemand.UserInputProcessor.DoubleLeftClickBenchmark(false);  
+        HeatDemand.UserInputProcessor.DoubleLeftClickBenchmark(false);
         HeatDemand.Plot.Clear();
 
         var bgColor = new Color("#1e1e1e");
@@ -52,82 +52,89 @@ public partial class SourceDataManagerView : UserControl
         if (timestamps.Length > 0 && values.Length > 0)
         {
             var scatter = HeatDemand.Plot.Add.Scatter(timestamps, values);
-            scatter.Color = Colors.LightSkyBlue; 
-            scatter.MarkerSize = 5;             
-            scatter.LineWidth = 2;              
+            scatter.Color = Colors.LightSkyBlue;
+            scatter.MarkerSize = 5;
+            scatter.LineWidth = 2;
             HeatDemand.Refresh();
         }
     }
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        ResetPlotView();  
+        ResetPlotView();
     }
     private void ResetPlotView()
     {
         AvaPlot HeatDemand = this.Find<AvaPlot>("HeatDemand");
-        HeatDemand.Plot.Axes.AutoScale(); 
+        HeatDemand.Plot.Axes.AutoScale();
         HeatDemand.Refresh();
     }
-private void LoadBlackoutDates()
-{
-    var calendar = this.Find<Calendar>("MyCalendar");
-    if (calendar == null) return;
-
-    var dataPoints = _sourceDataManager.GetWinterHeatDemandData();
-    var datesWithData = dataPoints.Select(x => x.timestamp.Date).Distinct().ToList();
-
-    if (!datesWithData.Any()) return;
-
-    var minDate = datesWithData.Min();
-    var maxDate = datesWithData.Max();
-
-    // Set calendar display range
-    calendar.DisplayDateStart = minDate;
-    calendar.DisplayDateEnd = maxDate;
-
-    // Clear existing blackout dates
-    calendar.BlackoutDates.Clear();
-
-    // Generate all dates in the range
-    var allDates = new List<DateTime>();
-    for (var date = minDate; date <= maxDate; date = date.AddDays(1))
+    private void LoadBlackoutDates()
     {
-        allDates.Add(date);
-    }
+        var calendar = this.Find<Calendar>("MyCalendar");
+        if (calendar == null) return;
 
-    // Find dates WITHOUT data
-    var datesWithoutData = allDates.Except(datesWithData).ToList();
+        // Get both winter and summer data
+        var winterDataPoints = _sourceDataManager.GetWinterHeatDemandData();
+        var summerDataPoints = _sourceDataManager.GetSummerHeatDemandData();
 
-    if (datesWithoutData.Count == 0) return;
+        // Combine all dates that have data
+        var datesWithData = winterDataPoints.Select(x => x.timestamp.Date)
+                             .Concat(summerDataPoints.Select(x => x.timestamp.Date))
+                             .Distinct()
+                             .ToList();
 
-    // Group consecutive missing dates into ranges
-    DateTime? rangeStart = null;
-    DateTime? rangeEnd = null;
+        if (!datesWithData.Any()) return;
 
-    foreach (var date in datesWithoutData.OrderBy(d => d))
-    {
-        if (!rangeStart.HasValue)
+        var minDate = datesWithData.Min();
+        var maxDate = datesWithData.Max();
+
+        // Set calendar display range
+        calendar.DisplayDateStart = minDate;
+        calendar.DisplayDateEnd = maxDate;
+
+        // Clear existing blackout dates
+        calendar.BlackoutDates.Clear();
+
+        // Generate all dates in the range
+        var allDates = new List<DateTime>();
+        for (var date = minDate; date <= maxDate; date = date.AddDays(1))
         {
-            rangeStart = date;
-            rangeEnd = date;
+            allDates.Add(date);
         }
-        else if (date == rangeEnd.Value.AddDays(1))
+
+        // Find dates WITHOUT data (in either winter or summer datasets)
+        var datesWithoutData = allDates.Except(datesWithData).ToList();
+
+        if (datesWithoutData.Count == 0) return;
+
+        // Group consecutive missing dates into ranges
+        DateTime? rangeStart = null;
+        DateTime? rangeEnd = null;
+
+        foreach (var date in datesWithoutData.OrderBy(d => d))
         {
-            rangeEnd = date; // Extend the current range
+            if (!rangeStart.HasValue)
+            {
+                rangeStart = date;
+                rangeEnd = date;
+            }
+            else if (date == rangeEnd.Value.AddDays(1))
+            {
+                rangeEnd = date; // Extend the current range
+            }
+            else
+            {
+                // Add the current range to blackout dates
+                calendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
+                rangeStart = date;
+                rangeEnd = date;
+            }
         }
-        else
+
+        // Add the final range if it exists
+        if (rangeStart.HasValue)
         {
-            // Add the current range to blackout dates
             calendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
-            rangeStart = date;
-            rangeEnd = date;
         }
     }
-
-    // Add the final range if it exists
-    if (rangeStart.HasValue)
-    {
-        calendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
-    }
-}
 }
