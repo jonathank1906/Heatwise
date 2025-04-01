@@ -4,9 +4,9 @@ using System.IO;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Sem2Proj.Models
-{
-    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+namespace Sem2Proj.Models;
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public partial class AssetModel : ObservableObject
     {
         [ObservableProperty]
@@ -34,22 +34,10 @@ namespace Sem2Proj.Models
         private double maxElectricity;
     }
 
-    public class Preset
-    {
-        public string Name { get; set; }
-        public List<string> Machines { get; set; }
-    }
-
-    public class AssetData
-    {
-        public List<AssetModel> Assets { get; set; }
-        public List<Preset> Presets { get; set; }
-    }
 
     public class AssetManager
     {
-        public List<AssetModel> Assets { get; set; }
-        public List<Preset> Presets { get; set; }
+        public List<AssetModel> Assets { get; set; } = new();
 
         public AssetManager()
         {
@@ -71,24 +59,38 @@ namespace Sem2Proj.Models
             }
 
             string jsonString = File.ReadAllText(jsonFilePath);
-            //.WriteLine($"JSON content: {jsonString}");
 
-            AssetData assetData;
             try
             {
-                assetData = JsonSerializer.Deserialize<AssetData>(jsonString) ?? new AssetData();
+                using var document = JsonDocument.Parse(jsonString);
+                var root = document.RootElement;
+
+                if (root.TryGetProperty("Assets", out var assetsElement))
+                {
+                    return JsonSerializer.Deserialize<List<AssetModel>>(assetsElement.GetRawText()) ?? new List<AssetModel>();
+                }
             }
             catch (JsonException ex)
             {
                 Console.WriteLine($"Error deserializing JSON: {ex.Message}");
-                return new List<AssetModel>();
             }
 
-            Assets = assetData.Assets ?? new List<AssetModel>();
-            Presets = assetData.Presets ?? new List<Preset>();
-
-            return Assets;
+            return new List<AssetModel>();
         }
     }
-    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-}
+
+    public class HeatingGrid
+    {
+        public string Architecture { get; set; }
+        public int CityBuildings { get; set; }
+        public string CityName { get; set; }
+
+        // Constructor for the HeatingGrid class
+        public HeatingGrid(string architecture, int cityBuildings, string cityName)
+        {
+            Architecture = architecture;
+            CityBuildings = cityBuildings;
+            CityName = cityName;
+        }
+    }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
