@@ -1,8 +1,28 @@
-using ReactiveUI;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Threading.Tasks;
 
 namespace Sem2Proj.ViewModels;
 
-public class SourceDataManagerViewModel : ViewModelBase
+public partial class SourceDataManagerViewModel : ViewModelBase
 {
-    // Empty by default (add properties/commands later)
+    private const int OpenWidth = 350;
+    private const int ClosedWidth = 0;
+
+    [ObservableProperty]
+    private double _paneWidth = OpenWidth;
+
+    [ObservableProperty]
+    private bool _isPaneOpen = true;
+
+    [RelayCommand]
+    private async Task TriggerPane()
+    {
+        IsPaneOpen = !IsPaneOpen;
+        PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
+    }
+
+    public SourceDataManagerViewModel()
+    {
+    }
 }

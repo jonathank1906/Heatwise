@@ -5,62 +5,154 @@
     xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Sem2Proj.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:SourceDataManagerViewModel"
     Background="#1e1e1e"
     mc:Ignorable="d">
 
-    <TabControl SelectionChanged="SeasonTabs_SelectionChanged">
-        <!-- Winter Data Tab -->
-        <TabItem x:Name="WinterTab" Header="Winter Data">
-            <StackPanel>
-                <ScottPlot:AvaPlot
-                    Name="WinterHeatPlot"
-                    Width="900"
-                    Height="300" />
-                    
-                <ScottPlot:AvaPlot
-                    Name="WinterElectricityPlot"
-                    Width="900"
-                    Height="300" />
-                    
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20" Spacing="10">
-                    <Calendar
-                        Name="WinterCalendar"
-                        Background="#2d2d2d"
-                        BorderBrush="#3e3e3e"
-                        Foreground="White"
-                        SelectionMode="MultipleRange" />
-                        
-                    <Button Width="100" Click="SetWinterRange_Click" Content="Set Range" />
-                    <Button Width="100" Click="ResetWinterView_Click" Content="Reset View" />
+    <Design.DataContext>
+        <vm:SourceDataManagerViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!--  Collapsible Side Panel  -->
+        <Border
+            Grid.Column="0"
+            Width="{Binding PaneWidth}"
+            Background="#252526"
+            BorderBrush="LightGray">
+            <Grid>
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Spacing="10"
+                    Margin="0,50,0,0">
+
+                    <!--  Season Tabs  -->
+                    <TabControl
+                        x:Name="SeasonTabs"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        SelectionChanged="SeasonTabs_SelectionChanged">
+                        <TabItem x:Name="WinterTab" Header="Winter Data">
+                            <StackPanel Spacing="10">
+                                <Calendar
+                                    Name="WinterCalendar"
+                                    Background="#2d2d2d"
+                                    BorderBrush="#3e3e3e"
+                                    BorderThickness="5,5,5,5"
+                                    CornerRadius="15,15,15,15"
+                                    Foreground="White"
+                                    SelectionMode="MultipleRange" />
+
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="10">
+                                    <Button
+                                        Width="100"
+                                        Click="SetWinterRange_Click"
+                                        Content="Set Range" />
+                                    <Button
+                                        Width="100"
+                                        Click="ResetWinterView_Click"
+                                        Content="Reset View" />
+                                </StackPanel>
+                            </StackPanel>
+                        </TabItem>
+
+                        <TabItem x:Name="SummerTab" Header="Summer Data">
+                            <StackPanel Spacing="10">
+                                <Calendar
+                                    Name="SummerCalendar"
+                                    Background="#2d2d2d"
+                                    BorderBrush="#3e3e3e"
+                                    BorderThickness="5,5,5,5"
+                                    CornerRadius="15,15,15,15"
+                                    Foreground="White"
+                                    SelectionMode="MultipleRange" />
+
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="10">
+                                    <Button
+                                        Width="100"
+                                        Click="SetSummerRange_Click"
+                                        Content="Set Range" />
+                                    <Button
+                                        Width="100"
+                                        Click="ResetSummerView_Click"
+                                        Content="Reset View" />
+                                </StackPanel>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
                 </StackPanel>
-            </StackPanel>
-        </TabItem>
-        
-        <!-- Summer Data Tab -->
-        <TabItem x:Name="SummerTab" Header="Summer Data">
-            <StackPanel>
-                <ScottPlot:AvaPlot
-                    Name="SummerHeatPlot"
-                    Width="900"
-                    Height="300" />
-                    
-                <ScottPlot:AvaPlot
-                    Name="SummerElectricityPlot"
-                    Width="900"
-                    Height="300" />
-                    
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20" Spacing="10">
-                    <Calendar
-                        Name="SummerCalendar"
-                        Background="#2d2d2d"
-                        BorderBrush="#3e3e3e"
-                        Foreground="White"
-                        SelectionMode="MultipleRange" />
-                        
-                    <Button Width="100" Click="SetSummerRange_Click" Content="Set Range" />
-                    <Button Width="100" Click="ResetSummerView_Click" Content="Reset View" />
+            </Grid>
+        </Border>
+
+        <!--  Main Content Area with Graphs  -->
+        <Border Grid.Column="1" Background="#1e1e1e">
+            <Grid>
+                <!--  Winter Graphs  -->
+                <StackPanel x:Name="WinterGraphs" IsVisible="{Binding #WinterTab.IsSelected}">
+                    <ScottPlot:AvaPlot
+                        Name="WinterHeatPlot"
+                        Width="900"
+                        Height="300" />
+
+                    <ScottPlot:AvaPlot
+                        Name="WinterElectricityPlot"
+                        Width="900"
+                        Height="300" />
                 </StackPanel>
-            </StackPanel>
-        </TabItem>
-    </TabControl>
+
+                <!--  Summer Graphs  -->
+                <StackPanel x:Name="SummerGraphs" IsVisible="{Binding #SummerTab.IsSelected}">
+                    <ScottPlot:AvaPlot
+                        Name="SummerHeatPlot"
+                        Width="900"
+                        Height="300" />
+
+                    <ScottPlot:AvaPlot
+                        Name="SummerElectricityPlot"
+                        Width="900"
+                        Height="300" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!--  Toggle Buttons  -->
+        <Button
+            Grid.Column="1"
+            Width="30"
+            Height="30"
+            Margin="5"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding TriggerPaneCommand}"
+            IsVisible="{Binding !IsPaneOpen}">
+            <PathIcon Data="M24,10.49a7.53,7.53,0,0,0-7.35,6H9a1.5,1.5,0,0,0,0,3h7.65a7.5,7.5,0,1,0,7.35-9Zm0,12A4.51,4.51,0,1,1,28.5,18,4.52,4.52,0,0,1,24,22.51Z M63,19.5H36a1.5,1.5,0,0,1,0-3H63a1.5,1.5,0,0,1,0,3Z M63,55.5H36a1.5,1.5,0,0,1,0-3H63a1.5,1.5,0,0,1,0,3Z M24,46.51a7.51,7.51,0,0,0-7.35,6H9A1.49,1.49,0,0,0,7.5,54,1.51,1.51,0,0,0,9,55.51h7.65a7.5,7.5,0,1,0,7.35-9Zm0,12A4.5,4.5,0,1,1,28.5,54,4.51,4.51,0,0,1,24,58.51Z M36,37.5H9a1.5,1.5,0,0,1,0-3H36a1.5,1.5,0,0,1,0,3Z M63,34.51H55.35a7.5,7.5,0,1,0,0,3H63A1.51,1.51,0,0,0,64.5,36,1.49,1.49,0,0,0,63,34.51Zm-15,6A4.5,4.5,0,1,1,52.5,36,4.51,4.51,0,0,1,48,40.51Z" />
+        </Button>
+
+        <Button
+            Grid.Column="0"
+            Width="30"
+            Height="30"
+            Margin="0,5,5,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Command="{Binding TriggerPaneCommand}"
+            IsVisible="{Binding IsPaneOpen}">
+            <PathIcon Data="M51,19.5a1.5,1.5,0,0,1-1.5,1.5H11.12L26.56,36.55a1.51,1.51,0,0,1,0,2.12,1.47,1.47,0,0,1-1.06.44,1.45,1.45,0,0,1-1.06-.44l-18-18a1.5,1.5,0,0,1,0-2.12l18-18a1.5,1.5,0,1,1,2.12,2.12L11.12,18H49.5A1.5,1.5,0,0,1,51,19.5Z M1.5,39a1.5,1.5,0,0,1-1.5-1.5v-36a1.5,1.5,0,0,1,3,0v36A1.5,1.5,0,0,1,1.5,39Z" />
+        </Button>
+    </Grid>
 </UserControl>
