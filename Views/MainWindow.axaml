@@ -20,7 +20,8 @@
     TransparencyLevelHint="AcrylicBlur"
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Icon="/Assets/heat-logo.ico">
 
     <Window.Styles>
         <!--  Style for TabItem  -->

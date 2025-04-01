@@ -431,19 +431,19 @@
                         Text="Heating Grid" />
                         
                     <Border
-                        Width="450"
-                        Height="300"
+                        Width="550"
+                        Height="400"
                         HorizontalAlignment="Center"
                         CornerRadius="15">
                         <Border.Clip>
                             <RectangleGeometry
                                 RadiusX="15"
                                 RadiusY="15"
-                                Rect="0,0,450,300" />
+                                Rect="0,0,540,390" />
                         </Border.Clip>
                         <Image
-                            Width="450"
-                            Height="300"
+                            Width="550"
+                            Height="400"
                             Source="/Assets/map.png"
                             Stretch="UniformToFill" />
                     </Border>

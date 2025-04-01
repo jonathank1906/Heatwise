@@ -4,12 +4,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Sem2Proj.Views.SplashWindow"
-
         Width="550" Height="450"
         WindowStartupLocation="CenterScreen"
         SystemDecorations="None"
         Background="Transparent"
-        Title="SplashScreen">
+        Title="SplashScreen"
+        Icon="/Assets/heat-logo.ico">
+        
     <Border CornerRadius="20">
         <Border.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
