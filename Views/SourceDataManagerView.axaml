@@ -8,9 +8,9 @@
     Background="#1e1e1e"
     mc:Ignorable="d">
 
-    <TabControl>
+    <TabControl SelectionChanged="SeasonTabs_SelectionChanged">
         <!-- Winter Data Tab -->
-        <TabItem Header="Winter Data">
+        <TabItem x:Name="WinterTab" Header="Winter Data">
             <StackPanel>
                 <ScottPlot:AvaPlot
                     Name="WinterHeatPlot"
@@ -37,7 +37,7 @@
         </TabItem>
         
         <!-- Summer Data Tab -->
-        <TabItem Header="Summer Data">
+        <TabItem x:Name="SummerTab" Header="Summer Data">
             <StackPanel>
                 <ScottPlot:AvaPlot
                     Name="SummerHeatPlot"

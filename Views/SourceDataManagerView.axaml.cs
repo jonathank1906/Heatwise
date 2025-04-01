@@ -17,6 +17,7 @@ public partial class SourceDataManagerView : UserControl
         InitializeComponent();
         InitializePlots();
         LoadBlackoutDates();
+        InitializeCalendarDisplayDates();
     }
 
     private void InitializePlots()
@@ -48,6 +49,29 @@ public partial class SourceDataManagerView : UserControl
                 "Electricity Price (DKK/MWh)");
     }
 
+    private void InitializeCalendarDisplayDates()
+    {
+        // Set initial winter calendar display
+        var winterDates = _sourceDataManager.GetWinterHeatDemandData()
+            .Select(x => x.timestamp.Date)
+            .ToList();
+            
+        if (winterDates.Any())
+        {
+            WinterCalendar.DisplayDate = winterDates.First();
+        }
+
+        // Set initial summer calendar display
+        var summerDates = _sourceDataManager.GetSummerHeatDemandData()
+            .Select(x => x.timestamp.Date)
+            .ToList();
+            
+        if (summerDates.Any())
+        {
+            SummerCalendar.DisplayDate = summerDates.First();
+        }
+    }
+
     private void PlotData(AvaPlot plot, IEnumerable<(DateTime timestamp, double value)> data, 
                         Color color, string label, string yAxisLabel)
     {
@@ -72,7 +96,6 @@ public partial class SourceDataManagerView : UserControl
         plot.Plot.YLabel(yAxisLabel);
         plot.Plot.Title(label);
   
-        
         plot.Plot.Axes.DateTimeTicksBottom();
         plot.Plot.Axes.Color(new Color("#FFFFFF"));
         plot.Plot.Grid.XAxisStyle.MajorLineStyle.Color = Colors.White.WithAlpha(25);
@@ -82,6 +105,36 @@ public partial class SourceDataManagerView : UserControl
         
         plot.Plot.Axes.AutoScale();
         plot.Refresh();
+    }
+
+    private void SeasonTabs_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is not TabControl tabControl) return;
+        
+        if (tabControl.SelectedItem == this.Find<TabItem>("WinterTab"))
+        {
+            // Update winter calendar to show first available date
+            var winterDates = _sourceDataManager.GetWinterHeatDemandData()
+                .Select(x => x.timestamp.Date)
+                .ToList();
+                
+            if (winterDates.Any() && WinterCalendar != null)
+            {
+                WinterCalendar.DisplayDate = winterDates.First();
+            }
+        }
+        else if (tabControl.SelectedItem == this.Find<TabItem>("SummerTab"))
+        {
+            // Update summer calendar to show first available date
+            var summerDates = _sourceDataManager.GetSummerHeatDemandData()
+                .Select(x => x.timestamp.Date)
+                .ToList();
+                
+            if (summerDates.Any() && SummerCalendar != null)
+            {
+                SummerCalendar.DisplayDate = summerDates.First();
+            }
+        }
     }
 
     private void SetWinterRange_Click(object sender, RoutedEventArgs e)
