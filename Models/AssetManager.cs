@@ -50,7 +50,7 @@ namespace Sem2Proj.Models;
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
             // Construct the full path to the JSON file in the root directory
-            string jsonFilePath = Path.Combine(basePath, "HeatProductionUnits.json");
+            string jsonFilePath = Path.Combine(basePath, "Data/HeatProductionUnits.json");
 
             if (!File.Exists(jsonFilePath))
             {

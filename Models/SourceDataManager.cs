@@ -13,7 +13,7 @@ public class SourceDataManager
         SummerElectricityPrice
     }
 
-    private readonly string dbPath = "Data Source=heat_optimization.db;Version=3;";
+    private readonly string dbPath = "Data Source=Data/heat_optimization.db;Version=3;";
 
     public List<(DateTime timestamp, double value)> GetData(DataType dataType)
     {
