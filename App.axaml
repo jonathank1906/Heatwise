@@ -1,16 +1,17 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="Sem2Proj.App"
-             xmlns:local="using:Sem2Proj"
-             xmlns:sty="using:FluentAvalonia.Styling"
-             RequestedThemeVariant="Dark">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+<Application
+    x:Class="Sem2Proj.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Sem2Proj"
+    xmlns:sty="using:FluentAvalonia.Styling"
+    RequestedThemeVariant="Dark">
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <local:ViewLocator />
     </Application.DataTemplates>
-  
+
+
     <Application.Styles>
-        <sty:FluentAvaloniaTheme PreferUserAccentColor="False" CustomAccentColor="Firebrick"/>
+        <sty:FluentAvaloniaTheme CustomAccentColor="Firebrick" PreferUserAccentColor="False" />
     </Application.Styles>
 </Application>

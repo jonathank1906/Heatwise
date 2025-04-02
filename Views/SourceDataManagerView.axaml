@@ -27,7 +27,30 @@
             Grid.Column="0"
             Width="{Binding PaneWidth}"
             Background="#252526"
-            BorderBrush="LightGray">
+            BorderBrush="LightGray"
+            Tag="{Binding IsPaneOpen}">
+              <Border.Styles>
+                <Style Selector="Border[Tag=True]">
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <DoubleTransition
+                                Easing="BackEaseOut"
+                                Property="Width"
+                                Duration="0:0:0.3" />
+                        </Transitions>
+                    </Setter>
+                </Style>
+                <Style Selector="Border[Tag=False]">
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <DoubleTransition
+                                Easing="BackEaseIn"
+                                Property="Width"
+                                Duration="0:0:0.3" />
+                        </Transitions>
+                    </Setter>
+                </Style>
+            </Border.Styles>
             <Grid>
                 <StackPanel
                     HorizontalAlignment="Center"

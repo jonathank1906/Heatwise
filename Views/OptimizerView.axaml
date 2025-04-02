@@ -2,10 +2,12 @@
     x:Class="Sem2Proj.Views.OptimizerView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:Sem2Proj.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+    xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Sem2Proj.ViewModels"
-    xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:OptimizerViewModel"
@@ -21,64 +23,60 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--  Collapsible Side Menu  -->
+        <!--  Animated Collapsible Side Menu  -->
         <Border
+            x:Name="SidePanel"
             Grid.Column="0"
             Width="{Binding PaneWidth}"
             Background="#252526"
-            BorderBrush="LightGray">
-            <Grid>
-                <StackPanel
+            BorderBrush="LightGray"
+            Tag="{Binding IsPaneOpen}">
+            <Border.Styles>
+                <Style Selector="Border[Tag=True]">
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <DoubleTransition
+                                Easing="BackEaseOut"
+                                Property="Width"
+                                Duration="0:0:0.3" />
+                        </Transitions>
+                    </Setter>
+                </Style>
+                <Style Selector="Border[Tag=False]">
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <DoubleTransition
+                                Easing="BackEaseIn"
+                                Property="Width"
+                                Duration="0:0:0.3" />
+                        </Transitions>
+                    </Setter>
+                </Style>
+            </Border.Styles>
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="10">
+                <TextBlock FontSize="18" Text="Optimization Period" />
+                <RadioButton Content="Summer" GroupName="SeasonGroup" />
+                <RadioButton Content="Winter" GroupName="SeasonGroup" />
+
+                <TextBlock FontSize="18" Text="Optimization Preference" />
+                <RadioButton Content="Cost" GroupName="OptimizationGroup" />
+                <RadioButton Content="CO2" GroupName="OptimizationGroup" />
+
+                <Button
+                    Width="110"
+                    Height="50"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="10">
-                    
-                    <TextBlock
-                    Grid.Row="0"
-                    Margin="0,10"
-                    HorizontalAlignment="Left"
-                    Text="Optimization Period"
-                    FontSize="18" />
-                    <RadioButton Content="Summer" GroupName="SeasonGroup" />
-                    <RadioButton Content="Winter" GroupName="SeasonGroup" />
-
-                    <TextBlock
-                    Grid.Row="0"
-                    Margin="0,10"
-                    HorizontalAlignment="Left"
-                    Text="Optimization Preference"
-                    FontSize="18" />
-                    <RadioButton Content="Cost" GroupName="OptimizationGroup" />
-                    <RadioButton Content="CO2" GroupName="OptimizationGroup" />
-
-                    <Button
-                        Width="110"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        Classes="FancyGreenButton"
-                        Content="Optimize">
-                        <Button.Styles>
-                            <Style Selector="Button.FancyGreenButton">
-                                <Setter Property="Background" Value="#2ecc71" />
-                                <Setter Property="Foreground" Value="White" />
-                                <Setter Property="Padding" Value="15,5" />
-                                <Setter Property="FontSize" Value="16" />
-                                <Setter Property="FontWeight" Value="Bold" />
-                                <Setter Property="CornerRadius" Value="8" />
-                            </Style>
-                        </Button.Styles>
-                    </Button>
-                </StackPanel>
-            </Grid>
+                    Classes="FancyGreenButton"
+                    Content="Optimize" />
+            </StackPanel>
         </Border>
 
         <!--  Main Content Area  -->
         <Border Grid.Column="1" Background="#1e1e1e">
             <Grid RowDefinitions="Auto,*">
-         
-
-
-                <!--  Toggle Button in main content  -->
                 <Button
                     Width="30"
                     Height="30"
@@ -91,8 +89,6 @@
                 </Button>
             </Grid>
         </Border>
-
-        <!--  Toggle Button in side panel when panel is open  -->
         <Button
             Grid.Column="0"
             Width="30"

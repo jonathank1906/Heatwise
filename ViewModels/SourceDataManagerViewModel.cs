@@ -15,14 +15,21 @@ public partial class SourceDataManagerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isPaneOpen = true;
 
+    [ObservableProperty]
+    private bool _isOpening;
+
     [RelayCommand]
     private async Task TriggerPane()
     {
+        IsOpening = !IsPaneOpen;
         IsPaneOpen = !IsPaneOpen;
         PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
     }
 
+
+
     public SourceDataManagerViewModel()
     {
+        
     }
 }
