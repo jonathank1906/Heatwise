@@ -6,11 +6,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Sem2Proj.Models;
 
 namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
+    // Optimizer
+    [ObservableProperty]
+    private double heatDemand;
+
+    [ObservableProperty]
+    private OptimisationMode optimisationMode;
+
+    [ObservableProperty]
+    private List<HeatProductionResult> optimizationResults;
+
+    private readonly Optimizer optimizer;
+    private readonly SourceDataManager sourceDataManager;
+
+    // Side pane ------------------------------------------------
     private const int OpenWidth = 275;
     private const int ClosedWidth = 0;
 
@@ -30,11 +45,11 @@ public partial class OptimizerViewModel : ViewModelBase
         IsPaneOpen = !IsPaneOpen;
         PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
     }
-
+    // -----------------------------------------------------------
 
 
     public OptimizerViewModel()
     {
-        
+
     }
 }

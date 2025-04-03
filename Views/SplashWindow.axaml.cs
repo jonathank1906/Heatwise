@@ -1,39 +1,47 @@
-using System;
 using System.Threading.Tasks;
-using System.Timers;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Sem2Proj.ViewModels;
 
 namespace Sem2Proj.Views;
 
 public partial class SplashWindow : Window
 {
-    private readonly Action? _mainAction;
-
     public SplashWindow()
     {
-    }
-
-    public SplashWindow(Action mainAction)
-    {
         InitializeComponent();
-        _mainAction = mainAction;
     }
 
-    protected override void OnLoaded(RoutedEventArgs e)
+    public async void LoadApplicationAsync()
     {
-        DummyLoad();
-    }
-    
-    private async void DummyLoad()
-    {
-        // Do some background stuff here.
+        // Ensure the splash screen is rendered before starting the loading process
+        await Task.Yield();
+
+        // Perform the loading on a background thread
+        var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel());
+        var optimizerViewModel = await Task.Run(() => new OptimizerViewModel());
+        var homeViewModel = await Task.Run(() => new HomeViewModel());
+        var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());
+
+        // Simulate a delay to show the splash screen (optional)
         await Task.Delay(3000);
 
+        // Launch the main window with the preloaded view models
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            _mainAction?.Invoke();
+            var mainWindowViewModel = new MainWindowViewModel(
+                assetManagerViewModel,
+                optimizerViewModel,
+                homeViewModel,
+                sourceDataManagerViewModel);
+
+            var mainWindow = new MainWindow
+            {
+                DataContext = mainWindowViewModel
+            };
+            var homeWindow = new HomeWindow();
+            mainWindow.Show();
+            homeWindow.ShowDialog(mainWindow);
             Close();
         });
     }

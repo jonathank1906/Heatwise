@@ -14,32 +14,18 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
     }
-    public override void OnFrameworkInitializationCompleted()
+public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             DisableAvaloniaDataAnnotationValidation();
 
-            desktop.MainWindow = new SplashWindow(() =>
-            {
-                // Create and show MainWindow first
-                var mainWindow = new MainWindow()
-                {
-                    DataContext = new MainWindowViewModel()
-                };
+            // Show the SplashWindow
+            var splashWindow = new SplashWindow();
+            desktop.MainWindow = splashWindow;
 
-                // Create and show HomeWindow as a modal dialog
-                var homeWindow = new HomeWindow();
-
-                // Show main window first (non-blocking)
-                mainWindow.Show();
-
-                // Show home window as modal (blocking)
-                homeWindow.ShowDialog(mainWindow);
-
-                // Set the main window after both are shown
-                desktop.MainWindow = mainWindow;
-            });
+            // Start the loading process asynchronously
+            splashWindow.LoadApplicationAsync();
         }
 
         base.OnFrameworkInitializationCompleted();
