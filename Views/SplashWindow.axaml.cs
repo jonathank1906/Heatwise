@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Sem2Proj.ViewModels;
+using Sem2Proj.Models;
 
 namespace Sem2Proj.Views;
 
@@ -9,17 +10,18 @@ public partial class SplashWindow : Window
 {
     public SplashWindow()
     {
-        InitializeComponent();
+        InitializeComponent(); 
     }
 
     public async void LoadApplicationAsync()
     {
         // Ensure the splash screen is rendered before starting the loading process
         await Task.Yield();
-
+          var assetManager = new AssetManager();
+        var sourceDataManager = new SourceDataManager();
         // Perform the loading on a background thread
         var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel());
-        var optimizerViewModel = await Task.Run(() => new OptimizerViewModel());
+        var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager));
         var homeViewModel = await Task.Run(() => new HomeViewModel());
         var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());
 

@@ -12,18 +12,39 @@ namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
-    // Optimizer
+    // Radio button options
     [ObservableProperty]
-    private double heatDemand;
+    private bool isSummerSelected; // Tracks if "Summer" is selected
 
     [ObservableProperty]
-    private OptimisationMode optimisationMode;
+    private bool isWinterSelected = true; // Default to "Winter"
+
+    [ObservableProperty]
+    private bool isCostSelected = true; // Default to "Cost"
+
+    [ObservableProperty]
+    private bool isCO2Selected; // Tracks if "CO2" is selected
+
+    // SourceDataManager
+    private readonly SourceDataManager _sourceDataManager;
+
+    // Optimizer
+    private readonly Optimizer _optimizer;
+
+    [ObservableProperty]
+    private SourceDataManager.DataType selectedDataType = SourceDataManager.DataType.WinterHeatDemand; // Default to WinterHeatDemand
+
+    [ObservableProperty]
+    private double heatDemand = 0.0; // Default value, can be updated via UI
+
+    [ObservableProperty]
+    private OptimisationMode optimisationMode = OptimisationMode.Cost; // Default mode
 
     [ObservableProperty]
     private List<HeatProductionResult> optimizationResults;
 
-    private readonly Optimizer optimizer;
-    private readonly SourceDataManager sourceDataManager;
+    // Action to trigger plot updates in the view
+    public Action<string[], double[]>? PlotOptimizationResults { get; set; }
 
     // Side pane ------------------------------------------------
     private const int OpenWidth = 275;
@@ -47,9 +68,62 @@ public partial class OptimizerViewModel : ViewModelBase
     }
     // -----------------------------------------------------------
 
-
-    public OptimizerViewModel()
+    // Command to perform optimization and update the plot
+    [RelayCommand]
+    private void OptimizeAndPlot()
     {
+        // Fetch heat demand dynamically based on the selected data type
+        var heatDemandData = _sourceDataManager.GetData(SelectedDataType);
+        HeatDemand = heatDemandData.Sum(data => data.value); // Sum all heat demand values
 
+        // Perform optimization (Call optimizer.cs)
+        OptimizationResults = _optimizer.CalculateOptimalHeatProduction(heatDemandData, OptimisationMode);
+
+        // Prepare data for plotting
+        var assetNames = OptimizationResults.Select(r => r.AssetId).ToArray();
+        var heatProduced = OptimizationResults.Select(r => r.HeatProduced).ToArray();
+
+        // Trigger plot update in the view
+        PlotOptimizationResults?.Invoke(assetNames, heatProduced);
+    }
+
+    // Constructor
+    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager)
+    {
+        _optimizer = new Optimizer(assetManager, sourceDataManager);
+        _sourceDataManager = sourceDataManager;
+    }
+
+    // Update the selected data type based on the radio button selection
+    partial void OnIsSummerSelectedChanged(bool value)
+    {
+        if (value)
+        {
+            SelectedDataType = SourceDataManager.DataType.SummerHeatDemand;
+        }
+    }
+
+    partial void OnIsWinterSelectedChanged(bool value)
+    {
+        if (value)
+        {
+            SelectedDataType = SourceDataManager.DataType.WinterHeatDemand;
+        }
+    }
+
+    partial void OnIsCostSelectedChanged(bool value)
+    {
+        if (value)
+        {
+            OptimisationMode = OptimisationMode.Cost;
+        }
+    }
+
+    partial void OnIsCO2SelectedChanged(bool value)
+    {
+        if (value)
+        {
+            OptimisationMode = OptimisationMode.CO2;
+        }
     }
 }

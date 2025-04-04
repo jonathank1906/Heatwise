@@ -17,11 +17,11 @@
     Background="Transparent"
     ExtendClientAreaTitleBarHeightHint="0"
     ExtendClientAreaToDecorationsHint="True"
+    Icon="/Assets/heat-logo.ico"
     TransparencyLevelHint="AcrylicBlur"
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
-    mc:Ignorable="d"
-    Icon="/Assets/heat-logo.ico">
+    mc:Ignorable="d">
 
     <Window.Styles>
         <!--  Style for TabItem  -->
@@ -241,7 +241,8 @@
                 Grid.Row="1"
                 Padding="0,0,0,0"
                 TabStripPlacement="Top"
-                ZIndex="2">
+                ZIndex="2"
+                SelectedIndex="1">
                 <TabControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Columns="3" />
@@ -258,13 +259,12 @@
                     </DataTemplate>
                 </TabControl.Resources>
 
+                <TabItem Header="Source Data Viewer" HeaderTemplate="{StaticResource TabHeaderTemplate}">
+                    <local:SourceDataManagerView DataContext="{Binding SourceDataManagerViewModel}" />
+                </TabItem>
 
                 <TabItem Header="Asset Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
                     <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
-                </TabItem>
-
-                <TabItem Header="Source Data Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
-                    <local:SourceDataManagerView DataContext="{Binding SourceDataManagerViewModel}" />
                 </TabItem>
 
                 <TabItem Header="Optimizer" HeaderTemplate="{StaticResource TabHeaderTemplate}">

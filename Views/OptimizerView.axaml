@@ -2,6 +2,7 @@
     x:Class="Sem2Proj.Views.OptimizerView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
     xmlns:converters="using:Sem2Proj.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
@@ -57,19 +58,42 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Spacing="10">
+                <TextBlock FontSize="18" Text="Preset" />
+                <RadioButton
+                    Content="Scenario 1"
+                    GroupName="ScenarioGroup"
+                    />
+                <RadioButton
+                    Content="Scenario 2"
+                    GroupName="ScenarioGroup"
+                     />
+
                 <TextBlock FontSize="18" Text="Optimization Period" />
-                <RadioButton Content="Summer" GroupName="SeasonGroup" />
-                <RadioButton Content="Winter" GroupName="SeasonGroup" />
+                <RadioButton
+                    Content="Summer"
+                    GroupName="SeasonGroup"
+                    IsChecked="{Binding IsSummerSelected}" />
+                <RadioButton
+                    Content="Winter"
+                    GroupName="SeasonGroup"
+                    IsChecked="{Binding IsWinterSelected}" />
 
                 <TextBlock FontSize="18" Text="Optimization Preference" />
-                <RadioButton Content="Cost" GroupName="OptimizationGroup" />
-                <RadioButton Content="CO2" GroupName="OptimizationGroup" />
+                <RadioButton
+                    Content="Cost"
+                    GroupName="OptimizationGroup"
+                    IsChecked="{Binding IsCostSelected}" />
+                <RadioButton
+                    Content="CO2"
+                    GroupName="OptimizationGroup"
+                    IsChecked="{Binding IsCO2Selected}" />
 
                 <Button
                     Width="110"
                     Height="50"
                     HorizontalAlignment="Center"
                     Classes="FancyGreenButton"
+                    Command="{Binding OptimizeAndPlotCommand}"
                     Content="Optimize" />
             </StackPanel>
         </Border>
@@ -85,8 +109,13 @@
                     VerticalAlignment="Top"
                     Command="{Binding TriggerPaneCommand}"
                     IsVisible="{Binding !IsPaneOpen}">
-                    <PathIcon Data="{StaticResource RightArrow}"/>
+                    <PathIcon Data="{StaticResource RightArrow}" />
                 </Button>
+                <ScottPlot:AvaPlot
+                    x:Name="OptimizationPlot"
+                    Grid.Row="1"
+                    Width="900"
+                    Height="500" />
             </Grid>
         </Border>
         <Button
@@ -98,7 +127,9 @@
             VerticalAlignment="Top"
             Command="{Binding TriggerPaneCommand}"
             IsVisible="{Binding IsPaneOpen}">
-            <PathIcon Data="{StaticResource LeftArrow}"/>
+            <PathIcon Data="{StaticResource LeftArrow}" />
         </Button>
+
+
     </Grid>
 </UserControl>
