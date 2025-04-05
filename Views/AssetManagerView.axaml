@@ -36,11 +36,11 @@
             </Setter>
         </Style>
 
-        <Style Selector="Button#editButton > Path">
+        <Style Selector="Button#editButton &gt; Path">
             <Setter Property="Fill" Value="#808080" />
         </Style>
 
-        <Style Selector="Button#editButton:pointerover > Path">
+        <Style Selector="Button#editButton:pointerover &gt; Path">
             <Setter Property="Fill" Value="White" />
         </Style>
 
@@ -53,7 +53,7 @@
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
 
-        <Style Selector="Border.value-box > TextBlock">
+        <Style Selector="Border.value-box &gt; TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Width" Value="36" />
             <Setter Property="TextAlignment" Value="Center" />
@@ -65,7 +65,7 @@
             <Setter Property="Margin" Value="5,0" />
             <Setter Property="Foreground" Value="White" />
         </Style>
-        
+
         <Style Selector="TextBlock.section-header">
             <Setter Property="Margin" Value="0,20,0,10" />
             <Setter Property="FontSize" Value="18" />
@@ -78,24 +78,38 @@
         Background="#1e1e1e"
         ColumnDefinitions="200,*"
         RowDefinitions="Auto,*,Auto">
-        <!-- Left Column: Static Navigation -->
+        <!--  Left Column: Static Navigation  -->
         <StackPanel
             Grid.Row="1"
             Grid.RowSpan="2"
             Width="200"
             Background="#252526">
-            <TextBlock
-                Margin="10"
-                FontSize="18"
-                FontWeight="SemiBold"
-                Foreground="White"
-                Text="All Assets" />
+            <ComboBox
+                Margin="10,10,10,15"
+                ItemsSource="{Binding AvailableScenarios}"
+                PlaceholderText="Select view"
+                SelectedItem="{Binding SelectedScenario, Mode=TwoWay}">
+                <ComboBox.Styles>
+                    <Style Selector="ComboBox">
+                        <Setter Property="FontSize" Value="16" />
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Background" Value="#333333" />
+                    </Style>
+                    <Style Selector="ComboBox:pointerover">
+                        <Setter Property="Background" Value="#444444" />
+                    </Style>
+                    <Style Selector="ComboBoxItem">
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Background" Value="#252526" />
+                    </Style>
+                </ComboBox.Styles>
+            </ComboBox>
 
             <ListBox
                 Margin="0,0,0,10"
                 Padding="0"
-                ItemsSource="{Binding Assets}"
-                SelectedItem="{Binding SelectedListItem}">
+                ItemsSource="{Binding DisplayedAssets}"
+                SelectedItem="{Binding SelectedAsset, Mode=TwoWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock
@@ -107,15 +121,15 @@
             </ListBox>
         </StackPanel>
 
-        <!-- Right Column: Scrollable Content -->
+        <!--  Right Column: Scrollable Content  -->
         <ScrollViewer
             Grid.Row="1"
-            Grid.Column="1"
             Grid.RowSpan="2"
+            Grid.Column="1"
             HorizontalScrollBarVisibility="Disabled"
             VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="20">
-                <!-- Main Content Grid -->
+                <!--  Main Content Grid  -->
                 <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -123,9 +137,9 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- Image Section -->
+                    <!--  Image Section  -->
                     <Grid Grid.Column="0" HorizontalAlignment="Center">
-                        <!-- Shadow container -->
+                        <!--  Shadow container  -->
                         <Border
                             Width="450"
                             Height="300"
@@ -135,8 +149,8 @@
                                 <DropShadowEffect BlurRadius="10" Color="Black" />
                             </Border.Effect>
                         </Border>
-                        
-                        <!-- Image with rounded corners -->
+
+                        <!--  Image with rounded corners  -->
                         <Border
                             Width="450"
                             Height="300"
@@ -148,13 +162,11 @@
                                     RadiusY="15"
                                     Rect="0,0,450,300" />
                             </Border.Clip>
-                            <Image
-                                Source="{Binding ImageFromBinding}"
-                                Stretch="UniformToFill" />
+                            <Image Source="{Binding ImageFromBinding}" Stretch="UniformToFill" />
                         </Border>
                     </Grid>
 
-                    <!-- Progress Bars Section -->
+                    <!--  Progress Bars Section  -->
                     <Border
                         Grid.Column="2"
                         Background="#252526"
@@ -165,26 +177,39 @@
                         </Border.Effect>
                         <Grid Margin="10">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" /> <!-- Title and button row -->
-                                <RowDefinition Height="Auto" /> <!-- Max Heat label -->
-                                <RowDefinition Height="Auto" /> <!-- Max Heat progress -->
-                                <RowDefinition Height="Auto" /> <!-- Production Costs label -->
-                                <RowDefinition Height="Auto" /> <!-- Production Costs progress -->
-                                <RowDefinition Height="Auto" /> <!-- CO₂ Emissions label -->
-                                <RowDefinition Height="Auto" /> <!-- CO₂ Emissions progress -->
-                                <RowDefinition Height="Auto" /> <!-- Gas Consumption label -->
-                                <RowDefinition Height="Auto" /> <!-- Gas Consumption progress -->
-                                <RowDefinition Height="Auto" /> <!-- Oil Consumption label -->
-                                <RowDefinition Height="Auto" /> <!-- Oil Consumption progress -->
-                                <RowDefinition Height="Auto" /> <!-- Max Electricity label -->
-                                <RowDefinition Height="Auto" /> <!-- Max Electricity progress -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Title and button row  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Max Heat label  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Max Heat progress  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Production Costs label  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Production Costs progress  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  CO₂ Emissions label  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  CO₂ Emissions progress  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Gas Consumption label  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Gas Consumption progress  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Oil Consumption label  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Oil Consumption progress  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Max Electricity label  -->
+                                <RowDefinition Height="Auto" />
+                                <!--  Max Electricity progress  -->
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Title -->
+                            <!--  Title  -->
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="0"
@@ -194,9 +219,9 @@
                                 FontSize="20"
                                 FontWeight="Bold"
                                 Foreground="White"
-                                Text="{Binding SelectedListItem.Name}" />
+                                Text="{Binding SelectedAsset.Name}" />
 
-                            <!-- Edit Button -->
+                            <!--  Edit Button  -->
                             <Button
                                 Name="editButton"
                                 Grid.Row="0"
@@ -216,7 +241,7 @@
                                     Stretch="Uniform" />
                             </Button>
 
-                            <!-- Progress bars and labels -->
+                            <!--  Progress bars and labels  -->
                             <TextBlock
                                 Grid.Row="1"
                                 Grid.Column="0"
@@ -233,16 +258,18 @@
                                 Classes="thick-track"
                                 Maximum="5"
                                 Minimum="0"
-                                Value="{Binding SelectedListItem.MaxHeat}" />
+                                Value="{Binding SelectedAsset.MaxHeat}" />
                             <Border
                                 Grid.Row="2"
                                 Grid.Column="1"
                                 HorizontalAlignment="Left"
                                 Classes="value-box">
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="Black"
-                                    Text="{Binding SelectedListItem.MaxHeat, StringFormat={}{0:F1}}" />
+                                <Grid HorizontalAlignment="Center">
+                                    <TextBlock
+                                        FontWeight="Bold"
+                                        Foreground="Black"
+                                        Text="{Binding SelectedAsset.MaxHeat, StringFormat={}{0:F1}}" />
+                                </Grid>
                             </Border>
                             <TextBlock
                                 Grid.Row="2"
@@ -267,16 +294,18 @@
                                 Classes="thick-track"
                                 Maximum="990"
                                 Minimum="0"
-                                Value="{Binding SelectedListItem.ProductionCosts}" />
+                                Value="{Binding SelectedAsset.ProductionCosts}" />
                             <Border
                                 Grid.Row="4"
                                 Grid.Column="1"
                                 HorizontalAlignment="Left"
                                 Classes="value-box">
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="Black"
-                                    Text="{Binding SelectedListItem.ProductionCosts, StringFormat={}{0:F1}}" />
+                                <Grid HorizontalAlignment="Center">
+                                    <TextBlock
+                                        FontWeight="Bold"
+                                        Foreground="Black"
+                                        Text="{Binding SelectedAsset.ProductionCosts, StringFormat={}{0:F1}}" />
+                                </Grid>
                             </Border>
                             <TextBlock
                                 Grid.Row="4"
@@ -301,16 +330,18 @@
                                 Classes="thick-track"
                                 Maximum="650"
                                 Minimum="0"
-                                Value="{Binding SelectedListItem.Emissions}" />
+                                Value="{Binding SelectedAsset.Emissions}" />
                             <Border
                                 Grid.Row="6"
                                 Grid.Column="1"
                                 HorizontalAlignment="Left"
                                 Classes="value-box">
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="Black"
-                                    Text="{Binding SelectedListItem.Emissions, StringFormat={}{0:F1}}" />
+                                <Grid HorizontalAlignment="Center">
+                                    <TextBlock
+                                        FontWeight="Bold"
+                                        Foreground="Black"
+                                        Text="{Binding SelectedAsset.Emissions, StringFormat={}{0:F1}}" />
+                                </Grid>
                             </Border>
                             <TextBlock
                                 Grid.Row="6"
@@ -335,16 +366,18 @@
                                 Classes="thick-track"
                                 Maximum="1.8"
                                 Minimum="0"
-                                Value="{Binding SelectedListItem.GasConsumption}" />
+                                Value="{Binding SelectedAsset.GasConsumption}" />
                             <Border
                                 Grid.Row="8"
                                 Grid.Column="1"
                                 HorizontalAlignment="Left"
                                 Classes="value-box">
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="Black"
-                                    Text="{Binding SelectedListItem.GasConsumption, StringFormat={}{0:F1}}" />
+                                <Grid HorizontalAlignment="Center">
+                                    <TextBlock
+                                        FontWeight="Bold"
+                                        Foreground="Black"
+                                        Text="{Binding SelectedAsset.GasConsumption, StringFormat={}{0:F1}}" />
+                                </Grid>
                             </Border>
                             <TextBlock
                                 Grid.Row="8"
@@ -369,16 +402,18 @@
                                 Classes="thick-track"
                                 Maximum="1.5"
                                 Minimum="0"
-                                Value="{Binding SelectedListItem.OilConsumption}" />
+                                Value="{Binding SelectedAsset.OilConsumption}" />
                             <Border
                                 Grid.Row="10"
                                 Grid.Column="1"
                                 HorizontalAlignment="Left"
                                 Classes="value-box">
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="Black"
-                                    Text="{Binding SelectedListItem.OilConsumption, StringFormat={}{0:F1}}" />
+                                <Grid HorizontalAlignment="Center">
+                                    <TextBlock
+                                        FontWeight="Bold"
+                                        Foreground="Black"
+                                        Text="{Binding SelectedAsset.OilConsumption, StringFormat={}{0:F1}}" />
+                                </Grid>
                             </Border>
                             <TextBlock
                                 Grid.Row="10"
@@ -403,16 +438,18 @@
                                 Classes="thick-track"
                                 Maximum="-6"
                                 Minimum="0"
-                                Value="{Binding SelectedListItem.MaxElectricity}" />
+                                Value="{Binding SelectedAsset.MaxElectricity}" />
                             <Border
                                 Grid.Row="12"
                                 Grid.Column="1"
                                 HorizontalAlignment="Left"
                                 Classes="value-box">
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="Black"
-                                    Text="{Binding SelectedListItem.MaxElectricity, StringFormat={}{0:F1}}" />
+                                <Grid HorizontalAlignment="Center">
+                                    <TextBlock
+                                        FontWeight="Bold"
+                                        Foreground="Black"
+                                        Text="{Binding SelectedAsset.MaxElectricity, StringFormat={}{0:F1}}" />
+                                </Grid>
                             </Border>
                             <TextBlock
                                 Grid.Row="12"
@@ -424,12 +461,10 @@
                     </Border>
                 </Grid>
 
-                <!-- Heating Grid Section -->
+                <!--  Heating Grid Section  -->
                 <StackPanel Margin="0,20,0,0">
-                    <TextBlock
-                        Classes="section-header"
-                        Text="Heating Grid" />
-                        
+                    <TextBlock Classes="section-header" Text="Heating Grid" />
+
                     <Border
                         Width="550"
                         Height="400"

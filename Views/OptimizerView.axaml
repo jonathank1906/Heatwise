@@ -62,11 +62,11 @@
                 <RadioButton
                     Content="Scenario 1"
                     GroupName="ScenarioGroup"
-                    />
+                    IsChecked="{Binding IsScenario1Selected}" />
                 <RadioButton
                     Content="Scenario 2"
                     GroupName="ScenarioGroup"
-                     />
+                    IsChecked="{Binding IsScenario2Selected}" />
 
                 <TextBlock FontSize="18" Text="Optimization Period" />
                 <RadioButton
@@ -129,7 +129,5 @@
             IsVisible="{Binding IsPaneOpen}">
             <PathIcon Data="{StaticResource LeftArrow}" />
         </Button>
-
-
     </Grid>
 </UserControl>

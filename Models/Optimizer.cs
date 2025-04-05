@@ -7,126 +7,139 @@ namespace Sem2Proj.Models;
 
 public class Optimizer
 {
-    private readonly List<AssetModel> _assets; // List of assets to be optimized
+    private readonly AssetManager _assetManager;
     private readonly SourceDataManager _sourceDataManager;
-    private ResultDataManager ResultDataManager = new ResultDataManager();
-
+    
     public Optimizer(AssetManager assetManager, SourceDataManager sourceDataManager)
     {
-        _assets = assetManager.Assets;
+        _assetManager = assetManager;
         _sourceDataManager = sourceDataManager;
 
-        Console.WriteLine($"Optimizer initialized with {_assets.Count} assets.");
-    foreach (var asset in _assets)
-    {
-        Console.WriteLine($"Asset: {asset.Name}, MaxHeat: {asset.MaxHeat}, ProductionCosts: {asset.ProductionCosts}, Emissions: {asset.Emissions}");
-    }
+        Debug.WriteLine($"Optimizer initialized with scenario: {_assetManager.CurrentScenarioName}");
+        LogCurrentAssets();
     }
 
-    //     // Step 1: Calculate production costs for electric boilers based on electricity price
-    //     public void CalculateProductionCosts(double electricityPrice)
-    //     {
-    //         foreach (var asset in _assets)
-    //         {
-    //             if (asset.IsElectricBoiler)
-    //             {
-    //                 asset.ProductionCosts = asset.ElectricityConsumption * electricityPrice;
-    //             }
-    //         }
-    //     }
-
-    // Step 2: Calculate optimal heat production
-public List<HeatProductionResult> CalculateOptimalHeatProduction(List<(DateTime timestamp, double heatDemand)> heatDemandIntervals, OptimisationMode optimisationMode)
-{
-    var results = new List<HeatProductionResult>();
-
-    Console.WriteLine($"Total assets: {_assets.Count}");
-    foreach (var asset in _assets)
+    private void LogCurrentAssets()
     {
-        Console.WriteLine($"Asset: {asset.Name}, MaxHeat: {asset.MaxHeat}, ProductionCosts: {asset.ProductionCosts}, Emissions: {asset.Emissions}");
-    }
-
-    foreach (var (timestamp, heatDemand) in heatDemandIntervals)
-    {
-        // Step 2.1: Sort assets based on the optimization criteria
-        var sortedAssets = optimisationMode == OptimisationMode.CO2
-            ? _assets.Where(a => a.MaxHeat > 0).OrderBy(a => a.Emissions).ToList()
-            : _assets.Where(a => a.MaxHeat > 0).OrderBy(a => a.ProductionCosts / a.MaxHeat).ToList();
-
-        Console.WriteLine($"Filtered assets for {optimisationMode}: {sortedAssets.Count}");
-        foreach (var asset in sortedAssets)
+        Debug.WriteLine($"Current Assets ({_assetManager.CurrentAssets.Count}):");
+        foreach (var asset in _assetManager.CurrentAssets)
         {
-            Console.WriteLine($"Asset: {asset.Name}, MaxHeat: {asset.MaxHeat}, ProductionCosts: {asset.ProductionCosts}, Emissions: {asset.Emissions}");
+            Debug.WriteLine($"[{asset.Name}] " +
+                          $"MaxHeat: {asset.MaxHeat} MW, " +
+                          $"Cost: {asset.ProductionCosts:C}/h, " +
+                          $"Emissions: {asset.Emissions} kg/MWh, " +
+                          $"Electricity: {(asset.IsElectricBoiler ? "Consumer" : asset.IsGenerator ? "Producer" : "None")}");
+        }
+    }
+
+    public List<HeatProductionResult> CalculateOptimalHeatProduction(
+        List<(DateTime timestamp, double heatDemand)> heatDemandIntervals, 
+        OptimisationMode optimisationMode)
+    {
+        var results = new List<HeatProductionResult>();
+        var currentAssets = _assetManager.CurrentAssets;
+        
+        Debug.WriteLine($"\n=== Starting optimization ===");
+        Debug.WriteLine($"Mode: {optimisationMode}");
+        Debug.WriteLine($"Time intervals: {heatDemandIntervals.Count}");
+        Debug.WriteLine($"Available assets: {currentAssets.Count}");
+
+        foreach (var (timestamp, heatDemand) in heatDemandIntervals)
+        {
+            var intervalResults = ProcessTimeInterval(
+                timestamp, 
+                heatDemand, 
+                currentAssets, 
+                optimisationMode);
+            
+            results.AddRange(intervalResults);
         }
 
-        // Step 2.2: Initialize variables for this interval
-        double remainingHeatDemand = heatDemand;
-        double totalProductionCost = 0;
+        Debug.WriteLine($"\n=== Optimization completed ===");
+        Debug.WriteLine($"Total results: {results.Count}");
+        
+        return results;
+    }
+
+    private List<HeatProductionResult> ProcessTimeInterval(
+        DateTime timestamp,
+        double heatDemand,
+        List<AssetModel> assets,
+        OptimisationMode optimisationMode)
+    {
+        var results = new List<HeatProductionResult>();
+        double remainingDemand = heatDemand;
+        double totalCost = 0;
         double totalEmissions = 0;
 
-        // Step 3: Allocate heat production for this interval
-        foreach (var asset in sortedAssets)
+        Debug.WriteLine($"\nProcessing interval: {timestamp}");
+        Debug.WriteLine($"Initial demand: {heatDemand} MW");
+
+        var prioritizedAssets = optimisationMode switch
         {
-            if (remainingHeatDemand <= 0)
-                break;
+            OptimisationMode.Cost => assets
+                .Where(a => a.MaxHeat > 0)
+                .OrderBy(a => a.CostPerMW)
+                .ToList(),
+            
+            OptimisationMode.CO2 => assets
+                .Where(a => a.MaxHeat > 0)
+                .OrderBy(a => a.EmissionsPerMW)
+                .ToList(),
+            
+            _ => throw new ArgumentOutOfRangeException(nameof(optimisationMode))
+        };
 
-            double heatProduced = Math.Min(asset.MaxHeat, remainingHeatDemand);
-            remainingHeatDemand -= heatProduced;
+        foreach (var asset in prioritizedAssets)
+        {
+            if (remainingDemand <= 0) break;
 
-            totalProductionCost += heatProduced * (asset.ProductionCosts / asset.MaxHeat);
-            totalEmissions += heatProduced * asset.Emissions;
+            double allocation = Math.Min(asset.MaxHeat, remainingDemand);
+            remainingDemand -= allocation;
 
-            results.Add(new HeatProductionResult
+            var result = new HeatProductionResult
             {
-                AssetId = asset.Name,
-                HeatProduced = heatProduced,
-                ProductionCost = heatProduced * (asset.ProductionCosts / asset.MaxHeat),
-                Emissions = heatProduced * asset.Emissions,
-                Timestamp = timestamp // Add timestamp for this interval
-            });
+                AssetName = asset.Name,
+                HeatProduced = allocation,
+                ProductionCost = allocation * asset.CostPerMW,
+                Emissions = allocation * asset.EmissionsPerMW,
+                Timestamp = timestamp
+            };
+
+            totalCost += result.ProductionCost;
+            totalEmissions += result.Emissions;
+            results.Add(result);
+
+            Debug.WriteLine($"- Allocated {allocation} MW from {asset.Name} " +
+                          $"(Cost: {result.ProductionCost:C}, Emissions: {result.Emissions} kg)");
         }
 
-        // Step 3.1: Log a message if demand is not met for this interval
-        if (remainingHeatDemand > 0)
+        if (remainingDemand > 0)
         {
-            Console.WriteLine($"Warning: Heat demand of {heatDemand} at {timestamp} could not be fully met. Remaining demand: {remainingHeatDemand}");
+            Debug.WriteLine($"WARNING: Unmet demand of {remainingDemand} MW");
         }
 
-        // Step 4: Add summary data for this interval
+        // Add interval summary
         results.Add(new HeatProductionResult
         {
-            AssetId = "Summary",
-            HeatProduced = heatDemand - remainingHeatDemand,
-            ProductionCost = totalProductionCost,
+            AssetName = "Interval Summary",
+            HeatProduced = heatDemand - remainingDemand,
+            ProductionCost = totalCost,
             Emissions = totalEmissions,
-            Timestamp = timestamp // Add timestamp for this interval
+            Timestamp = timestamp
         });
+
+        return results;
     }
-
-    return results;
 }
 
-
-}
-
-// Helper class to store the result of heat production optimization
 public class HeatProductionResult
 {
-    public string AssetId { get; set; }
+    public string AssetName { get; set; } = string.Empty;
     public double HeatProduced { get; set; }
     public double ProductionCost { get; set; }
     public double Emissions { get; set; }
-
     public DateTime Timestamp { get; set; }
-}
-
-public enum SortBy
-{
-    Cost,
-    CO2,
-    ElectricityConsumption,
-    ElectricityProduction,
-    HeatCapacity,
 }
 
 public enum OptimisationMode

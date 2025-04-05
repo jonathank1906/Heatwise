@@ -12,6 +12,14 @@ namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
+    // Scenario ratio buttons
+    [ObservableProperty]
+    private bool _isScenario1Selected = true;
+    
+    [ObservableProperty]
+    private bool _isScenario2Selected;
+
+
     // Radio button options
     [ObservableProperty]
     private bool isSummerSelected; // Tracks if "Summer" is selected
@@ -80,7 +88,7 @@ public partial class OptimizerViewModel : ViewModelBase
         OptimizationResults = _optimizer.CalculateOptimalHeatProduction(heatDemandData, OptimisationMode);
 
         // Prepare data for plotting
-        var assetNames = OptimizationResults.Select(r => r.AssetId).ToArray();
+        var assetNames = OptimizationResults.Select(r => r.AssetName).ToArray();
         var heatProduced = OptimizationResults.Select(r => r.HeatProduced).ToArray();
 
         // Trigger plot update in the view
@@ -126,4 +134,6 @@ public partial class OptimizerViewModel : ViewModelBase
             OptimisationMode = OptimisationMode.CO2;
         }
     }
+
+
 }

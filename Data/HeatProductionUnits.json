@@ -54,11 +54,11 @@
     "Presets": [
       {
         "Name": "Scenario 1",
-        "Machines": ["Gas Boiler 1", "Oil Boiler 1"]
+        "Machines": ["Gas Boiler 1", "Gas Boiler 2", "Oil Boiler 1"]
       },
       {
         "Name": "Scenario 2",
-        "Machines": ["Gas Boiler 1", "Oil Boiler 1"]
+        "Machines": ["Gas Boiler 1", "Oil Boiler 1", "Gas Motor 1", "Heat Pump 1"]  
       }
     ]
   }

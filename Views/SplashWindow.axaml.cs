@@ -20,7 +20,7 @@ public partial class SplashWindow : Window
           var assetManager = new AssetManager();
         var sourceDataManager = new SourceDataManager();
         // Perform the loading on a background thread
-        var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel());
+        var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager));
         var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager));
         var homeViewModel = await Task.Run(() => new HomeViewModel());
         var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());

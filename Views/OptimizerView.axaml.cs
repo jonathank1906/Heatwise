@@ -25,8 +25,7 @@ public partial class OptimizerView : UserControl
                     var bgColor = new Color("#1e1e1e");
                     plt.FigureBackground.Color = bgColor;
                     plt.DataBackground.Color = bgColor;
-                    // Add bars to the plot
-                    // Create bars for the plot
+                  
                     var bars = assetNames.Select((name, index) => new Bar
                     {
                         Position = index + 1,
