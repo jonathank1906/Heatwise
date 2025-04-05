@@ -7,18 +7,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Sem2Proj.Models;
+using System.Diagnostics;
 
 namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
+
+
+    private readonly AssetManager _assetManager;
+
+
     // Scenario ratio buttons
-    [ObservableProperty]
+ [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsScenario2Selected))]
     private bool _isScenario1Selected = true;
     
     [ObservableProperty]
     private bool _isScenario2Selected;
-
 
     // Radio button options
     [ObservableProperty]
@@ -96,10 +102,15 @@ public partial class OptimizerViewModel : ViewModelBase
     }
 
     // Constructor
-    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager)
+   public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager)
     {
-        _optimizer = new Optimizer(assetManager, sourceDataManager);
-        _sourceDataManager = sourceDataManager;
+        _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
+        _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
+        _optimizer = new Optimizer(_assetManager, _sourceDataManager);
+        
+        // Initialize with default scenario
+        _assetManager.SetScenario(0); // Default to Scenario 1
+        _isScenario1Selected = true;
     }
 
     // Update the selected data type based on the radio button selection
@@ -134,6 +145,22 @@ public partial class OptimizerViewModel : ViewModelBase
             OptimisationMode = OptimisationMode.CO2;
         }
     }
+ partial void OnIsScenario1SelectedChanged(bool value)
+    {
+        if (value)
+        {
+            _assetManager.SetScenario(0); // Scenario 1
+            Debug.WriteLine("Scenario 1 selected");
+        }
+    }
 
+    partial void OnIsScenario2SelectedChanged(bool value)
+    {
+        if (value)
+        {
+            _assetManager.SetScenario(1); // Scenario 2
+            Debug.WriteLine("Scenario 2 selected");
+        }
+    }
 
 }

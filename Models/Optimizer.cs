@@ -38,6 +38,7 @@ public class Optimizer
     {
         var results = new List<HeatProductionResult>();
         var currentAssets = _assetManager.CurrentAssets;
+        Debug.WriteLine($"Optimizing with {currentAssets.Count} assets in current scenario");
         
         Debug.WriteLine($"\n=== Starting optimization ===");
         Debug.WriteLine($"Mode: {optimisationMode}");
