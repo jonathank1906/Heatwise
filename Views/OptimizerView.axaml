@@ -111,7 +111,13 @@
                     IsVisible="{Binding !IsPaneOpen}">
                     <PathIcon Data="{StaticResource RightArrow}" />
                 </Button>
-
+                <CheckBox
+                    Grid.Row="1"
+                    Margin="10,5"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Content="Show Heat Demand"
+                    IsChecked="{Binding ShowHeatDemand}" />
                 <!--  Content that changes based on whether optimization has run  -->
                 <StackPanel
                     Grid.Row="1"

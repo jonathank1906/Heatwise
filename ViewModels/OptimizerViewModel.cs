@@ -17,7 +17,8 @@ public partial class OptimizerViewModel : ViewModelBase
     private bool _hasOptimized = false;
 
     private readonly AssetManager _assetManager;
-
+[ObservableProperty]
+private bool _showHeatDemand = true;
 
     // Scenario ratio buttons
     [ObservableProperty]
@@ -59,7 +60,7 @@ public partial class OptimizerViewModel : ViewModelBase
     private List<HeatProductionResult> optimizationResults;
 
     // Action to trigger plot updates in the view
-    public Action<List<HeatProductionResult>>? PlotOptimizationResults { get; set; }
+public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
 
     // Side pane ------------------------------------------------
     private const int OpenWidth = 275;
@@ -84,23 +85,24 @@ public partial class OptimizerViewModel : ViewModelBase
     // -----------------------------------------------------------
 
     // Command to perform optimization and update the plot
-   [RelayCommand]
+ [RelayCommand]
 private void OptimizeAndPlot()
 {
-    // Fetch heat demand dynamically based on the selected data type
+    // Fetch heat demand data
     var heatDemandData = _sourceDataManager.GetData(SelectedDataType);
     HeatDemand = heatDemandData.Sum(data => data.value);
 
     // Perform optimization
     OptimizationResults = _optimizer.CalculateOptimalHeatProduction(heatDemandData, OptimisationMode);
 
-    // Trigger plot update in the view with full results
-    PlotOptimizationResults?.Invoke(OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList());
+    // Trigger plot update with both results and heat demand data
+    PlotOptimizationResults?.Invoke(
+        OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
+        heatDemandData
+    );
 
-    // Set flag that optimization has run
     HasOptimized = true;
 }
-
     // Constructor
     public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager)
     {
