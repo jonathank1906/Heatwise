@@ -59,7 +59,7 @@ public partial class OptimizerViewModel : ViewModelBase
     private List<HeatProductionResult> optimizationResults;
 
     // Action to trigger plot updates in the view
-    public Action<string[], double[]>? PlotOptimizationResults { get; set; }
+    public Action<List<HeatProductionResult>>? PlotOptimizationResults { get; set; }
 
     // Side pane ------------------------------------------------
     private const int OpenWidth = 275;
@@ -84,26 +84,22 @@ public partial class OptimizerViewModel : ViewModelBase
     // -----------------------------------------------------------
 
     // Command to perform optimization and update the plot
-    [RelayCommand]
-    private void OptimizeAndPlot()
-    {
-        // Fetch heat demand dynamically based on the selected data type
-        var heatDemandData = _sourceDataManager.GetData(SelectedDataType);
-        HeatDemand = heatDemandData.Sum(data => data.value);
+   [RelayCommand]
+private void OptimizeAndPlot()
+{
+    // Fetch heat demand dynamically based on the selected data type
+    var heatDemandData = _sourceDataManager.GetData(SelectedDataType);
+    HeatDemand = heatDemandData.Sum(data => data.value);
 
-        // Perform optimization
-        OptimizationResults = _optimizer.CalculateOptimalHeatProduction(heatDemandData, OptimisationMode);
+    // Perform optimization
+    OptimizationResults = _optimizer.CalculateOptimalHeatProduction(heatDemandData, OptimisationMode);
 
-        // Prepare data for plotting
-        var assetNames = OptimizationResults.Select(r => r.AssetName).ToArray();
-        var heatProduced = OptimizationResults.Select(r => r.HeatProduced).ToArray();
+    // Trigger plot update in the view with full results
+    PlotOptimizationResults?.Invoke(OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList());
 
-        // Trigger plot update in the view
-        PlotOptimizationResults?.Invoke(assetNames, heatProduced);
-
-        // Set flag that optimization has run
-        HasOptimized = true;
-    }
+    // Set flag that optimization has run
+    HasOptimized = true;
+}
 
     // Constructor
     public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager)
