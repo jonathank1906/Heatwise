@@ -111,11 +111,24 @@
                     IsVisible="{Binding !IsPaneOpen}">
                     <PathIcon Data="{StaticResource RightArrow}" />
                 </Button>
-                <ScottPlot:AvaPlot
-                    x:Name="OptimizationPlot"
+
+                <!--  Content that changes based on whether optimization has run  -->
+                <StackPanel
                     Grid.Row="1"
-                    Width="900"
-                    Height="500" />
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="White"
+                        IsVisible="{Binding !HasOptimized}"
+                        Text="Click Optimize to get started" />
+
+                    <ScottPlot:AvaPlot
+                        x:Name="OptimizationPlot"
+                        Width="900"
+                        Height="500"
+                        IsVisible="{Binding HasOptimized}" />
+                </StackPanel>
             </Grid>
         </Border>
         <Button

@@ -13,16 +13,17 @@ namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
-
+    [ObservableProperty]
+    private bool _hasOptimized = false;
 
     private readonly AssetManager _assetManager;
 
 
     // Scenario ratio buttons
- [ObservableProperty]
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsScenario2Selected))]
     private bool _isScenario1Selected = true;
-    
+
     [ObservableProperty]
     private bool _isScenario2Selected;
 
@@ -88,9 +89,9 @@ public partial class OptimizerViewModel : ViewModelBase
     {
         // Fetch heat demand dynamically based on the selected data type
         var heatDemandData = _sourceDataManager.GetData(SelectedDataType);
-        HeatDemand = heatDemandData.Sum(data => data.value); // Sum all heat demand values
+        HeatDemand = heatDemandData.Sum(data => data.value);
 
-        // Perform optimization (Call optimizer.cs)
+        // Perform optimization
         OptimizationResults = _optimizer.CalculateOptimalHeatProduction(heatDemandData, OptimisationMode);
 
         // Prepare data for plotting
@@ -99,15 +100,18 @@ public partial class OptimizerViewModel : ViewModelBase
 
         // Trigger plot update in the view
         PlotOptimizationResults?.Invoke(assetNames, heatProduced);
+
+        // Set flag that optimization has run
+        HasOptimized = true;
     }
 
     // Constructor
-   public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager)
+    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager)
     {
         _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
         _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
         _optimizer = new Optimizer(_assetManager, _sourceDataManager);
-        
+
         // Initialize with default scenario
         _assetManager.SetScenario(0); // Default to Scenario 1
         _isScenario1Selected = true;
@@ -145,7 +149,7 @@ public partial class OptimizerViewModel : ViewModelBase
             OptimisationMode = OptimisationMode.CO2;
         }
     }
- partial void OnIsScenario1SelectedChanged(bool value)
+    partial void OnIsScenario1SelectedChanged(bool value)
     {
         if (value)
         {
