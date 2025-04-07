@@ -8,6 +8,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Sem2Proj.Models;
 using System.Diagnostics;
+using Avalonia.Controls;
+
 
 namespace Sem2Proj.ViewModels;
 
@@ -16,53 +18,29 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _hasOptimized = false;
 
+    [ObservableProperty]
+    private bool _showHeatDemand = true;
+
+    [ObservableProperty]
+    private List<HeatProductionResult>? _optimizationResults;
+
+    [ObservableProperty]
+    private List<(DateTime timestamp, double value)>? _heatDemandData;
+
     private readonly AssetManager _assetManager;
-[ObservableProperty]
-private bool _showHeatDemand = true;
-
-    // Scenario ratio buttons
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsScenario2Selected))]
-    private bool _isScenario1Selected = true;
-
-    [ObservableProperty]
-    private bool _isScenario2Selected;
-
-    // Radio button options
-    [ObservableProperty]
-    private bool isSummerSelected; // Tracks if "Summer" is selected
-
-    [ObservableProperty]
-    private bool isWinterSelected = true; // Default to "Winter"
-
-    [ObservableProperty]
-    private bool isCostSelected = true; // Default to "Cost"
-
-    [ObservableProperty]
-    private bool isCO2Selected; // Tracks if "CO2" is selected
-
-    // SourceDataManager
     private readonly SourceDataManager _sourceDataManager;
-
-    // Optimizer
     private readonly Optimizer _optimizer;
 
     [ObservableProperty]
-    private SourceDataManager.DataType selectedDataType = SourceDataManager.DataType.WinterHeatDemand; // Default to WinterHeatDemand
+    private SourceDataManager.DataType _selectedDataType = SourceDataManager.DataType.WinterHeatDemand;
 
     [ObservableProperty]
-    private double heatDemand = 0.0; // Default value, can be updated via UI
+    private double _heatDemand = 0.0;
 
     [ObservableProperty]
-    private OptimisationMode optimisationMode = OptimisationMode.Cost; // Default mode
+    private OptimisationMode _optimisationMode = OptimisationMode.Cost;
 
-    [ObservableProperty]
-    private List<HeatProductionResult> optimizationResults;
-
-    // Action to trigger plot updates in the view
-public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
-
-    // Side pane ------------------------------------------------
+    // Side pane properties
     private const int OpenWidth = 275;
     private const int ClosedWidth = 0;
 
@@ -75,35 +53,29 @@ public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value
     [ObservableProperty]
     private bool _isOpening;
 
-    [RelayCommand]
-    private async Task TriggerPane()
-    {
-        IsOpening = !IsPaneOpen;
-        IsPaneOpen = !IsPaneOpen;
-        PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
-    }
-    // -----------------------------------------------------------
+    // Scenario ratio buttons
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsScenario2Selected))]
+    private bool _isScenario1Selected = true;
 
-    // Command to perform optimization and update the plot
- [RelayCommand]
-private void OptimizeAndPlot()
-{
-    // Fetch heat demand data
-    var heatDemandData = _sourceDataManager.GetData(SelectedDataType);
-    HeatDemand = heatDemandData.Sum(data => data.value);
+    [ObservableProperty]
+    private bool _isScenario2Selected;
 
-    // Perform optimization
-    OptimizationResults = _optimizer.CalculateOptimalHeatProduction(heatDemandData, OptimisationMode);
+    // Radio button options
+    [ObservableProperty]
+    private bool _isSummerSelected;
 
-    // Trigger plot update with both results and heat demand data
-    PlotOptimizationResults?.Invoke(
-        OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
-        heatDemandData
-    );
+    [ObservableProperty]
+    private bool _isWinterSelected = true;
 
-    HasOptimized = true;
-}
-    // Constructor
+    [ObservableProperty]
+    private bool _isCostSelected = true;
+
+    [ObservableProperty]
+    private bool _isCO2Selected;
+
+    public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
+
     public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager)
     {
         _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
@@ -115,7 +87,78 @@ private void OptimizeAndPlot()
         _isScenario1Selected = true;
     }
 
-    // Update the selected data type based on the radio button selection
+    [RelayCommand]
+    private async Task TriggerPane()
+    {
+        IsOpening = !IsPaneOpen;
+        IsPaneOpen = !IsPaneOpen;
+        PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
+    }
+
+    [RelayCommand]
+    private void OptimizeAndPlot()
+    {
+        // Fetch heat demand data
+        HeatDemandData = _sourceDataManager.GetData(SelectedDataType);
+        HeatDemand = HeatDemandData.Sum(data => data.value);
+
+        // Perform optimization
+        OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimisationMode);
+
+        // Trigger plot update with both results and heat demand data
+        PlotOptimizationResults?.Invoke(
+            OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
+            HeatDemandData
+        );
+
+        HasOptimized = true;
+    }
+
+    [RelayCommand]
+    private void SetDateRange()
+    {
+        if (OptimizationResults == null || HeatDemandData == null || !HasOptimized) return;
+
+        // Get selected dates from the calendar (passed via command parameter)
+        if (SelectedDates == null || SelectedDates.Count == 0) return;
+
+        var orderedDates = SelectedDates.OrderBy(d => d).ToList();
+        DateTime startDate = orderedDates.First();
+        DateTime endDate = orderedDates.Last().AddDays(1);
+
+        // Filter both optimization results and heat demand data
+        var filteredResults = OptimizationResults
+            .Where(r => r.Timestamp >= startDate && r.Timestamp <= endDate)
+            .ToList();
+
+        var filteredHeatDemand = HeatDemandData
+            .Where(h => h.timestamp >= startDate && h.timestamp <= endDate)
+            .ToList();
+
+        // Replot with filtered data
+        PlotOptimizationResults?.Invoke(filteredResults, filteredHeatDemand);
+    }
+
+    [RelayCommand]
+    private void ResetView()
+    {
+        if (OptimizationResults == null || HeatDemandData == null || !HasOptimized) return;
+
+        // Replot with all data
+        PlotOptimizationResults?.Invoke(
+            OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
+            HeatDemandData
+        );
+
+        // Clear calendar selection via property
+        SelectedDates?.Clear();
+    }
+
+    // Add this property to hold selected dates
+    [ObservableProperty]
+    private IList<DateTime>? _selectedDates;
+
+    // Property change handlers
     partial void OnIsSummerSelectedChanged(bool value)
     {
         if (value)
@@ -147,6 +190,7 @@ private void OptimizeAndPlot()
             OptimisationMode = OptimisationMode.CO2;
         }
     }
+
     partial void OnIsScenario1SelectedChanged(bool value)
     {
         if (value)
@@ -164,5 +208,4 @@ private void OptimizeAndPlot()
             Debug.WriteLine("Scenario 2 selected");
         }
     }
-
 }

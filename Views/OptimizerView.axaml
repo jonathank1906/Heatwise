@@ -88,6 +88,31 @@
                     GroupName="OptimizationGroup"
                     IsChecked="{Binding IsCO2Selected}" />
 
+                <!--  Calendar Section  -->
+                <TextBlock FontSize="18" Text="Date Range" />
+                <Calendar
+                    Name="OptimizationCalendar"
+                    Background="#2d2d2d"
+                    BorderBrush="#3e3e3e"
+                    BorderThickness="5,5,5,5"
+                    CornerRadius="15,15,15,15"
+                    Foreground="White"
+                    SelectionMode="MultipleRange" />
+
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="10">
+                    <Button
+                        Width="100"
+                        Click="SetRange_Click"
+                        Content="Set Range" />
+                    <Button
+                        Width="100"
+                        Command="{Binding ResetViewCommand}"
+                        Content="Reset View" />
+                </StackPanel>
+
                 <Button
                     Width="110"
                     Height="50"

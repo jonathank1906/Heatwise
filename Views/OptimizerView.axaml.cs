@@ -3,6 +3,10 @@ using ScottPlot;
 using System.Linq;
 using System.Collections.Generic;
 using Sem2Proj.ViewModels;
+using Avalonia.Interactivity;
+using System;
+using Avalonia.Controls.Primitives;
+using Sem2Proj.Models;
 
 namespace Sem2Proj.Views;
 
@@ -21,146 +25,262 @@ public partial class OptimizerView : UserControl
         { "Heat Pump 2", Colors.LightGreen }
     };
 
+    private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
+    private List<HeatProductionResult>? _currentOptimizationResults;
+
     public OptimizerView()
     {
         InitializeComponent();
-
+        
         DataContextChanged += (sender, e) =>
         {
             if (DataContext is OptimizerViewModel viewModel)
             {
                 viewModel.PlotOptimizationResults = (results, heatDemandData) =>
                 {
-                    var plt = OptimizationPlot.Plot;
-                    plt.Clear();
-                    _heatDemandPlot = null;
-
-                    // Set dark theme
-                    var bgColor = new Color("#1e1e1e");
-                    plt.FigureBackground.Color = bgColor;
-                    plt.DataBackground.Color = bgColor;
-                    plt.Axes.Color(new Color("#FFFFFF"));
-
-                    // Clear previous legend items
-                    plt.Legend.ManualItems.Clear();
-
-                    // Process optimization results (stacked bars)
-                    var groupedResults = results
-                        .Where(r => r.AssetName != "Interval Summary")
-                        .GroupBy(r => r.Timestamp)
-                        .OrderBy(g => g.Key)
-                        .ToList();
-
-                    // Create stacked bars and add to legend
-                    var addedToLegend = new HashSet<string>();
-                    for (int i = 0; i < groupedResults.Count; i++)
-                    {
-                        double currentBase = 0;
-                        foreach (var result in groupedResults[i].OrderBy(r => r.AssetName))
-                        {
-                            if (_machineColors.TryGetValue(result.AssetName, out var color))
-                            {
-                                plt.Add.Bar(new Bar
-                                {
-                                    Position = i + 1,
-                                    ValueBase = currentBase,
-                                    Value = currentBase + result.HeatProduced,
-                                    FillColor = color
-                                });
-                                currentBase += result.HeatProduced;
-
-                                // Add to legend only once per asset
-                                if (addedToLegend.Add(result.AssetName))
-                                {
-                                    plt.Legend.ManualItems.Add(new LegendItem
-                                    {
-                                        LabelText = result.AssetName,
-                                        FillColor = color
-                                    });
-                                }
-                            }
-                        }
-                    }
-
-                    // Always create heat demand plot (visibility controlled by checkbox)
-                    var orderedDemand = heatDemandData
-                        .OrderBy(x => x.timestamp)
-                        .ToList();
-
-                    double[] positions = new double[orderedDemand.Count + 1];
-                    double[] values = new double[orderedDemand.Count + 1];
-                    
-                    for (int i = 0; i < orderedDemand.Count; i++)
-                    {
-                        positions[i] = i + 0.5;
-                        values[i] = orderedDemand[i].value;
-                    }
-                    
-                    // Add final point
-                    positions[^1] = orderedDemand.Count + 0.5;
-                    values[^1] = values[^2];
-
-                    _heatDemandPlot = plt.Add.Scatter(positions, values);
-                    _heatDemandPlot.ConnectStyle = ConnectStyle.StepHorizontal;
-                    _heatDemandPlot.LineWidth = 2;
-                    _heatDemandPlot.Color = Colors.Red.WithAlpha(0.7);
-                    _heatDemandPlot.MarkerSize = 0;
-                    _heatDemandPlot.IsVisible = viewModel.ShowHeatDemand;
-
-                    // Only add to legend if checkbox is checked
-                    if (viewModel.ShowHeatDemand)
-                    {
-                        plt.Legend.ManualItems.Add(new LegendItem
-                        {
-                            LabelText = "Heat Demand",
-                            LineColor = Colors.Red,
-                            LineWidth = 2
-                        });
-                    }
-
-                    plt.ShowLegend(Alignment.UpperRight);
-                    plt.Title("Heat Production Optimization");
-                    plt.XLabel("Time Intervals");
-                    plt.YLabel("Heat (MW)");
-                    plt.Axes.Margins(bottom: 0, top: 0.2);
-                    plt.HideGrid();
-
-                    OptimizationPlot.Refresh();
+                    _currentOptimizationResults = results;
+                    _currentHeatDemandData = heatDemandData;
+                    PlotResults(results, heatDemandData, viewModel.ShowHeatDemand);
+                    InitializeCalendar(heatDemandData);
                 };
 
-                // Handle toggle changes
                 viewModel.PropertyChanged += (sender, e) =>
                 {
                     if (e.PropertyName == nameof(OptimizerViewModel.ShowHeatDemand) && _heatDemandPlot != null)
                     {
-                        // Update visibility
-                        _heatDemandPlot.IsVisible = viewModel.ShowHeatDemand;
-                        
-                        // Update legend
-                        var plt = OptimizationPlot.Plot;
-                        
-                        // Remove any existing heat demand legend item
-                        var existingItem = plt.Legend.ManualItems.FirstOrDefault(x => x.LabelText == "Heat Demand");
-                        if (existingItem != null)
-                        {
-                            plt.Legend.ManualItems.Remove(existingItem);
-                        }
-                        
-                        // Add to legend if checkbox is checked
-                        if (viewModel.ShowHeatDemand)
-                        {
-                            plt.Legend.ManualItems.Add(new LegendItem
-                            {
-                                LabelText = "Heat Demand",
-                                LineColor = Colors.Red,
-                                LineWidth = 2
-                            });
-                        }
-                        
-                        OptimizationPlot.Refresh();
+                        UpdateHeatDemandVisibility(viewModel.ShowHeatDemand);
                     }
                 };
             }
         };
+    }
+
+    private void InitializeCalendar(List<(DateTime timestamp, double value)> heatDemandData)
+    {
+        if (heatDemandData == null || !heatDemandData.Any()) 
+            return;
+
+        var dates = heatDemandData.Select(x => x.timestamp.Date).Distinct().ToList();
+        if (!dates.Any()) return;
+
+        OptimizationCalendar.DisplayDateStart = dates.Min();
+        OptimizationCalendar.DisplayDateEnd = dates.Max();
+        OptimizationCalendar.DisplayDate = dates.First();
+        
+        // Blackout dates without data
+        OptimizationCalendar.BlackoutDates.Clear();
+        
+        var allDates = new List<DateTime>();
+        for (var date = dates.Min(); date <= dates.Max(); date = date.AddDays(1))
+        {
+            allDates.Add(date);
+        }
+
+        var datesWithoutData = allDates.Except(dates).ToList();
+        if (datesWithoutData.Count == 0) return;
+
+        DateTime? rangeStart = null;
+        DateTime? rangeEnd = null;
+
+        foreach (var date in datesWithoutData.OrderBy(d => d))
+        {
+            if (!rangeStart.HasValue)
+            {
+                rangeStart = date;
+                rangeEnd = date;
+            }
+            else if (date == rangeEnd.Value.AddDays(1))
+            {
+                rangeEnd = date;
+            }
+            else
+            {
+                OptimizationCalendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
+                rangeStart = date;
+                rangeEnd = date;
+            }
+        }
+
+        if (rangeStart.HasValue)
+        {
+            OptimizationCalendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
+        }
+    }
+
+    private void PlotResults(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData, bool showHeatDemand)
+    {
+        var plt = OptimizationPlot.Plot;
+        plt.Clear();
+        _heatDemandPlot = null;
+
+        // Set dark theme
+        var bgColor = new Color("#1e1e1e");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(new Color("#FFFFFF"));
+
+        // Clear previous legend items
+        plt.Legend.ManualItems.Clear();
+
+        // Process optimization results (stacked bars)
+        var groupedResults = results
+            .Where(r => r.AssetName != "Interval Summary")
+            .GroupBy(r => r.Timestamp)
+            .OrderBy(g => g.Key)
+            .ToList();
+
+        // Create stacked bars and add to legend
+        var addedToLegend = new HashSet<string>();
+        for (int i = 0; i < groupedResults.Count; i++)
+        {
+            double currentBase = 0;
+            foreach (var result in groupedResults[i].OrderBy(r => r.AssetName))
+            {
+                if (_machineColors.TryGetValue(result.AssetName, out var color))
+                {
+                    plt.Add.Bar(new Bar
+                    {
+                        Position = i + 1, // Bars start at position 1
+                        ValueBase = currentBase,
+                        Value = currentBase + result.HeatProduced,
+                        FillColor = color
+                    });
+                    currentBase += result.HeatProduced;
+
+                    // Add to legend only once per asset
+                    if (addedToLegend.Add(result.AssetName))
+                    {
+                        plt.Legend.ManualItems.Add(new LegendItem
+                        {
+                            LabelText = result.AssetName,
+                            FillColor = color
+                        });
+                    }
+                }
+            }
+        }
+
+        // Always create heat demand plot with proper offset
+        var orderedDemand = heatDemandData
+            .OrderBy(x => x.timestamp)
+            .ToList();
+
+        double[] positions = new double[orderedDemand.Count + 1];
+        double[] values = new double[orderedDemand.Count + 1];
+        
+        for (int i = 0; i < orderedDemand.Count; i++)
+        {
+            positions[i] = i + 0.5; // Shifted by 0.5 to align with bars
+            values[i] = orderedDemand[i].value;
+        }
+        
+        // Add final point
+        positions[^1] = orderedDemand.Count + 0.5;
+        values[^1] = values[^2];
+
+        _heatDemandPlot = plt.Add.Scatter(positions, values);
+        _heatDemandPlot.ConnectStyle = ConnectStyle.StepHorizontal;
+        _heatDemandPlot.LineWidth = 2;
+        _heatDemandPlot.Color = Colors.Red.WithAlpha(0.7);
+        _heatDemandPlot.MarkerSize = 0;
+        _heatDemandPlot.IsVisible = showHeatDemand;
+
+        // Set x-axis ticks to show time intervals
+    string[] labels = new string[groupedResults.Count];
+    double[] tickPositions = new double[groupedResults.Count];
+    for (int i = 0; i < groupedResults.Count; i++)
+    {
+        labels[i] = groupedResults[i].Key.ToString("MM/dd HH:mm"); 
+        tickPositions[i] = i + 1;
+    }
+    plt.Axes.Bottom.SetTicks(tickPositions, labels);
+   
+        plt.Axes.Bottom.TickLabelStyle.Rotation = 45;
+
+        // Only add to legend if checkbox is checked
+        if (showHeatDemand)
+        {
+            plt.Legend.ManualItems.Add(new LegendItem
+            {
+                LabelText = "Heat Demand",
+                LineColor = Colors.Red,
+                LineWidth = 2
+            });
+        }
+
+        plt.ShowLegend(Alignment.UpperRight);
+        plt.Title("Heat Production Optimization");
+        plt.XLabel("Time Intervals");
+        plt.YLabel("Heat (MW)");
+        plt.Axes.Margins(bottom: 0, top: 0.2);
+        plt.HideGrid();
+
+        OptimizationPlot.Refresh();
+    }
+
+    private void UpdateHeatDemandVisibility(bool showHeatDemand)
+    {
+        if (_heatDemandPlot == null) return;
+        
+        var plt = OptimizationPlot.Plot;
+        _heatDemandPlot.IsVisible = showHeatDemand;
+        
+        // Update legend
+        var existingItem = plt.Legend.ManualItems.FirstOrDefault(x => x.LabelText == "Heat Demand");
+        if (existingItem != null)
+        {
+            plt.Legend.ManualItems.Remove(existingItem);
+        }
+        
+        if (showHeatDemand)
+        {
+            plt.Legend.ManualItems.Add(new LegendItem
+            {
+                LabelText = "Heat Demand",
+                LineColor = Colors.Red,
+                LineWidth = 2
+            });
+        }
+        
+        OptimizationPlot.Refresh();
+    }
+
+    private void SetRange_Click(object sender, RoutedEventArgs e)
+    {
+        if (_currentOptimizationResults == null || _currentHeatDemandData == null) 
+            return;
+
+        if (OptimizationCalendar.SelectedDates.Count == 0) 
+            return;
+
+        var selectedDates = OptimizationCalendar.SelectedDates.OrderBy(d => d).ToList();
+        DateTime startDate = selectedDates.First();
+        DateTime endDate = selectedDates.Last().AddDays(1);
+
+        // Filter results and heat demand data by selected date range
+        var filteredResults = _currentOptimizationResults
+            .Where(r => r.Timestamp.Date >= startDate && r.Timestamp.Date <= endDate)
+            .ToList();
+
+        var filteredHeatDemand = _currentHeatDemandData
+            .Where(h => h.timestamp.Date >= startDate && h.timestamp.Date <= endDate)
+            .ToList();
+
+        if (!filteredResults.Any() || !filteredHeatDemand.Any())
+        {
+            // Show message or handle empty selection
+            return;
+        }
+
+        PlotResults(filteredResults, filteredHeatDemand, (DataContext as OptimizerViewModel)?.ShowHeatDemand ?? true);
+    }
+
+    private void ResetView_Click(object sender, RoutedEventArgs e)
+    {
+        if (_currentOptimizationResults == null || _currentHeatDemandData == null) 
+            return;
+
+        OptimizationCalendar.SelectedDates.Clear();
+        PlotResults(_currentOptimizationResults, _currentHeatDemandData, (DataContext as OptimizerViewModel)?.ShowHeatDemand ?? true);
     }
 }
