@@ -255,9 +255,9 @@ public partial class OptimizerView : UserControl
             _hoverCrosshair.VerticalLine.Position = barIndex + 1;
             _hoverCrosshair.HorizontalLine.Position = heatDemand;
             
-          //  plt.Title.Label.Text = tooltip;
-          //  plt.Title.Label.FontSize = 12;
-           // plt.Title.Label.FontColor = Colors.White;
+            plt.Title(tooltip);
+         //  plt.Title.Label.FontSize = 12;
+          //  plt.Title.Label.FontColor = Colors.White;
         }
         else
         {
