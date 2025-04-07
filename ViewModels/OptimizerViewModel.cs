@@ -41,7 +41,7 @@ public partial class OptimizerViewModel : ViewModelBase
     private OptimisationMode _optimisationMode = OptimisationMode.Cost;
 
     // Side pane properties
-    private const int OpenWidth = 275;
+    private const int OpenWidth = 350;
     private const int ClosedWidth = 0;
 
     [ObservableProperty]
