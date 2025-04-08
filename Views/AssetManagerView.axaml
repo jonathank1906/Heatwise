@@ -462,26 +462,82 @@
                 </Grid>
 
                 <!--  Heating Grid Section  -->
-                <StackPanel Margin="0,20,0,0">
-                    <TextBlock Classes="section-header" Text="Heating Grid" />
+                <StackPanel Margin="0,100,0,0">
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <Border
-                        Width="550"
-                        Height="400"
-                        HorizontalAlignment="Center"
-                        CornerRadius="15">
-                        <Border.Clip>
-                            <RectangleGeometry
-                                RadiusX="15"
-                                RadiusY="15"
-                                Rect="0,0,540,390" />
-                        </Border.Clip>
-                        <Image
+                        <!--  Heating Grid Image  -->
+                        <Border
+                            Grid.Column="0"
                             Width="550"
                             Height="400"
-                            Source="/Assets/map.png"
-                            Stretch="UniformToFill" />
-                    </Border>
+                            CornerRadius="15">
+                            <Border.Clip>
+                                <RectangleGeometry
+                                    RadiusX="15"
+                                    RadiusY="15"
+                                    Rect="0,0,550,400" />
+                            </Border.Clip>
+                            <Image
+                                Width="550"
+                                Height="400"
+                                Source="{Binding GridImageFromBinding}"
+                                Stretch="UniformToFill" />
+                        </Border>
+
+                        <!--  Heating Grid Info  -->
+                        <StackPanel
+                            Grid.Column="2"
+                            Width="300"
+                            VerticalAlignment="Center">
+                            <Border
+                                Background="#252526"
+                                ClipToBounds="True"
+                                CornerRadius="15">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Color="Black" />
+                                </Border.Effect>
+                                <StackPanel Margin="15">
+                                    <TextBlock
+                                        Margin="0,0,0,10"
+                                        FontSize="18"
+                                        FontWeight="Bold"
+                                        Foreground="White"
+                                        Text="Grid Specifications" />
+
+                                    <!--  Architecture  -->
+                                    <StackPanel Margin="0,5">
+                                        <TextBlock
+                                            FontSize="14"
+                                            Foreground="#BFBFBF"
+                                            Text="Architecture" />
+                                        <TextBlock
+                                            FontSize="16"
+                                            Foreground="White"
+                                            Text="{Binding GridInfo.Architecture}" />
+                                    </StackPanel>
+
+                                    <!--  Size  -->
+                                    <StackPanel Margin="0,5">
+                                        <TextBlock
+                                            FontSize="14"
+                                            Foreground="#BFBFBF"
+                                            Text="Size" />
+                                        <TextBlock
+                                            FontSize="16"
+                                            Foreground="White"
+                                            Text="{Binding GridInfo.Size}" />
+                                    </StackPanel>
+
+                                    <!--  You can add more properties here if needed  -->
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

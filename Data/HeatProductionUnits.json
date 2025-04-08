@@ -60,5 +60,11 @@
         "Name": "Scenario 2",
         "Machines": ["Gas Boiler 1", "Oil Boiler 1", "Gas Motor 1", "Heat Pump 1"]  
       }
-    ]
+    ],
+    "HeatingGrid": {
+      "Name": "District Heating Network",
+      "ImageSource": "/Assets/map.png",
+      "Architecture": "Single district heating network",
+      "Size": "1600 buildings"
+    }
   }

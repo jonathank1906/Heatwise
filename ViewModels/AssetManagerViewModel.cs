@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System;
 using System.IO;
 using Sem2Proj.Models;
@@ -18,7 +17,7 @@ public partial class AssetManagerViewModel : ObservableObject
     private ObservableCollection<AssetModel> _displayedAssets;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(DisplayedAssets))]  // Important for updates
+    [NotifyPropertyChangedFor(nameof(DisplayedAssets))]
     private string? _selectedScenario;
 
     [ObservableProperty]
@@ -27,8 +26,12 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private Bitmap? _imageFromBinding;
 
+    [ObservableProperty]
+    private Bitmap? _gridImageFromBinding;
+
     public ObservableCollection<string> AvailableScenarios { get; }
 
+    public HeatingGrid? GridInfo => _assetManager.GridInfo;
 
     public AssetManagerViewModel(AssetManager assetManager)
     {
@@ -40,9 +43,6 @@ public partial class AssetManagerViewModel : ObservableObject
                 .Concat(_assetManager.Presets.Select(p => p.Name))
         );
 
-        // Initialize command
-
-
         // Set default state
         SelectedScenario = "All Assets";
         _displayedAssets = new ObservableCollection<AssetModel>(_assetManager.AllAssets);
@@ -50,6 +50,12 @@ public partial class AssetManagerViewModel : ObservableObject
         if (_displayedAssets.Count > 0)
         {
             SelectedAsset = _displayedAssets[0];
+        }
+
+        // Load initial grid image if available
+        if (GridInfo?.ImageSource != null)
+        {
+            LoadGridImageFromSource(GridInfo.ImageSource);
         }
 
         Debug.WriteLine($"ViewModel initialized with {_displayedAssets.Count} assets");
@@ -130,6 +136,40 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             Debug.WriteLine($"Error loading image: {ex.Message}");
             ImageFromBinding = null;
+        }
+    }
+
+    private void LoadGridImageFromSource(string imageSource)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(imageSource))
+            {
+                GridImageFromBinding = null;
+                return;
+            }
+
+            var normalizedPath = imageSource.TrimStart('/', '\\');
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string fullPath = Path.Combine(basePath, normalizedPath);
+
+            if (File.Exists(fullPath))
+            {
+                using (var stream = File.OpenRead(fullPath))
+                {
+                    GridImageFromBinding = new Bitmap(stream);
+                }
+            }
+            else
+            {
+                Debug.WriteLine($"Grid image not found at: {fullPath}");
+                GridImageFromBinding = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error loading grid image: {ex.Message}");
+            GridImageFromBinding = null;
         }
     }
 }
