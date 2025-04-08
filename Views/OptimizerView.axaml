@@ -3,10 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
-    xmlns:converters="using:Sem2Proj.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-    xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Sem2Proj.ViewModels"
     d:DesignHeight="450"
@@ -24,15 +21,36 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--  Animated Collapsible Side Menu  -->
+        <!--  Open Button (identical to SourceDataManagerView)  -->
+        <Button
+            Grid.Column="0"
+            Width="30"
+            Height="30"
+            Margin="5"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding TriggerPaneCommand}"
+            IsVisible="{Binding !IsPaneOpen}">
+            <Button.Styles>
+                <Style Selector="Button">
+                    <Setter Property="Panel.ZIndex" Value="0" />
+                </Style>
+            </Button.Styles>
+            <PathIcon Data="{StaticResource RightArrow}" />
+        </Button>
+
+        <!--  Side Panel (identical structure to SourceDataManagerView)  -->
         <Border
-            x:Name="SidePanel"
             Grid.Column="0"
             Width="{Binding PaneWidth}"
             Background="#252526"
             BorderBrush="LightGray"
-            Tag="{Binding IsPaneOpen}">
+            Tag="{Binding IsPaneOpen}"
+            ClipToBounds="True">
             <Border.Styles>
+                <Style Selector="Border">
+                    <Setter Property="Panel.ZIndex" Value="1" />
+                </Style>
                 <Style Selector="Border[Tag=True]">
                     <Setter Property="Transitions">
                         <Transitions>
@@ -54,96 +72,104 @@
                     </Setter>
                 </Style>
             </Border.Styles>
-            <StackPanel
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Spacing="10">
-                <TextBlock FontSize="18" Text="Preset" />
-                <RadioButton
-                    Content="Scenario 1"
-                    GroupName="ScenarioGroup"
-                    IsChecked="{Binding IsScenario1Selected}" />
-                <RadioButton
-                    Content="Scenario 2"
-                    GroupName="ScenarioGroup"
-                    IsChecked="{Binding IsScenario2Selected}" />
 
-                <TextBlock FontSize="18" Text="Optimization Period" />
-                <RadioButton
-                    Content="Summer"
-                    GroupName="SeasonGroup"
-                    IsChecked="{Binding IsSummerSelected}" />
-                <RadioButton
-                    Content="Winter"
-                    GroupName="SeasonGroup"
-                    IsChecked="{Binding IsWinterSelected}" />
-
-                <TextBlock FontSize="18" Text="Optimization Preference" />
-                <RadioButton
-                    Content="Cost"
-                    GroupName="OptimizationGroup"
-                    IsChecked="{Binding IsCostSelected}" />
-                <RadioButton
-                    Content="CO2"
-                    GroupName="OptimizationGroup"
-                    IsChecked="{Binding IsCO2Selected}" />
-
-                <!--  Calendar Section  -->
-                <TextBlock FontSize="18" Text="Date Range" />
-                <Calendar
-                    Name="OptimizationCalendar"
-                    Background="#2d2d2d"
-                    BorderBrush="#3e3e3e"
-                    BorderThickness="5,5,5,5"
-                    CornerRadius="15,15,15,15"
-                    Foreground="White"
-                    SelectionMode="MultipleRange" />
-
+            <!--  This Grid matches SourceDataManagerView exactly  -->
+            <Grid>
                 <StackPanel
+                    Margin="0,50,0,0"
                     HorizontalAlignment="Center"
-                    Orientation="Horizontal"
+                    VerticalAlignment="Top"
                     Spacing="10">
+
+                    <!--  Your OptimizerView content here  -->
+                    <TextBlock FontSize="18" Text="Preset" />
+                    <RadioButton
+                        Content="Scenario 1"
+                        GroupName="ScenarioGroup"
+                        IsChecked="{Binding IsScenario1Selected}" />
+                    <RadioButton
+                        Content="Scenario 2"
+                        GroupName="ScenarioGroup"
+                        IsChecked="{Binding IsScenario2Selected}" />
+
+                    <TextBlock FontSize="18" Text="Optimization Period" />
+                    <RadioButton
+                        Content="Summer"
+                        GroupName="SeasonGroup"
+                        IsChecked="{Binding IsSummerSelected}" />
+                    <RadioButton
+                        Content="Winter"
+                        GroupName="SeasonGroup"
+                        IsChecked="{Binding IsWinterSelected}" />
+
+                    <TextBlock FontSize="16" Text="Optimization Preference" />
+                    <RadioButton
+                        Content="Cost"
+                        GroupName="OptimizationGroup"
+                        IsChecked="{Binding IsCostSelected}" />
+                    <RadioButton
+                        Content="CO2"
+                        GroupName="OptimizationGroup"
+                        IsChecked="{Binding IsCO2Selected}" />
+
+                    <TextBlock FontSize="18" Text="Date Range" />
+                    <Calendar
+                        Name="OptimizationCalendar"
+                        Background="#2d2d2d"
+                        BorderBrush="#3e3e3e"
+                        BorderThickness="5,5,5,5"
+                        CornerRadius="15,15,15,15"
+                        Foreground="White"
+                        SelectionMode="MultipleRange" />
+
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                        <Button
+                            Width="100"
+                            Click="SetRange_Click"
+                            Content="Set Range" />
+                        <Button
+                            Width="100"
+                            Command="{Binding ResetViewCommand}"
+                            Content="Reset View" />
+                    </StackPanel>
+
                     <Button
-                        Width="100"
-                        Click="SetRange_Click"
-                        Content="Set Range" />
-                    <Button
-                        Width="100"
-                        Command="{Binding ResetViewCommand}"
-                        Content="Reset View" />
+                        Width="110"
+                        Height="50"
+                        HorizontalAlignment="Center"
+                        Classes="FancyGreenButton"
+                        Command="{Binding OptimizeAndPlotCommand}"
+                        Content="Optimize" />
                 </StackPanel>
 
+                <!--  Close Button (identical positioning to SourceDataManagerView)  -->
                 <Button
-                    Width="110"
-                    Height="50"
-                    HorizontalAlignment="Center"
-                    Classes="FancyGreenButton"
-                    Command="{Binding OptimizeAndPlotCommand}"
-                    Content="Optimize" />
-            </StackPanel>
+                    Grid.Column="0"
+                    Width="30"
+                    Height="30"
+                    Margin="0,5,5,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Command="{Binding TriggerPaneCommand}"
+                    IsVisible="{Binding IsPaneOpen}">
+                    <PathIcon Data="{StaticResource LeftArrow}" />
+                </Button>
+            </Grid>
         </Border>
 
         <!--  Main Content Area  -->
         <Border Grid.Column="1" Background="#1e1e1e">
-            <Grid RowDefinitions="Auto,*">
-                <Button
-                    Width="30"
-                    Height="30"
-                    Margin="5"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Command="{Binding TriggerPaneCommand}"
-                    IsVisible="{Binding !IsPaneOpen}">
-                    <PathIcon Data="{StaticResource RightArrow}" />
-                </Button>
+            <Grid>
                 <CheckBox
-                    Grid.Row="1"
                     Margin="10,5"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Content="Show Heat Demand"
                     IsChecked="{Binding ShowHeatDemand}" />
-                <!--  Content that changes based on whether optimization has run  -->
+
                 <StackPanel
                     Grid.Row="1"
                     HorizontalAlignment="Center"
@@ -160,18 +186,8 @@
                         Height="500"
                         IsVisible="{Binding HasOptimized}" />
                 </StackPanel>
+
             </Grid>
         </Border>
-        <Button
-            Grid.Column="0"
-            Width="30"
-            Height="30"
-            Margin="0,5,5,0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Command="{Binding TriggerPaneCommand}"
-            IsVisible="{Binding IsPaneOpen}">
-            <PathIcon Data="{StaticResource LeftArrow}" />
-        </Button>
     </Grid>
 </UserControl>

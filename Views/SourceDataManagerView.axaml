@@ -22,14 +22,36 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <!--  Static Open Button (placed behind the side panel)  -->
+        <Button
+            Grid.Column="0"
+            Width="30"
+            Height="30"
+            Margin="5"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding TriggerPaneCommand}"
+            IsVisible="{Binding !IsPaneOpen}">
+            <Button.Styles>
+                <Style Selector="Button">
+                    <Setter Property="Panel.ZIndex" Value="0" />
+                </Style>
+            </Button.Styles>
+            <PathIcon Data="{StaticResource RightArrow}" />
+        </Button>
+
         <!--  Collapsible Side Panel  -->
         <Border
             Grid.Column="0"
             Width="{Binding PaneWidth}"
             Background="#252526"
             BorderBrush="LightGray"
-            Tag="{Binding IsPaneOpen}">
-              <Border.Styles>
+            Tag="{Binding IsPaneOpen}"
+            ClipToBounds="True">
+            <Border.Styles>
+                <Style Selector="Border">
+                    <Setter Property="Panel.ZIndex" Value="1" />
+                </Style>
                 <Style Selector="Border[Tag=True]">
                     <Setter Property="Transitions">
                         <Transitions>
@@ -53,10 +75,10 @@
             </Border.Styles>
             <Grid>
                 <StackPanel
+                    Margin="0,50,0,0"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Top"
-                    Spacing="10"
-                    Margin="0,50,0,0">
+                    Spacing="10">
 
                     <!--  Season Tabs  -->
                     <TabControl
@@ -119,6 +141,19 @@
                         </TabItem>
                     </TabControl>
                 </StackPanel>
+
+                <!--  Close Button (inside the panel but positioned outside)  -->
+                <Button
+                    Grid.Column="0"
+                    Width="30"
+                    Height="30"
+                    Margin="0,5,5,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Command="{Binding TriggerPaneCommand}"
+                    IsVisible="{Binding IsPaneOpen}">
+                    <PathIcon Data="{StaticResource LeftArrow}" />
+                </Button>
             </Grid>
         </Border>
 
@@ -152,30 +187,5 @@
                 </StackPanel>
             </Grid>
         </Border>
-
-        <!--  Toggle Buttons  -->
-        <Button
-            Grid.Column="1"
-            Width="30"
-            Height="30"
-            Margin="5"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Command="{Binding TriggerPaneCommand}"
-            IsVisible="{Binding !IsPaneOpen}">
-            <PathIcon Data="{StaticResource RightArrow}"/>
-        </Button>
-
-        <Button
-            Grid.Column="0"
-            Width="30"
-            Height="30"
-            Margin="0,5,5,0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Command="{Binding TriggerPaneCommand}"
-            IsVisible="{Binding IsPaneOpen}">
-            <PathIcon Data="{StaticResource LeftArrow}"/>
-        </Button>
     </Grid>
 </UserControl>
