@@ -62,7 +62,7 @@
       }
     ],
     "HeatingGrid": {
-      "Name": "District Heating Network",
+      "Name": "Heatington",
       "ImageSource": "/Assets/map.png",
       "Architecture": "Single district heating network",
       "Size": "1600 buildings"

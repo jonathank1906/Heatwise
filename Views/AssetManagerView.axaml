@@ -509,7 +509,6 @@
                                         Foreground="White"
                                         Text="Grid Specifications" />
 
-                                    <!--  Architecture  -->
                                     <StackPanel Margin="0,5">
                                         <TextBlock
                                             FontSize="14"
@@ -521,7 +520,6 @@
                                             Text="{Binding GridInfo.Architecture}" />
                                     </StackPanel>
 
-                                    <!--  Size  -->
                                     <StackPanel Margin="0,5">
                                         <TextBlock
                                             FontSize="14"
@@ -531,6 +529,17 @@
                                             FontSize="16"
                                             Foreground="White"
                                             Text="{Binding GridInfo.Size}" />
+                                    </StackPanel>
+
+                                    <StackPanel Margin="0,5">
+                                        <TextBlock
+                                            FontSize="14"
+                                            Foreground="#BFBFBF"
+                                            Text="Name" />
+                                        <TextBlock
+                                            FontSize="16"
+                                            Foreground="White"
+                                            Text="{Binding GridInfo.Name}" />
                                     </StackPanel>
 
                                     <!--  You can add more properties here if needed  -->
