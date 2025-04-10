@@ -17,6 +17,7 @@ namespace Sem2Proj.Views;
 
 public partial class OptimizerView : UserControl
 {
+    private Window? _mainWindow;
     private bool _hasAutoOpenedWindow = false;
     private string? _lastTooltipContent;
     private TooltipWindow? _tooltipWindow;
@@ -49,6 +50,24 @@ public partial class OptimizerView : UserControl
         plt.Legend.Orientation = Orientation.Horizontal; // This makes items flow horizontally
         plt.Legend.Margin = new(0, 0, 0, -25); // Adjust bottom margin to move it down
         plt.Legend.Alignment = Alignment.UpperCenter;
+        this.AttachedToVisualTree += (s, e) =>
+  {
+      _mainWindow = TopLevel.GetTopLevel(this) as Window;
+      if (_mainWindow != null)
+      {
+          _mainWindow.PropertyChanged += MainWindow_PropertyChanged;
+      }
+  };
+
+        this.DetachedFromVisualTree += (s, e) =>
+        {
+            if (_mainWindow != null)
+            {
+                _mainWindow.PropertyChanged -= MainWindow_PropertyChanged;
+                _mainWindow = null;
+            }
+        };
+
         DataContextChanged += (sender, e) =>
         {
             if (DataContext is OptimizerViewModel viewModel)
@@ -71,6 +90,21 @@ public partial class OptimizerView : UserControl
                 };
             }
         };
+    }
+
+    private void MainWindow_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == Window.WindowStateProperty)
+        {
+            if (_mainWindow?.WindowState == WindowState.Minimized)
+            {
+                _tooltipWindow?.MinimizeWithMainWindow();
+            }
+            else
+            {
+                _tooltipWindow?.RestoreWithMainWindow();
+            }
+        }
     }
 
     private void InitializeTooltipWindow()

@@ -15,7 +15,8 @@ namespace Sem2Proj.Views
         public TooltipWindow()
         {
             InitializeComponent();
-            this.Closed += (s, e) => {
+            this.Closed += (s, e) =>
+            {
                 IsClosed = true;
                 WindowClosed?.Invoke(this, EventArgs.Empty);
             };
@@ -33,11 +34,27 @@ namespace Sem2Proj.Views
         {
             Close();
         }
-        
+
         public void UpdateContent(string text)
         {
             var textBlock = this.FindControl<TextBlock>("TooltipText");
             textBlock.Text = text;
+        }
+
+        public void MinimizeWithMainWindow()
+        {
+            if (WindowState != WindowState.Minimized)
+            {
+                WindowState = WindowState.Minimized;
+            }
+        }
+
+        public void RestoreWithMainWindow()
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
         }
     }
 }
