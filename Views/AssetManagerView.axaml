@@ -541,8 +541,6 @@
                                             Foreground="White"
                                             Text="{Binding GridInfo.Name}" />
                                     </StackPanel>
-
-                                    <!--  You can add more properties here if needed  -->
                                 </StackPanel>
                             </Border>
                         </StackPanel>
