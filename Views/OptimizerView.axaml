@@ -183,8 +183,8 @@
 
                     <ScottPlot:AvaPlot
                         x:Name="OptimizationPlot"
-                        Width="900"
-                        Height="500"
+                        Width="1500"
+                        Height="900"
                         IsVisible="{Binding HasOptimized}" />
                 </StackPanel>
 

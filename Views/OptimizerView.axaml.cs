@@ -38,7 +38,13 @@ public partial class OptimizerView : UserControl
     public OptimizerView()
     {
         InitializeComponent();
-        
+        var plt = OptimizationPlot.Plot;
+
+        plt.Legend.IsVisible = true;
+        plt.Legend.Location = Alignment.UpperCenter;
+        plt.Legend.Orientation = Orientation.Horizontal; // This makes items flow horizontally
+        plt.Legend.Margin = new(0, 0, 0, -25); // Adjust bottom margin to move it down
+        plt.Legend.Alignment = Alignment.UpperCenter;
         DataContextChanged += (sender, e) =>
         {
             if (DataContext is OptimizerViewModel viewModel)
@@ -65,7 +71,7 @@ public partial class OptimizerView : UserControl
 
     private void InitializeCalendar(List<(DateTime timestamp, double value)> heatDemandData)
     {
-        if (heatDemandData == null || !heatDemandData.Any()) 
+        if (heatDemandData == null || !heatDemandData.Any())
             return;
 
         var dates = heatDemandData.Select(x => x.timestamp.Date).Distinct().ToList();
@@ -74,10 +80,10 @@ public partial class OptimizerView : UserControl
         OptimizationCalendar.DisplayDateStart = dates.Min();
         OptimizationCalendar.DisplayDateEnd = dates.Max();
         OptimizationCalendar.DisplayDate = dates.First();
-        
+
         // Blackout dates without data
         OptimizationCalendar.BlackoutDates.Clear();
-        
+
         var allDates = new List<DateTime>();
         for (var date = dates.Min(); date <= dates.Max(); date = date.AddDays(1))
         {
@@ -128,6 +134,12 @@ public partial class OptimizerView : UserControl
         plt.FigureBackground.Color = bgColor;
         plt.DataBackground.Color = bgColor;
         plt.Axes.Color(new Color("#FFFFFF"));
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+
 
         // Clear previous legend items
         plt.Legend.ManualItems.Clear();
@@ -176,13 +188,13 @@ public partial class OptimizerView : UserControl
 
         double[] positions = new double[orderedDemand.Count + 1];
         double[] values = new double[orderedDemand.Count + 1];
-        
+
         for (int i = 0; i < orderedDemand.Count; i++)
         {
             positions[i] = i + 0.5;
             values[i] = orderedDemand[i].value;
         }
-        
+
         positions[^1] = orderedDemand.Count + 0.5;
         values[^1] = values[^2];
 
@@ -196,8 +208,8 @@ public partial class OptimizerView : UserControl
         // Add hover crosshair
         _hoverCrosshair = plt.Add.Crosshair(0, 0);
         _hoverCrosshair.IsVisible = false;
-       // _hoverCrosshair.VerticalLine.Pattern = LinePattern.DenselyDashed;
-       // _hoverCrosshair.HorizontalLine.Pattern = LinePattern.DenselyDashed;
+        // _hoverCrosshair.VerticalLine.Pattern = LinePattern.DenselyDashed;
+        // _hoverCrosshair.HorizontalLine.Pattern = LinePattern.DenselyDashed;
 
         // Set x-axis ticks to show date and time
         string[] labels = new string[groupedResults.Count];
@@ -207,7 +219,7 @@ public partial class OptimizerView : UserControl
             labels[i] = groupedResults[i].Key.ToString("MM/dd HH:mm");
             tickPositions[i] = i + 1;
         }
-        
+
         if (groupedResults.Count > 20)
         {
             int step = (int)Math.Ceiling(groupedResults.Count / 20.0);
@@ -219,54 +231,58 @@ public partial class OptimizerView : UserControl
 
         plt.Axes.Bottom.SetTicks(tickPositions, labels);
         plt.Axes.Bottom.TickLabelStyle.Rotation = 45;
+        plt.Axes.Bottom.TickLabelStyle.OffsetY = 20;
+
+
+
 
         // Add hover interaction
-    OptimizationPlot.PointerMoved += (s, e) => 
-    {
-        if (_currentFilteredResults == null || _currentHeatDemandData == null)
-            return;
-
-        var pixelPosition = e.GetPosition(OptimizationPlot);
-        var pixel = new Pixel((float)pixelPosition.X, (float)pixelPosition.Y);
-        var coordinates = plt.GetCoordinates(pixel);
-        
-        int barIndex = (int)Math.Round(coordinates.X - 0.5);
-        
-        if (barIndex >= 0 && barIndex < groupedResults.Count)
+        OptimizationPlot.PointerMoved += (s, e) =>
         {
-            var timestamp = groupedResults[barIndex].Key;
-            var resultsAtTime = _currentFilteredResults
-                .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
-                .ToList();
-            
-            var heatDemand = _currentHeatDemandData
-                .FirstOrDefault(h => h.timestamp == timestamp).value;
+            if (_currentFilteredResults == null || _currentHeatDemandData == null)
+                return;
 
-            string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
-            tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
-            tooltip += "Production:\n";
-            
-            foreach (var result in resultsAtTime)
+            var pixelPosition = e.GetPosition(OptimizationPlot);
+            var pixel = new Pixel((float)pixelPosition.X, (float)pixelPosition.Y);
+            var coordinates = plt.GetCoordinates(pixel);
+
+            int barIndex = (int)Math.Round(coordinates.X - 0.5);
+
+            if (barIndex >= 0 && barIndex < groupedResults.Count)
             {
-                tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
+                var timestamp = groupedResults[barIndex].Key;
+                var resultsAtTime = _currentFilteredResults
+                    .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
+                    .ToList();
+
+                var heatDemand = _currentHeatDemandData
+                    .FirstOrDefault(h => h.timestamp == timestamp).value;
+
+                string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
+                tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
+                tooltip += "Production:\n";
+
+                foreach (var result in resultsAtTime)
+                {
+                    tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
+                }
+
+                _hoverCrosshair.IsVisible = true;
+                _hoverCrosshair.VerticalLine.Position = barIndex + 1;
+                _hoverCrosshair.HorizontalLine.Position = heatDemand;
+
+                plt.Title(tooltip);
+                //  plt.Title.Label.FontSize = 12;
+                //  plt.Title.Label.FontColor = Colors.White;
+            }
+            else
+            {
+                _hoverCrosshair.IsVisible = false;
+                //  plt.Title.Label.Text = originalTitle;
             }
 
-            _hoverCrosshair.IsVisible = true;
-            _hoverCrosshair.VerticalLine.Position = barIndex + 1;
-            _hoverCrosshair.HorizontalLine.Position = heatDemand;
-            
-            plt.Title(tooltip);
-         //  plt.Title.Label.FontSize = 12;
-          //  plt.Title.Label.FontColor = Colors.White;
-        }
-        else
-        {
-            _hoverCrosshair.IsVisible = false;
-          //  plt.Title.Label.Text = originalTitle;
-        }
-
-        OptimizationPlot.Refresh();
-    };
+            OptimizationPlot.Refresh();
+        };
 
         if (showHeatDemand)
         {
@@ -278,11 +294,11 @@ public partial class OptimizerView : UserControl
             });
         }
 
-        plt.ShowLegend(Alignment.UpperRight);
+
         plt.Title("Heat Production Optimization");
         plt.XLabel("Time Intervals");
         plt.YLabel("Heat (MW)");
-        plt.Axes.Margins(bottom: 0.1, top: 0.3);
+        plt.Axes.Margins(bottom: 0.02, top: 0.1);
         plt.HideGrid();
 
         OptimizationPlot.Refresh();
@@ -291,16 +307,16 @@ public partial class OptimizerView : UserControl
     private void UpdateHeatDemandVisibility(bool showHeatDemand)
     {
         if (_heatDemandPlot == null) return;
-        
+
         var plt = OptimizationPlot.Plot;
         _heatDemandPlot.IsVisible = showHeatDemand;
-        
+
         var existingItem = plt.Legend.ManualItems.FirstOrDefault(x => x.LabelText == "Heat Demand");
         if (existingItem != null)
         {
             plt.Legend.ManualItems.Remove(existingItem);
         }
-        
+
         if (showHeatDemand)
         {
             plt.Legend.ManualItems.Add(new LegendItem
@@ -310,16 +326,16 @@ public partial class OptimizerView : UserControl
                 LineWidth = 2
             });
         }
-        
+
         OptimizationPlot.Refresh();
     }
 
     private void SetRange_Click(object sender, RoutedEventArgs e)
     {
-        if (_currentOptimizationResults == null || _currentHeatDemandData == null) 
+        if (_currentOptimizationResults == null || _currentHeatDemandData == null)
             return;
 
-        if (OptimizationCalendar.SelectedDates.Count == 0) 
+        if (OptimizationCalendar.SelectedDates.Count == 0)
             return;
 
         var selectedDates = OptimizationCalendar.SelectedDates.OrderBy(d => d).ToList();
@@ -345,7 +361,7 @@ public partial class OptimizerView : UserControl
 
     private void ResetView_Click(object sender, RoutedEventArgs e)
     {
-        if (_currentOptimizationResults == null || _currentHeatDemandData == null) 
+        if (_currentOptimizationResults == null || _currentHeatDemandData == null)
             return;
 
         OptimizationCalendar.SelectedDates.Clear();
