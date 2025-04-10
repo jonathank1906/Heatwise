@@ -199,7 +199,7 @@ namespace Sem2Proj.Models
 
         public bool IsElectricBoiler => MaxElectricity < 0;
         public bool IsGenerator => MaxElectricity > 0;
-        public double CostPerMW => MaxHeat > 0 ? ProductionCosts / MaxHeat : 0;
+        public double CostPerMW => ProductionCosts;
         public double EmissionsPerMW => MaxHeat > 0 ? Emissions / MaxHeat : 0;
     }
 
