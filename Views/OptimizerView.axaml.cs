@@ -17,6 +17,10 @@ namespace Sem2Proj.Views;
 
 public partial class OptimizerView : UserControl
 {
+    private bool _hasAutoOpenedWindow = false;
+    private string? _lastTooltipContent;
+    private TooltipWindow? _tooltipWindow;
+    private bool _isTooltipVisible = false;
     private ScottPlot.Plottables.Scatter? _heatDemandPlot;
     private ScottPlot.Plottables.Crosshair? _hoverCrosshair;
     private readonly Dictionary<string, Color> _machineColors = new()
@@ -67,6 +71,17 @@ public partial class OptimizerView : UserControl
                 };
             }
         };
+    }
+
+    private void InitializeTooltipWindow()
+    {
+        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        {
+            _tooltipWindow = new TooltipWindow();
+            _tooltipWindow.Position = new PixelPoint(100, 100); // Default position
+            _tooltipWindow.WindowClosed += (s, e) => { _tooltipWindow = null; };
+            _tooltipWindow.Show();
+        }
     }
 
     private void InitializeCalendar(List<(DateTime timestamp, double value)> heatDemandData)
@@ -238,51 +253,57 @@ public partial class OptimizerView : UserControl
 
         // Add hover interaction
         OptimizationPlot.PointerMoved += (s, e) =>
-        {
-            if (_currentFilteredResults == null || _currentHeatDemandData == null)
-                return;
+   {
+       if (_currentFilteredResults == null || _currentHeatDemandData == null)
+           return;
 
-            var pixelPosition = e.GetPosition(OptimizationPlot);
-            var pixel = new Pixel((float)pixelPosition.X, (float)pixelPosition.Y);
-            var coordinates = plt.GetCoordinates(pixel);
+       var pixelPosition = e.GetPosition(OptimizationPlot);
+       var pixel = new Pixel((float)pixelPosition.X, (float)pixelPosition.Y);
+       var coordinates = plt.GetCoordinates(pixel);
 
-            int barIndex = (int)Math.Round(coordinates.X - 0.5);
+       int barIndex = (int)Math.Round(coordinates.X - 0.5);
 
-            if (barIndex >= 0 && barIndex < groupedResults.Count)
-            {
-                var timestamp = groupedResults[barIndex].Key;
-                var resultsAtTime = _currentFilteredResults
-                    .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
-                    .ToList();
+       if (barIndex >= 0 && barIndex < groupedResults.Count)
+       {
+           var timestamp = groupedResults[barIndex].Key;
+           var resultsAtTime = _currentFilteredResults
+               .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
+               .ToList();
 
-                var heatDemand = _currentHeatDemandData
-                    .FirstOrDefault(h => h.timestamp == timestamp).value;
+           var heatDemand = _currentHeatDemandData
+               .FirstOrDefault(h => h.timestamp == timestamp).value;
 
-                string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
-                tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
-                tooltip += "Production:\n";
+           string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
+           tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
+           tooltip += "Production:\n";
 
-                foreach (var result in resultsAtTime)
-                {
-                    tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
-                }
+           foreach (var result in resultsAtTime)
+           {
+               tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
+           }
 
-                _hoverCrosshair.IsVisible = true;
-                _hoverCrosshair.VerticalLine.Position = barIndex + 1;
-                _hoverCrosshair.HorizontalLine.Position = heatDemand;
+           _hoverCrosshair.IsVisible = true;
+           _hoverCrosshair.VerticalLine.Position = barIndex + 1;
+           _hoverCrosshair.HorizontalLine.Position = heatDemand;
 
-                plt.Title(tooltip);
-                //  plt.Title.Label.FontSize = 12;
-                //  plt.Title.Label.FontColor = Colors.White;
-            }
-            else
-            {
-                _hoverCrosshair.IsVisible = false;
-                //  plt.Title.Label.Text = originalTitle;
-            }
+           _lastTooltipContent = tooltip;
 
-            OptimizationPlot.Refresh();
-        };
+           // Auto-open on first valid hover
+           if (!_hasAutoOpenedWindow && (_tooltipWindow == null || _tooltipWindow.IsClosed))
+           {
+               ShowTooltipWindow();
+               _hasAutoOpenedWindow = true;
+           }
+
+           UpdateTooltipContent(tooltip);
+       }
+       else
+       {
+           _hoverCrosshair.IsVisible = false;
+       }
+
+       OptimizationPlot.Refresh();
+   };
 
         if (showHeatDemand)
         {
@@ -304,6 +325,17 @@ public partial class OptimizerView : UserControl
         OptimizationPlot.Refresh();
     }
 
+    private void ShowTooltipWindow()
+    {
+        InitializeTooltipWindow();
+    }
+    protected override void OnUnloaded(RoutedEventArgs e)
+    {
+        base.OnUnloaded(e);
+        _tooltipWindow?.Close();
+        _tooltipWindow = null;
+        _hasAutoOpenedWindow = false; // Reset for next time
+    }
     private void UpdateHeatDemandVisibility(bool showHeatDemand)
     {
         if (_heatDemandPlot == null) return;
@@ -367,5 +399,61 @@ public partial class OptimizerView : UserControl
         OptimizationCalendar.SelectedDates.Clear();
         _currentFilteredResults = _currentOptimizationResults;
         PlotResults(_currentOptimizationResults, _currentHeatDemandData, (DataContext as OptimizerViewModel)?.ShowHeatDemand ?? true);
+    }
+
+    private void ShowTooltip(string text, Point position)
+    {
+        var plotPosition = OptimizationPlot.PointToScreen(position);
+        var screenPoint = new PixelPoint((int)plotPosition.X + 20, (int)plotPosition.Y + 20);
+
+        if (_tooltipWindow == null)
+        {
+            _tooltipWindow = new TooltipWindow();
+            _tooltipWindow.Deactivated += (s, e) => HideTooltip();
+        }
+
+        if (_tooltipWindow.DataContext is not TextBlock textBlock)
+        {
+            // var textBlock = _tooltipWindow.FindControl<TextBlock>("TooltipText");
+            //  textBlock.Text = text;
+        }
+        else
+        {
+            textBlock.Text = text;
+        }
+
+        if (!_isTooltipVisible)
+        {
+            _tooltipWindow.Position = screenPoint;
+            _tooltipWindow.Show();
+            _isTooltipVisible = true;
+        }
+        else
+        {
+            _tooltipWindow.Position = screenPoint;
+        }
+    }
+
+    private void HideTooltip()
+    {
+        if (_isTooltipVisible && _tooltipWindow != null)
+        {
+            _tooltipWindow.Hide();
+            _isTooltipVisible = false;
+        }
+    }
+
+    private void UpdateTooltipContent(string text)
+    {
+        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        {
+            return; // Don't create window automatically - only update if open
+        }
+        _tooltipWindow?.UpdateContent(text);
+    }
+
+    private void ToggleTooltip_Click(object sender, RoutedEventArgs e)
+    {
+        ShowTooltipWindow();
     }
 }

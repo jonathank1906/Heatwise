@@ -46,8 +46,8 @@
             Width="{Binding PaneWidth}"
             Background="#252526"
             BorderBrush="LightGray"
-            Tag="{Binding IsPaneOpen}"
-            ClipToBounds="True">
+            ClipToBounds="True"
+            Tag="{Binding IsPaneOpen}">
             <Border.Styles>
                 <Style Selector="Border">
                     <Setter Property="Panel.ZIndex" Value="1" />
@@ -170,6 +170,11 @@
                     VerticalAlignment="Center"
                     Content="Show Heat Demand"
                     IsChecked="{Binding ShowHeatDemand}" />
+                <Button
+                    Margin="5"
+                    HorizontalAlignment="Right"
+                    Click="ToggleTooltip_Click"
+                    Content="Toggle Tooltip" />
 
                 <StackPanel
                     Grid.Row="1"
