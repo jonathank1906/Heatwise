@@ -194,10 +194,6 @@
                             Width="100"
                             Click="SetRange_Click"
                             Content="Set Range" />
-                        <Button
-                            Width="100"
-                            Command="{Binding ResetViewCommand}"
-                            Content="Reset View" />
                     </StackPanel>
 
                     <Button
@@ -209,7 +205,6 @@
                         Content="Optimize" />
                 </StackPanel>
 
-                <!--  Close Button (identical positioning to SourceDataManagerView)  -->
                 <Button
                     Grid.Column="0"
                     Width="30"
@@ -249,13 +244,31 @@
                         IsVisible="{Binding !HasOptimized}"
                         Text="Click Optimize to get started" />
 
-                    <ScottPlot:AvaPlot
-                        x:Name="OptimizationPlot"
-                        Width="1500"
-                        Height="900"
-                        IsVisible="{Binding HasOptimized}" />
-                </StackPanel>
+                    <Grid>
+                        <ScottPlot:AvaPlot
+                            x:Name="OptimizationPlot"
+                            Width="1500"
+                            Height="900"
+                            IsVisible="{Binding HasOptimized}" />
 
+                        <!--  Reset View Button  -->
+                        <Button
+                            x:Name="ResetViewButton"
+                            Width="30"
+                            Height="30"
+                            Margin="0,18,15,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Background="Transparent"
+                            Command="{Binding ResetViewCommand}"
+                            IsVisible="{Binding HasOptimized}">
+                            <PathIcon
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource Home}" />
+                        </Button>
+                    </Grid>
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>
