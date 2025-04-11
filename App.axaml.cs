@@ -2,9 +2,8 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using Sem2Proj.ViewModels;
-using System.Linq;
 using Sem2Proj.Views;
+using System.Linq;
 
 namespace Sem2Proj;
 
@@ -14,18 +13,17 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
     }
-public override void OnFrameworkInitializationCompleted()
+
+    public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             DisableAvaloniaDataAnnotationValidation();
 
-            // Show the SplashWindow
+            // Just create and assign the splash window
             var splashWindow = new SplashWindow();
             desktop.MainWindow = splashWindow;
-
-            // Start the loading process asynchronously
-            splashWindow.LoadApplicationAsync();
+            splashWindow.Show(); // <-- This is important to make it actually show
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -33,11 +31,9 @@ public override void OnFrameworkInitializationCompleted()
 
     private void DisableAvaloniaDataAnnotationValidation()
     {
-        // Get an array of plugins to remove
         var dataValidationPluginsToRemove =
             BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
 
-        // remove each entry found
         foreach (var plugin in dataValidationPluginsToRemove)
         {
             BindingPlugins.DataValidators.Remove(plugin);

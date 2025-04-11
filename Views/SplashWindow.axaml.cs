@@ -10,25 +10,30 @@ public partial class SplashWindow : Window
 {
     public SplashWindow()
     {
-        InitializeComponent(); 
+        InitializeComponent();
+
+        // Hook into the "Opened" event - only called after the window is shown on screen
+        this.Opened += async (_, _) => await LoadApplicationAsync();
     }
 
-    public async void LoadApplicationAsync()
+    private async Task LoadApplicationAsync()
     {
-        // Ensure the splash screen is rendered before starting the loading process
+        // Give UI thread a chance to render the splash screen
         await Task.Yield();
-          var assetManager = new AssetManager();
+
+        var assetManager = new AssetManager();
         var sourceDataManager = new SourceDataManager();
-        // Perform the loading on a background thread
+
+        // Load ViewModels in background threads
         var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager));
         var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager));
         var homeViewModel = await Task.Run(() => new HomeViewModel());
         var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());
 
-        // Simulate a delay to show the splash screen (optional)
+        // Simulated loading delay
         await Task.Delay(3000);
 
-        // Launch the main window with the preloaded view models
+        // Switch to UI thread to show main window
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
             var mainWindowViewModel = new MainWindowViewModel(
@@ -41,10 +46,14 @@ public partial class SplashWindow : Window
             {
                 DataContext = mainWindowViewModel
             };
-            var homeWindow = new HomeWindow();
+
             mainWindow.Show();
+
+            // Optionally open HomeWindow as modal
+            var homeWindow = new HomeWindow();
             homeWindow.ShowDialog(mainWindow);
-            Close();
+
+            Close(); // Close the splash screen
         });
     }
 }
