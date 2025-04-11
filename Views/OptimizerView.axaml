@@ -272,7 +272,6 @@
                                 <Flyout Placement="LeftEdgeAlignedTop">
                                     <Panel Width="130" Height="100">
                                         <CheckBox
-                                           
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Center"
                                             Content="Heat Demand"
@@ -307,7 +306,11 @@
                             </StackPanel>
                         </Button>
 
-
+                        <Button
+                            Classes="toolbar"
+                            ToolTip.Tip="Export">
+                            <PathIcon Data="{StaticResource Export}" />
+                        </Button>
                     </StackPanel>
                 </Border>
             </Grid>
