@@ -98,5 +98,21 @@ namespace Sem2Proj.Views
             }
             Close(); // Close the window after selection
         }
+
+        public void MinimizeWithMainWindow()
+        {
+            if (WindowState != WindowState.Minimized)
+            {
+                WindowState = WindowState.Minimized;
+            }
+        }
+
+        public void RestoreWithMainWindow()
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
+        }
     }
 }

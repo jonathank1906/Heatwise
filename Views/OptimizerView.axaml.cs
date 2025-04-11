@@ -95,10 +95,12 @@ public partial class OptimizerView : UserControl
             if (_mainWindow?.WindowState == WindowState.Minimized)
             {
                 _tooltipWindow?.MinimizeWithMainWindow();
+                _calendarWindow?.MinimizeWithMainWindow();
             }
             else
             {
                 _tooltipWindow?.RestoreWithMainWindow();
+                _calendarWindow?.RestoreWithMainWindow();
             }
         }
     }
@@ -125,194 +127,192 @@ public partial class OptimizerView : UserControl
     }
 
 
-    private void PlotResults(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData, bool showHeatDemand)
+  private void PlotResults(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData, bool showHeatDemand)
+{
+    var plt = OptimizationPlot.Plot;
+    plt.Clear();
+    _heatDemandPlot = null;
+    _hoverCrosshair = null;
+    _currentFilteredResults = results;
+
+    // Set dark theme
+    var bgColor = new Color("#1e1e1e");
+    plt.FigureBackground.Color = bgColor;
+    plt.DataBackground.Color = bgColor;
+    plt.Axes.Color(new Color("#FFFFFF"));
+    plt.Legend.ShadowOffset = new(0, 0);
+    plt.Legend.BackgroundColor = new Color("#1e1e1e");
+    plt.Legend.OutlineColor = new Color("#1e1e1e");
+    plt.Legend.FontColor = Colors.White;
+
+    // Clear previous legend items
+    plt.Legend.ManualItems.Clear();
+
+    // Process optimization results (stacked bars)
+    var groupedResults = results
+        .Where(r => r.AssetName != "Interval Summary")
+        .GroupBy(r => r.Timestamp)
+        .OrderBy(g => g.Key)
+        .ToList();
+
+    // Create stacked bars and add to legend
+    var addedToLegend = new HashSet<string>();
+    for (int i = 0; i < groupedResults.Count; i++)
     {
-        var plt = OptimizationPlot.Plot;
-        plt.Clear();
-        _heatDemandPlot = null;
-        _hoverCrosshair = null;
-        _currentFilteredResults = results;
-
-        // Set dark theme
-        var bgColor = new Color("#1e1e1e");
-        plt.FigureBackground.Color = bgColor;
-        plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(new Color("#FFFFFF"));
-        plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
-
-
-        // Clear previous legend items
-        plt.Legend.ManualItems.Clear();
-
-        // Process optimization results (stacked bars)
-        var groupedResults = results
-            .Where(r => r.AssetName != "Interval Summary")
-            .GroupBy(r => r.Timestamp)
-            .OrderBy(g => g.Key)
-            .ToList();
-
-        // Create stacked bars and add to legend
-        var addedToLegend = new HashSet<string>();
-        for (int i = 0; i < groupedResults.Count; i++)
+        double currentBase = 0;
+        foreach (var result in groupedResults[i].OrderBy(r => r.AssetName))
         {
-            double currentBase = 0;
-            foreach (var result in groupedResults[i].OrderBy(r => r.AssetName))
+            if (_machineColors.TryGetValue(result.AssetName, out var color))
             {
-                if (_machineColors.TryGetValue(result.AssetName, out var color))
+                plt.Add.Bar(new Bar
                 {
-                    plt.Add.Bar(new Bar
+                    Position = i + 1,
+                    ValueBase = currentBase,
+                    Value = currentBase + result.HeatProduced,
+                    FillColor = color
+                });
+                currentBase += result.HeatProduced;
+
+                if (addedToLegend.Add(result.AssetName))
+                {
+                    plt.Legend.ManualItems.Add(new LegendItem
                     {
-                        Position = i + 1,
-                        ValueBase = currentBase,
-                        Value = currentBase + result.HeatProduced,
+                        LabelText = result.AssetName,
                         FillColor = color
                     });
-                    currentBase += result.HeatProduced;
-
-                    if (addedToLegend.Add(result.AssetName))
-                    {
-                        plt.Legend.ManualItems.Add(new LegendItem
-                        {
-                            LabelText = result.AssetName,
-                            FillColor = color
-                        });
-                    }
                 }
             }
         }
+    }
 
-        // Create heat demand plot with proper offset
-        var orderedDemand = heatDemandData
-            .OrderBy(x => x.timestamp)
-            .ToList();
+    // Create heat demand plot with proper offset
+    var orderedDemand = heatDemandData
+        .OrderBy(x => x.timestamp)
+        .ToList();
 
-        double[] positions = new double[orderedDemand.Count + 1];
-        double[] values = new double[orderedDemand.Count + 1];
+    double[] positions = new double[orderedDemand.Count + 1];
+    double[] values = new double[orderedDemand.Count + 1];
 
-        for (int i = 0; i < orderedDemand.Count; i++)
+    for (int i = 0; i < orderedDemand.Count; i++)
+    {
+        positions[i] = i + 0.5;
+        values[i] = orderedDemand[i].value;
+    }
+
+    positions[^1] = orderedDemand.Count + 0.5;
+    values[^1] = values[^2];
+
+    _heatDemandPlot = plt.Add.Scatter(positions, values);
+    _heatDemandPlot.ConnectStyle = ConnectStyle.StepHorizontal;
+    _heatDemandPlot.LineWidth = 2;
+    _heatDemandPlot.Color = Colors.Red.WithAlpha(0.7);
+    _heatDemandPlot.MarkerSize = 0;
+    _heatDemandPlot.IsVisible = showHeatDemand;
+
+    // Add hover crosshair
+    _hoverCrosshair = plt.Add.Crosshair(0, 0);
+    _hoverCrosshair.IsVisible = false;
+
+    // Set x-axis ticks to show only dates (no time)
+    string[] labels = new string[groupedResults.Count];
+    double[] tickPositions = new double[groupedResults.Count];
+    
+    // Track the current day to only show label when day changes
+    DateTime currentDay = DateTime.MinValue;
+    for (int i = 0; i < groupedResults.Count; i++)
+    {
+        var timestamp = groupedResults[i].Key;
+        if (timestamp.Date != currentDay)
         {
-            positions[i] = i + 0.5;
-            values[i] = orderedDemand[i].value;
+            labels[i] = timestamp.ToString("MM/dd");
+            currentDay = timestamp.Date;
+        }
+        else
+        {
+            labels[i] = string.Empty;
+        }
+        tickPositions[i] = i + 1;
+    }
+
+    plt.Axes.Bottom.SetTicks(tickPositions, labels);
+    plt.Axes.Bottom.TickLabelStyle.Rotation = 45;
+    plt.Axes.Bottom.TickLabelStyle.OffsetY = 20;
+
+    // Rest of your method remains the same...
+    OptimizationPlot.PointerMoved += (s, e) =>
+    {
+        if (_currentFilteredResults == null || _currentHeatDemandData == null || !_tooltipsEnabled)
+        {
+            _hoverCrosshair.IsVisible = false;
+            OptimizationPlot.Refresh();
+            return;
         }
 
-        positions[^1] = orderedDemand.Count + 0.5;
-        values[^1] = values[^2];
+        var pixelPosition = e.GetPosition(OptimizationPlot);
+        var pixel = new Pixel((float)pixelPosition.X, (float)pixelPosition.Y);
+        var coordinates = plt.GetCoordinates(pixel);
 
-        _heatDemandPlot = plt.Add.Scatter(positions, values);
-        _heatDemandPlot.ConnectStyle = ConnectStyle.StepHorizontal;
-        _heatDemandPlot.LineWidth = 2;
-        _heatDemandPlot.Color = Colors.Red.WithAlpha(0.7);
-        _heatDemandPlot.MarkerSize = 0;
-        _heatDemandPlot.IsVisible = showHeatDemand;
+        int barIndex = (int)Math.Round(coordinates.X - 0.5);
 
-        // Add hover crosshair
-        _hoverCrosshair = plt.Add.Crosshair(0, 0);
-        _hoverCrosshair.IsVisible = false;
-        // _hoverCrosshair.VerticalLine.Pattern = LinePattern.DenselyDashed;
-        // _hoverCrosshair.HorizontalLine.Pattern = LinePattern.DenselyDashed;
-
-        // Set x-axis ticks to show date and time
-        string[] labels = new string[groupedResults.Count];
-        double[] tickPositions = new double[groupedResults.Count];
-        for (int i = 0; i < groupedResults.Count; i++)
+        if (barIndex >= 0 && barIndex < groupedResults.Count)
         {
-            labels[i] = groupedResults[i].Key.ToString("MM/dd HH:mm");
-            tickPositions[i] = i + 1;
-        }
+            var timestamp = groupedResults[barIndex].Key;
+            var resultsAtTime = _currentFilteredResults
+                .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
+                .ToList();
 
-        if (groupedResults.Count > 20)
-        {
-            int step = (int)Math.Ceiling(groupedResults.Count / 20.0);
-            for (int i = 0; i < groupedResults.Count; i++)
+            var heatDemand = _currentHeatDemandData
+                .FirstOrDefault(h => h.timestamp == timestamp).value;
+
+            string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
+            tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
+            tooltip += "Production:\n";
+
+            foreach (var result in resultsAtTime)
             {
-                if (i % step != 0) labels[i] = string.Empty;
+                tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
             }
-        }
 
-        plt.Axes.Bottom.SetTicks(tickPositions, labels);
-        plt.Axes.Bottom.TickLabelStyle.Rotation = 45;
-        plt.Axes.Bottom.TickLabelStyle.OffsetY = 20;
+            _hoverCrosshair.IsVisible = true;
+            _hoverCrosshair.VerticalLine.Position = barIndex + 1;
+            _hoverCrosshair.HorizontalLine.Position = heatDemand;
 
-        // Add hover interaction
-        OptimizationPlot.PointerMoved += (s, e) =>
-  {
-      if (_currentFilteredResults == null || _currentHeatDemandData == null || !_tooltipsEnabled)
-      {
-          _hoverCrosshair.IsVisible = false;
-          OptimizationPlot.Refresh();
-          return;
-      }
+            _lastTooltipContent = tooltip;
 
-      var pixelPosition = e.GetPosition(OptimizationPlot);
-      var pixel = new Pixel((float)pixelPosition.X, (float)pixelPosition.Y);
-      var coordinates = plt.GetCoordinates(pixel);
-
-      int barIndex = (int)Math.Round(coordinates.X - 0.5);
-
-      if (barIndex >= 0 && barIndex < groupedResults.Count)
-      {
-          var timestamp = groupedResults[barIndex].Key;
-          var resultsAtTime = _currentFilteredResults
-              .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
-              .ToList();
-
-          var heatDemand = _currentHeatDemandData
-              .FirstOrDefault(h => h.timestamp == timestamp).value;
-
-          string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
-          tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
-          tooltip += "Production:\n";
-
-          foreach (var result in resultsAtTime)
-          {
-              tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
-          }
-
-          _hoverCrosshair.IsVisible = true;
-          _hoverCrosshair.VerticalLine.Position = barIndex + 1;
-          _hoverCrosshair.HorizontalLine.Position = heatDemand;
-
-          _lastTooltipContent = tooltip;
-
-          // Auto-open on first valid hover
-          if (!_hasAutoOpenedWindow && (_tooltipWindow == null || _tooltipWindow.IsClosed))
-          {
-              ShowTooltipWindow();
-              _hasAutoOpenedWindow = true;
-          }
-
-          UpdateTooltipContent(tooltip);
-      }
-      else
-      {
-          _hoverCrosshair.IsVisible = false;
-      }
-
-      OptimizationPlot.Refresh();
-  };
-
-        if (showHeatDemand)
-        {
-            plt.Legend.ManualItems.Add(new LegendItem
+            if (!_hasAutoOpenedWindow && (_tooltipWindow == null || _tooltipWindow.IsClosed))
             {
-                LabelText = "Heat Demand",
-                LineColor = Colors.Red,
-                LineWidth = 2
-            });
-        }
+                ShowTooltipWindow();
+                _hasAutoOpenedWindow = true;
+            }
 
-        plt.Title("Heat Production Optimization");
-        plt.XLabel("Time Intervals");
-        plt.YLabel("Heat (MW)");
-        plt.Axes.Margins(bottom: 0.02, top: 0.1);
-        plt.HideGrid();
+            UpdateTooltipContent(tooltip);
+        }
+        else
+        {
+            _hoverCrosshair.IsVisible = false;
+        }
 
         OptimizationPlot.Refresh();
+    };
+
+    if (showHeatDemand)
+    {
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Heat Demand",
+            LineColor = Colors.Red,
+            LineWidth = 2
+        });
     }
+
+    plt.Title("Heat Production Optimization");
+    plt.XLabel("Days");
+    plt.YLabel("Heat (MW)");
+    plt.Axes.Margins(bottom: 0.02, top: 0.1);
+    plt.HideGrid();
+
+    OptimizationPlot.Refresh();
+}
 
     private void ShowTooltipWindow()
     {
