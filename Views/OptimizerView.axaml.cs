@@ -19,6 +19,8 @@ public partial class OptimizerView : UserControl
 {
     private bool _tooltipsEnabled = true; // Default to true
     private Window? _mainWindow;
+
+    private CalendarWindow? _calendarWindow;
     private bool _hasAutoOpenedWindow = false;
     private string? _lastTooltipContent;
     private TooltipWindow? _tooltipWindow;
@@ -79,7 +81,7 @@ public partial class OptimizerView : UserControl
                     _currentHeatDemandData = heatDemandData;
                     _currentFilteredResults = results;
                     PlotResults(results, heatDemandData, viewModel.ShowHeatDemand);
-                    InitializeCalendar(heatDemandData);
+                    
                 };
 
                 viewModel.PropertyChanged += (sender, e) =>
@@ -129,57 +131,7 @@ public partial class OptimizerView : UserControl
         }
     }
 
-    private void InitializeCalendar(List<(DateTime timestamp, double value)> heatDemandData)
-    {
-        if (heatDemandData == null || !heatDemandData.Any())
-            return;
-
-        var dates = heatDemandData.Select(x => x.timestamp.Date).Distinct().ToList();
-        if (!dates.Any()) return;
-
-        OptimizationCalendar.DisplayDateStart = dates.Min();
-        OptimizationCalendar.DisplayDateEnd = dates.Max();
-        OptimizationCalendar.DisplayDate = dates.First();
-
-        // Blackout dates without data
-        OptimizationCalendar.BlackoutDates.Clear();
-
-        var allDates = new List<DateTime>();
-        for (var date = dates.Min(); date <= dates.Max(); date = date.AddDays(1))
-        {
-            allDates.Add(date);
-        }
-
-        var datesWithoutData = allDates.Except(dates).ToList();
-        if (datesWithoutData.Count == 0) return;
-
-        DateTime? rangeStart = null;
-        DateTime? rangeEnd = null;
-
-        foreach (var date in datesWithoutData.OrderBy(d => d))
-        {
-            if (!rangeStart.HasValue)
-            {
-                rangeStart = date;
-                rangeEnd = date;
-            }
-            else if (date == rangeEnd.Value.AddDays(1))
-            {
-                rangeEnd = date;
-            }
-            else
-            {
-                OptimizationCalendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
-                rangeStart = date;
-                rangeEnd = date;
-            }
-        }
-
-        if (rangeStart.HasValue)
-        {
-            OptimizationCalendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
-        }
-    }
+    
 
     private void PlotResults(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData, bool showHeatDemand)
     {
@@ -383,7 +335,9 @@ public partial class OptimizerView : UserControl
         base.OnUnloaded(e);
         _tooltipWindow?.Close();
         _tooltipWindow = null;
-        _hasAutoOpenedWindow = false; // Reset for next time
+        _calendarWindow?.Close();
+        _calendarWindow = null;
+        _hasAutoOpenedWindow = false;
     }
     private void UpdateHeatDemandVisibility(bool showHeatDemand)
     {
@@ -411,44 +365,7 @@ public partial class OptimizerView : UserControl
         OptimizationPlot.Refresh();
     }
 
-    private void SetRange_Click(object sender, RoutedEventArgs e)
-    {
-        if (_currentOptimizationResults == null || _currentHeatDemandData == null)
-            return;
-
-        if (OptimizationCalendar.SelectedDates.Count == 0)
-            return;
-
-        var selectedDates = OptimizationCalendar.SelectedDates.OrderBy(d => d).ToList();
-        DateTime startDate = selectedDates.First();
-        DateTime endDate = selectedDates.Last().AddDays(1);
-
-        var filteredResults = _currentOptimizationResults
-            .Where(r => r.Timestamp.Date >= startDate && r.Timestamp.Date <= endDate)
-            .ToList();
-
-        var filteredHeatDemand = _currentHeatDemandData
-            .Where(h => h.timestamp.Date >= startDate && h.timestamp.Date <= endDate)
-            .ToList();
-
-        if (!filteredResults.Any() || !filteredHeatDemand.Any())
-        {
-            return;
-        }
-
-        _currentFilteredResults = filteredResults;
-        PlotResults(filteredResults, filteredHeatDemand, (DataContext as OptimizerViewModel)?.ShowHeatDemand ?? true);
-    }
-
-    private void ResetView_Click(object sender, RoutedEventArgs e)
-    {
-        if (_currentOptimizationResults == null || _currentHeatDemandData == null)
-            return;
-
-        OptimizationCalendar.SelectedDates.Clear();
-        _currentFilteredResults = _currentOptimizationResults;
-        PlotResults(_currentOptimizationResults, _currentHeatDemandData, (DataContext as OptimizerViewModel)?.ShowHeatDemand ?? true);
-    }
+   
 
     private void ShowTooltip(string text, Point position)
     {
@@ -524,5 +441,61 @@ public partial class OptimizerView : UserControl
                 OptimizationPlot.Refresh();
             }
         }
+    }
+
+    private void OpenCalendarPopup(object sender, RoutedEventArgs e)
+    {
+        if (_currentHeatDemandData == null || !_currentHeatDemandData.Any())
+            return;
+
+        if (_calendarWindow == null || _calendarWindow.IsClosed)
+        {
+            _calendarWindow = new CalendarWindow();
+            _calendarWindow.DatesSelected += (s, args) =>
+            {
+                SetRangeFromCalendar(_calendarWindow.OptimizationCalendar.SelectedDates);
+            };
+          
+
+            // Position near the button
+            var button = sender as Control;
+            var screenPosition = button?.PointToScreen(new Point(0, button.Bounds.Height));
+            _calendarWindow.Position = new PixelPoint((int)screenPosition.Value.X, (int)screenPosition.Value.Y);
+
+            _calendarWindow.InitializeCalendar(_currentHeatDemandData.Select(x => x.timestamp));
+            _calendarWindow.Show();
+        }
+        else
+        {
+            _calendarWindow.Activate();
+        }
+    }
+
+    private void SetRangeFromCalendar(IEnumerable<DateTime> selectedDates)
+    {
+        if (_currentOptimizationResults == null || _currentHeatDemandData == null)
+            return;
+
+        var dates = selectedDates.OrderBy(d => d).ToList();
+        if (dates.Count == 0) return;
+
+        DateTime startDate = dates.First();
+        DateTime endDate = dates.Last().AddDays(1);
+
+        var filteredResults = _currentOptimizationResults
+            .Where(r => r.Timestamp.Date >= startDate && r.Timestamp.Date <= endDate)
+            .ToList();
+
+        var filteredHeatDemand = _currentHeatDemandData
+            .Where(h => h.timestamp.Date >= startDate && h.timestamp.Date <= endDate)
+            .ToList();
+
+        if (!filteredResults.Any() || !filteredHeatDemand.Any())
+        {
+            return;
+        }
+
+        _currentFilteredResults = filteredResults;
+        PlotResults(filteredResults, filteredHeatDemand, (DataContext as OptimizerViewModel)?.ShowHeatDemand ?? true);
     }
 }
