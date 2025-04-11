@@ -5,13 +5,8 @@ using System.Collections.Generic;
 using Sem2Proj.ViewModels;
 using Avalonia.Interactivity;
 using System;
-using Avalonia.Controls.Primitives;
 using Sem2Proj.Models;
-using Avalonia.Input;
-using ScottPlot;
 using Avalonia;
-using ScottPlot;
-using Avalonia.Input;
 
 namespace Sem2Proj.Views;
 
@@ -19,12 +14,10 @@ public partial class OptimizerView : UserControl
 {
     private bool _tooltipsEnabled = true; // Default to true
     private Window? _mainWindow;
-
     private CalendarWindow? _calendarWindow;
     private bool _hasAutoOpenedWindow = false;
     private string? _lastTooltipContent;
     private TooltipWindow? _tooltipWindow;
-    private bool _isTooltipVisible = false;
     private ScottPlot.Plottables.Scatter? _heatDemandPlot;
     private ScottPlot.Plottables.Crosshair? _hoverCrosshair;
     private readonly Dictionary<string, Color> _machineColors = new()
@@ -81,7 +74,7 @@ public partial class OptimizerView : UserControl
                     _currentHeatDemandData = heatDemandData;
                     _currentFilteredResults = results;
                     PlotResults(results, heatDemandData, viewModel.ShowHeatDemand);
-                    
+
                 };
 
                 viewModel.PropertyChanged += (sender, e) =>
@@ -131,7 +124,6 @@ public partial class OptimizerView : UserControl
         }
     }
 
-    
 
     private void PlotResults(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData, bool showHeatDemand)
     {
@@ -245,9 +237,6 @@ public partial class OptimizerView : UserControl
         plt.Axes.Bottom.TickLabelStyle.Rotation = 45;
         plt.Axes.Bottom.TickLabelStyle.OffsetY = 20;
 
-
-
-
         // Add hover interaction
         OptimizationPlot.PointerMoved += (s, e) =>
   {
@@ -316,7 +305,6 @@ public partial class OptimizerView : UserControl
             });
         }
 
-
         plt.Title("Heat Production Optimization");
         plt.XLabel("Time Intervals");
         plt.YLabel("Heat (MW)");
@@ -365,50 +353,6 @@ public partial class OptimizerView : UserControl
         OptimizationPlot.Refresh();
     }
 
-   
-
-    private void ShowTooltip(string text, Point position)
-    {
-        var plotPosition = OptimizationPlot.PointToScreen(position);
-        var screenPoint = new PixelPoint((int)plotPosition.X + 20, (int)plotPosition.Y + 20);
-
-        if (_tooltipWindow == null)
-        {
-            _tooltipWindow = new TooltipWindow();
-            _tooltipWindow.Deactivated += (s, e) => HideTooltip();
-        }
-
-        if (_tooltipWindow.DataContext is not TextBlock textBlock)
-        {
-            // var textBlock = _tooltipWindow.FindControl<TextBlock>("TooltipText");
-            //  textBlock.Text = text;
-        }
-        else
-        {
-            textBlock.Text = text;
-        }
-
-        if (!_isTooltipVisible)
-        {
-            _tooltipWindow.Position = screenPoint;
-            _tooltipWindow.Show();
-            _isTooltipVisible = true;
-        }
-        else
-        {
-            _tooltipWindow.Position = screenPoint;
-        }
-    }
-
-    private void HideTooltip()
-    {
-        if (_isTooltipVisible && _tooltipWindow != null)
-        {
-            _tooltipWindow.Hide();
-            _isTooltipVisible = false;
-        }
-    }
-
     private void UpdateTooltipContent(string text)
     {
         if (_tooltipWindow == null || _tooltipWindow.IsClosed)
@@ -455,7 +399,6 @@ public partial class OptimizerView : UserControl
             {
                 SetRangeFromCalendar(_calendarWindow.OptimizationCalendar.SelectedDates);
             };
-          
 
             // Position near the button
             var button = sender as Control;
