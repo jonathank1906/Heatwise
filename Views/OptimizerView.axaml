@@ -220,13 +220,6 @@
 
                 <!--  Graph Area  -->
                 <Grid Grid.Column="0">
-                    <CheckBox
-                        Margin="10,5"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Content="Show Heat Demand"
-                        IsChecked="{Binding ShowHeatDemand}" />
-
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock
                             FontSize="18"
@@ -275,6 +268,18 @@
 
 
                         <Button Classes="toolbar" ToolTip.Tip="Toggle visibility">
+                            <Button.Flyout>
+                                <Flyout Placement="LeftEdgeAlignedTop">
+                                    <Panel Width="130" Height="100">
+                                        <CheckBox
+                                           
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Content="Heat Demand"
+                                            IsChecked="{Binding ShowHeatDemand}" />
+                                    </Panel>
+                                </Flyout>
+                            </Button.Flyout>
                             <PathIcon Data="{StaticResource Layers}" />
                         </Button>
 
