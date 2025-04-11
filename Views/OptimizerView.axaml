@@ -16,6 +16,65 @@
         <vm:OptimizerViewModel />
     </Design.DataContext>
 
+    <UserControl.Styles>
+        <!--  Fancy RadioButton Style with circle indicator  -->
+        <Style Selector="RadioButton.fancy">
+            <Setter Property="Background" Value="#2d2d2d" />
+            <Setter Property="BorderBrush" Value="#3e3e3e" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Margin" Value="0,5" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="10,8,15,8" />
+            <Setter Property="MinWidth" Value="120" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                        <DockPanel>
+                            <!--  Radio button circle  -->
+                            <Border
+                                Width="20"
+                                Height="20"
+                                Margin="5,0,10,0"
+                                VerticalAlignment="Center"
+                                DockPanel.Dock="Left">
+                                <Ellipse
+                                    x:Name="radioMark"
+                                    Width="16"
+                                    Height="16"
+                                    Fill="Transparent"
+                                    Stroke="#7e7e7e"
+                                    StrokeThickness="2" />
+                            </Border>
+                            <!--  Content  -->
+                            <ContentPresenter VerticalAlignment="Center" Content="{TemplateBinding Content}" />
+                        </DockPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="RadioButton.fancy:pointerover">
+            <Setter Property="Background" Value="#3a3a3a" />
+            <Setter Property="BorderBrush" Value="#4e4e4e" />
+        </Style>
+
+        <Style Selector="RadioButton.fancy:checked">
+            <Setter Property="Background" Value="#1a3a5a" />
+            <!--  Darker blue background  -->
+            <Setter Property="BorderBrush" Value="#0078d7" />
+        </Style>
+
+        <!--  Style for the checked radio mark  -->
+        <Style Selector="RadioButton.fancy:checked /template/ Ellipse#radioMark">
+            <Setter Property="Fill" Value="#0078d7" />
+            <Setter Property="Stroke" Value="#005a9e" />
+        </Style>
+    </UserControl.Styles>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -74,7 +133,6 @@
                 </Style>
             </Border.Styles>
 
-            <!--  This Grid matches SourceDataManagerView exactly  -->
             <Grid>
                 <StackPanel
                     Margin="0,50,0,0"
@@ -82,33 +140,38 @@
                     VerticalAlignment="Top"
                     Spacing="10">
 
-                    <!--  Your OptimizerView content here  -->
                     <TextBlock FontSize="18" Text="Preset" />
                     <RadioButton
+                        Classes="fancy"
                         Content="Scenario 1"
                         GroupName="ScenarioGroup"
                         IsChecked="{Binding IsScenario1Selected}" />
                     <RadioButton
+                        Classes="fancy"
                         Content="Scenario 2"
                         GroupName="ScenarioGroup"
                         IsChecked="{Binding IsScenario2Selected}" />
 
                     <TextBlock FontSize="18" Text="Optimization Period" />
                     <RadioButton
+                        Classes="fancy"
                         Content="Summer"
                         GroupName="SeasonGroup"
                         IsChecked="{Binding IsSummerSelected}" />
                     <RadioButton
+                        Classes="fancy"
                         Content="Winter"
                         GroupName="SeasonGroup"
                         IsChecked="{Binding IsWinterSelected}" />
 
                     <TextBlock FontSize="16" Text="Optimization Preference" />
                     <RadioButton
+                        Classes="fancy"
                         Content="Cost"
                         GroupName="OptimizationGroup"
                         IsChecked="{Binding IsCostSelected}" />
                     <RadioButton
+                        Classes="fancy"
                         Content="CO2"
                         GroupName="OptimizationGroup"
                         IsChecked="{Binding IsCO2Selected}" />

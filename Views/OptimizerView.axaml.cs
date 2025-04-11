@@ -109,25 +109,25 @@ public partial class OptimizerView : UserControl
     }
 
     private void InitializeTooltipWindow()
-{
-    if (_tooltipWindow == null || _tooltipWindow.IsClosed)
     {
-        _tooltipWindow = new TooltipWindow();
-        _tooltipWindow.Position = new PixelPoint(100, 100); // Default position
-        _tooltipWindow.WindowClosed += (s, e) => 
-        { 
-            _tooltipWindow = null; 
-            _tooltipsEnabled = false;
-            if (_hoverCrosshair != null)
+        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        {
+            _tooltipWindow = new TooltipWindow();
+            _tooltipWindow.Position = new PixelPoint(100, 100); // Default position
+            _tooltipWindow.WindowClosed += (s, e) =>
             {
-                _hoverCrosshair.IsVisible = false;
-                OptimizationPlot.Refresh();
-            }
-        };
-        _tooltipWindow.Show();
-        _tooltipsEnabled = true;
+                _tooltipWindow = null;
+                _tooltipsEnabled = false;
+                if (_hoverCrosshair != null)
+                {
+                    _hoverCrosshair.IsVisible = false;
+                    OptimizationPlot.Refresh();
+                }
+            };
+            _tooltipWindow.Show();
+            _tooltipsEnabled = true;
+        }
     }
-}
 
     private void InitializeCalendar(List<(DateTime timestamp, double value)> heatDemandData)
     {
@@ -297,62 +297,62 @@ public partial class OptimizerView : UserControl
 
 
         // Add hover interaction
-      OptimizationPlot.PointerMoved += (s, e) =>
-{
-    if (_currentFilteredResults == null || _currentHeatDemandData == null || !_tooltipsEnabled)
-    {
-        _hoverCrosshair.IsVisible = false;
-        OptimizationPlot.Refresh();
-        return;
-    }
+        OptimizationPlot.PointerMoved += (s, e) =>
+  {
+      if (_currentFilteredResults == null || _currentHeatDemandData == null || !_tooltipsEnabled)
+      {
+          _hoverCrosshair.IsVisible = false;
+          OptimizationPlot.Refresh();
+          return;
+      }
 
-    var pixelPosition = e.GetPosition(OptimizationPlot);
-    var pixel = new Pixel((float)pixelPosition.X, (float)pixelPosition.Y);
-    var coordinates = plt.GetCoordinates(pixel);
+      var pixelPosition = e.GetPosition(OptimizationPlot);
+      var pixel = new Pixel((float)pixelPosition.X, (float)pixelPosition.Y);
+      var coordinates = plt.GetCoordinates(pixel);
 
-    int barIndex = (int)Math.Round(coordinates.X - 0.5);
+      int barIndex = (int)Math.Round(coordinates.X - 0.5);
 
-    if (barIndex >= 0 && barIndex < groupedResults.Count)
-    {
-        var timestamp = groupedResults[barIndex].Key;
-        var resultsAtTime = _currentFilteredResults
-            .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
-            .ToList();
+      if (barIndex >= 0 && barIndex < groupedResults.Count)
+      {
+          var timestamp = groupedResults[barIndex].Key;
+          var resultsAtTime = _currentFilteredResults
+              .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
+              .ToList();
 
-        var heatDemand = _currentHeatDemandData
-            .FirstOrDefault(h => h.timestamp == timestamp).value;
+          var heatDemand = _currentHeatDemandData
+              .FirstOrDefault(h => h.timestamp == timestamp).value;
 
-        string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
-        tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
-        tooltip += "Production:\n";
+          string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
+          tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
+          tooltip += "Production:\n";
 
-        foreach (var result in resultsAtTime)
-        {
-            tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
-        }
+          foreach (var result in resultsAtTime)
+          {
+              tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
+          }
 
-        _hoverCrosshair.IsVisible = true;
-        _hoverCrosshair.VerticalLine.Position = barIndex + 1;
-        _hoverCrosshair.HorizontalLine.Position = heatDemand;
+          _hoverCrosshair.IsVisible = true;
+          _hoverCrosshair.VerticalLine.Position = barIndex + 1;
+          _hoverCrosshair.HorizontalLine.Position = heatDemand;
 
-        _lastTooltipContent = tooltip;
+          _lastTooltipContent = tooltip;
 
-        // Auto-open on first valid hover
-        if (!_hasAutoOpenedWindow && (_tooltipWindow == null || _tooltipWindow.IsClosed))
-        {
-            ShowTooltipWindow();
-            _hasAutoOpenedWindow = true;
-        }
+          // Auto-open on first valid hover
+          if (!_hasAutoOpenedWindow && (_tooltipWindow == null || _tooltipWindow.IsClosed))
+          {
+              ShowTooltipWindow();
+              _hasAutoOpenedWindow = true;
+          }
 
-        UpdateTooltipContent(tooltip);
-    }
-    else
-    {
-        _hoverCrosshair.IsVisible = false;
-    }
+          UpdateTooltipContent(tooltip);
+      }
+      else
+      {
+          _hoverCrosshair.IsVisible = false;
+      }
 
-    OptimizationPlot.Refresh();
-};
+      OptimizationPlot.Refresh();
+  };
 
         if (showHeatDemand)
         {
@@ -374,11 +374,11 @@ public partial class OptimizerView : UserControl
         OptimizationPlot.Refresh();
     }
 
-private void ShowTooltipWindow()
-{
-    InitializeTooltipWindow();
-    _tooltipsEnabled = true;
-}
+    private void ShowTooltipWindow()
+    {
+        InitializeTooltipWindow();
+        _tooltipsEnabled = true;
+    }
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         base.OnUnloaded(e);
@@ -502,19 +502,19 @@ private void ShowTooltipWindow()
         _tooltipWindow?.UpdateContent(text);
     }
 
-   private void ToggleTooltip_Click(object sender, RoutedEventArgs e)
-{
-    if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+    private void ToggleTooltip_Click(object sender, RoutedEventArgs e)
     {
-        ShowTooltipWindow();
-        _tooltipsEnabled = true;
+        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        {
+            ShowTooltipWindow();
+            _tooltipsEnabled = true;
+        }
+        else
+        {
+            _tooltipWindow.Close();
+            _tooltipsEnabled = false;
+            _hoverCrosshair.IsVisible = false;
+            OptimizationPlot.Refresh();
+        }
     }
-    else
-    {
-        _tooltipWindow.Close();
-        _tooltipsEnabled = false;
-        _hoverCrosshair.IsVisible = false;
-        OptimizationPlot.Refresh();
-    }
-}
 }
