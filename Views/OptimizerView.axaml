@@ -73,6 +73,16 @@
             <Setter Property="Fill" Value="#0078d7" />
             <Setter Property="Stroke" Value="#005a9e" />
         </Style>
+
+         <Style Selector="ToolTip">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="BorderBrush" Value="#CCCCCC" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
     </UserControl.Styles>
 
     <Grid>
@@ -81,7 +91,6 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--  Open Button (identical to SourceDataManagerView)  -->
         <Button
             Grid.Column="0"
             Width="30"
@@ -90,7 +99,8 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Command="{Binding TriggerPaneCommand}"
-            IsVisible="{Binding !IsPaneOpen}">
+            IsVisible="{Binding !IsPaneOpen}"
+            ToolTip.Tip="Expand">
             <Button.Styles>
                 <Style Selector="Button">
                     <Setter Property="Panel.ZIndex" Value="0" />
@@ -99,7 +109,7 @@
             <PathIcon Data="{StaticResource RightArrow}" />
         </Button>
 
-        <!--  Side Panel (identical structure to SourceDataManagerView)  -->
+        <!--  Side Panel  -->
         <Border
             Grid.Column="0"
             Width="{Binding PaneWidth}"
@@ -213,7 +223,8 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Command="{Binding TriggerPaneCommand}"
-                    IsVisible="{Binding IsPaneOpen}">
+                    IsVisible="{Binding IsPaneOpen}"
+                    ToolTip.Tip="Collapse">
                     <PathIcon Data="{StaticResource LeftArrow}" />
                 </Button>
             </Grid>
@@ -222,53 +233,95 @@
         <!--  Main Content Area  -->
         <Border Grid.Column="1" Background="#1e1e1e">
             <Grid>
-                <CheckBox
-                    Margin="10,5"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Content="Show Heat Demand"
-                    IsChecked="{Binding ShowHeatDemand}" />
-                <Button
-                    Margin="5"
-                    HorizontalAlignment="Right"
-                    Click="ToggleTooltip_Click"
-                    Content="Toggle Tooltip" />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                <StackPanel
-                    Grid.Row="1"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-                    <TextBlock
-                        FontSize="18"
-                        Foreground="White"
-                        IsVisible="{Binding !HasOptimized}"
-                        Text="Click Optimize to get started" />
+                <!--  Graph Area  -->
+                <Grid Grid.Column="0">
+                    <CheckBox
+                        Margin="10,5"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Content="Show Heat Demand"
+                        IsChecked="{Binding ShowHeatDemand}" />
 
-                    <Grid>
-                        <ScottPlot:AvaPlot
-                            x:Name="OptimizationPlot"
-                            Width="1500"
-                            Height="900"
-                            IsVisible="{Binding HasOptimized}" />
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="18"
+                            Foreground="White"
+                            IsVisible="{Binding !HasOptimized}"
+                            Text="Click Optimize to get started" />
 
-                        <!--  Reset View Button  -->
-                        <Button
-                            x:Name="ResetViewButton"
-                            Width="30"
-                            Height="30"
-                            Margin="0,18,15,0"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
-                            Background="Transparent"
-                            Command="{Binding ResetViewCommand}"
-                            IsVisible="{Binding HasOptimized}">
-                            <PathIcon
-                                Width="20"
-                                Height="20"
-                                Data="{StaticResource Home}" />
+                        <Grid>
+                            <ScottPlot:AvaPlot
+                                x:Name="OptimizationPlot"
+                                Width="1500"
+                                Height="900"
+                                IsVisible="{Binding HasOptimized}" />
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+
+                <!--  Vertical Toolbar  -->
+                <Border
+                    Grid.Column="1"
+                    Width="40"
+                    Background="#252526"
+                    BorderBrush="#3e3e3e"
+                    BorderThickness="1,0,0,0">
+                    <StackPanel
+                        Margin="0,10,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Spacing="10">
+
+
+                        <Button Classes="toolbar" ToolTip.Tip="Calendar">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Orientation="Vertical">
+                                <Image
+                                    Width="22"
+                                    Height="22"
+                                    Source="{SvgImage Assets/calendar.svg}" />
+                            </StackPanel>
                         </Button>
-                    </Grid>
-                </StackPanel>
+
+
+                        <Button Classes="toolbar" ToolTip.Tip="Toggle visibility">
+                            <PathIcon Data="{StaticResource Layers}" />
+                        </Button>
+
+
+                        <Button
+                            Classes="toolbar"
+                            Command="{Binding ResetViewCommand}"
+                            ToolTip.Tip="Restore view">
+                            <PathIcon Data="{StaticResource Home}" />
+                        </Button>
+
+
+                        <Button
+                            Classes="toolbar"
+                            Click="ToggleTooltip_Click"
+                            ToolTip.Tip="Pointer">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Orientation="Vertical">
+                                <Image
+                                    Width="22"
+                                    Height="22"
+                                    Source="{SvgImage Assets/pointer.svg}" />
+                            </StackPanel>
+                        </Button>
+
+
+                    </StackPanel>
+                </Border>
             </Grid>
         </Border>
     </Grid>
