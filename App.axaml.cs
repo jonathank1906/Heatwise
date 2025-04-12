@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Sem2Proj.Views;
+using Sem2Proj.ViewModels;
 using System.Linq;
 
 namespace Sem2Proj;
@@ -20,10 +21,10 @@ public partial class App : Application
         {
             DisableAvaloniaDataAnnotationValidation();
 
-            // Just create and assign the splash window
-            var splashWindow = new SplashWindow();
-            desktop.MainWindow = splashWindow;
-            splashWindow.Show(); // <-- This is important to make it actually show
+            var loadingViewModel = new LoadingWindowViewModel();
+            var loadingWindow = new LoadingWindow(loadingViewModel);
+            desktop.MainWindow = loadingWindow;
+            loadingWindow.Show();
         }
 
         base.OnFrameworkInitializationCompleted();

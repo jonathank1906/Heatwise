@@ -10,18 +10,15 @@ public partial class MainWindowViewModel : ObservableObject
     // ViewModels
     public AssetManagerViewModel AssetManagerViewModel { get; }
     public OptimizerViewModel OptimizerViewModel { get; }
-    public HomeViewModel HomeViewModel { get; }
     public SourceDataManagerViewModel SourceDataManagerViewModel { get; }
 
     public MainWindowViewModel(
         AssetManagerViewModel assetManagerViewModel,
         OptimizerViewModel optimizerViewModel,
-        HomeViewModel homeViewModel,
         SourceDataManagerViewModel sourceDataManagerViewModel)
     {
         AssetManagerViewModel = assetManagerViewModel;
         OptimizerViewModel = optimizerViewModel;
-        HomeViewModel = homeViewModel;
         SourceDataManagerViewModel = sourceDataManagerViewModel;
     }
 }
