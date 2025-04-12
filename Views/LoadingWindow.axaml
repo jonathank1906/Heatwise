@@ -1,0 +1,123 @@
+<Window
+    x:Class="Sem2Proj.Views.LoadingWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Sem2Proj.ViewModels"
+    Width="450"
+    Height="300"
+    d:DesignHeight="300"
+    d:DesignWidth="450"
+    x:DataType="vm:LoadingWindowViewModel"
+    Background="Transparent"
+    PointerPressed="WindowDragMove"
+    SystemDecorations="BorderOnly"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Border>
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="70%,80%">
+                <GradientStop Offset="0.0" Color="#EFE22D2A" />
+                <GradientStop Offset="1.0" Color="#1F95221E" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <Border.Styles>
+            <Style Selector="Image.gear-clockwise">
+                <Style.Animations>
+                    <Animation IterationCount="INFINITE" Duration="0:0:2">
+                        <KeyFrame Cue="0%">
+                            <Setter Property="RotateTransform.Angle" Value="0.0" />
+                        </KeyFrame>
+                        <KeyFrame Cue="100%">
+                            <Setter Property="RotateTransform.Angle" Value="360.0" />
+                        </KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+            <Style Selector="Image.gear-counterclockwise">
+                <Style.Animations>
+                    <Animation IterationCount="INFINITE" Duration="0:0:2">
+                        <KeyFrame Cue="0%">
+                            <Setter Property="RotateTransform.Angle" Value="0.0" />
+                        </KeyFrame>
+                        <KeyFrame Cue="100%">
+                            <Setter Property="RotateTransform.Angle" Value="-360.0" />
+                        </KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+        </Border.Styles>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Canvas
+                Grid.Row="0"
+                Margin="0,60,0,0"
+                HorizontalAlignment="Center">
+                <!--  Center Gear  -->
+                <Image
+                    x:Name="CenterGear"
+                    Canvas.Left="110"
+                    Canvas.Top="-30"
+                    Width="120"
+                    Height="120"
+                    Classes="gear-counterclockwise"
+                    Source="{SvgImage Assets/Gear.svg}" />
+                <!--  Second Gear  -->
+                <Image
+                    x:Name="SecondGear"
+                    Canvas.Left="0"
+                    Canvas.Top="0"
+                    Width="120"
+                    Height="120"
+                    Classes="gear-clockwise"
+                    Source="{SvgImage Assets/Gear.svg}" />
+            </Canvas>
+
+            <StackPanel
+                Grid.Row="1"
+                Grid.ColumnSpan="3"
+                Margin="0,70,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top">
+                <!--  Loading Text  -->
+                <TextBlock
+                    Name="LoadingText"
+                    Margin="0,0,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="20"
+                    Foreground="White"
+                    Text="{Binding LoadingText}" />
+
+                <!--  Progress bar  -->
+                <ProgressBar
+                    Name="ProgressBar"
+                    Width="400"
+                    Height="3"
+                    Margin="0,10,0,0"
+                    CornerRadius="50"
+                    Value="{Binding Progress}">
+                    <ProgressBar.Styles>
+                        <Style Selector="ProgressBar /template/ Border">
+                            <Setter Property="Background" Value="White" />
+                        </Style>
+                        <Style Selector="ProgressBar /template/ Border /template/ Border">
+                            <Setter Property="Background" Value="White" />
+                        </Style>
+                    </ProgressBar.Styles>
+                </ProgressBar>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
