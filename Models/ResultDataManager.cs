@@ -1,7 +1,9 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Sem2Proj.Models;
 
@@ -110,6 +112,48 @@ public class ResultDataManager
             Debug.WriteLine($"Error loading results from RDM: {ex.Message}");
         }
         return results;
+    }
+
+      public void ExportToCsv(string filePath)
+    {
+        try
+        {
+            var results = GetLatestResults();
+            
+            using (var writer = new StreamWriter(filePath))
+            {
+                // Write CSV header
+                writer.WriteLine("Timestamp,Asset Name,Produced Heat (MW),Production Cost (DKK),Emissions (kg CO2)");
+                
+                // Write data rows
+                foreach (var result in results)
+                {
+                    writer.WriteLine(
+                        $"{result.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")}," +
+                        $"{EscapeCsvField(result.AssetName)}," +
+                        $"{result.HeatProduced.ToString(CultureInfo.InvariantCulture)}," +
+                        $"{result.ProductionCost.ToString(CultureInfo.InvariantCulture)}," +
+                        $"{result.Emissions.ToString(CultureInfo.InvariantCulture)}"
+                    );
+                }
+            }
+            
+            Debug.WriteLine($"Successfully exported results to {filePath}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error exporting to CSV: {ex.Message}");
+            throw; // Re-throw to handle in UI
+        }
+    }
+
+    private string EscapeCsvField(string field)
+    {
+        if (field.Contains(",") || field.Contains("\"") || field.Contains("\n"))
+        {
+            return $"\"{field.Replace("\"", "\"\"")}\"";
+        }
+        return field;
     }
 }
 public class HeatProductionResult

@@ -308,6 +308,7 @@
 
                         <Button
                             Classes="toolbar"
+                            Click="OnExportButtonClick"
                             ToolTip.Tip="Export optimized results to a CSV file">
                             <PathIcon Data="{StaticResource Export}" />
                         </Button>

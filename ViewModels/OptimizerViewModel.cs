@@ -216,4 +216,39 @@ public partial class OptimizerViewModel : ViewModelBase
             Debug.WriteLine("Scenario 2 selected");
         }
     }
+
+    [RelayCommand]
+    public async Task ExportToCsv(Window parentWindow)
+    {
+        try
+        {
+            var dialog = new SaveFileDialog
+            {
+                Title = "Export Optimization Results",
+                Filters = new List<FileDialogFilter>
+            {
+                new() { Name = "CSV Files", Extensions = new() { "csv" } },
+                new() { Name = "All Files", Extensions = new() { "*" } }
+            },
+                DefaultExtension = "csv",
+                InitialFileName = $"optimization_results_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            };
+
+             var result = await dialog.ShowAsync(parentWindow);
+            if (result != null)
+            {
+                _resultDataManager.ExportToCsv(result);
+
+                // // Optional: Show success notification
+                // await ShowNotificationAsync("Export Successful", 
+                //     $"Results were saved to {Path.GetFileName(result)}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Export failed: {ex.Message}");
+            //await ShowErrorAsync("Export Failed", ex.Message);
+        }
+    }
+
 }

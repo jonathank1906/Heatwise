@@ -446,4 +446,11 @@ public partial class OptimizerView : UserControl
         _currentFilteredResults = filteredResults;
         PlotResults(filteredResults, filteredHeatDemand, (DataContext as OptimizerViewModel)?.ShowHeatDemand ?? true);
     }
+    private async void OnExportButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is OptimizerViewModel viewModel)
+        {
+            await viewModel.ExportToCsv(TopLevel.GetTopLevel(this) as Window);
+        }
+    }
 }
