@@ -9,6 +9,28 @@ public class ResultDataManager
 {
     private readonly string dbPath = "Data Source=Data/heat_optimization.db;Version=3;";
 
+    // Clears ALL data from the RDM table before saving new results
+    public void ClearAllResults()
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(dbPath))
+            {
+                conn.Open();
+                using (var cmd = new SQLiteCommand("DELETE FROM RDM", conn))
+                {
+                    cmd.ExecuteNonQuery();
+                    Debug.WriteLine("RDM table cleared successfully.");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error clearing RDM table: {ex.Message}");
+        }
+    }
+
+    // Saves new results (after clearing old data)
     public void SaveResultsToDatabase(List<HeatProductionResult> results)
     {
         try
@@ -16,24 +38,12 @@ public class ResultDataManager
             using (var conn = new SQLiteConnection(dbPath))
             {
                 conn.Open();
-                Debug.WriteLine("Connected to database for writing results.");
-
-                using (var checkCmd = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type='table' AND name='RDM';", conn))
-                {
-                    var result = checkCmd.ExecuteScalar();
-                    if (result == null)
-                    {
-                        Debug.WriteLine("⚠️ RDM table does NOT exist in this database!");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("✅ RDM table found in database.");
-                    }
-                }
-
-
                 using (var transaction = conn.BeginTransaction())
                 {
+                    // 1. Clear old data
+                    new SQLiteCommand("DELETE FROM RDM", conn).ExecuteNonQuery();
+
+                    // 2. Insert new results
                     string insertQuery = @"
                         INSERT INTO RDM 
                         (Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions])
@@ -50,13 +60,11 @@ public class ResultDataManager
                             cmd.Parameters.AddWithValue("@HeatProduced", result.HeatProduced);
                             cmd.Parameters.AddWithValue("@ProductionCost", result.ProductionCost);
                             cmd.Parameters.AddWithValue("@Emissions", result.Emissions);
-
                             cmd.ExecuteNonQuery();
                         }
                     }
-
                     transaction.Commit();
-                    Debug.WriteLine("Results successfully saved to RDM table.");
+                    Debug.WriteLine("New results saved to RDM after clearing old data.");
                 }
             }
         }
@@ -65,8 +73,45 @@ public class ResultDataManager
             Debug.WriteLine($"Error saving results to DB: {ex.Message}");
         }
     }
-}
 
+    // Fetches the ONLY results in the RDM (since we clear it every time)
+    public List<HeatProductionResult> GetLatestResults()
+    {
+        var results = new List<HeatProductionResult>();
+        try
+        {
+            using (var conn = new SQLiteConnection(dbPath))
+            {
+                conn.Open();
+                string query = @"
+                    SELECT Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions]
+                    FROM RDM
+                    ORDER BY Timestamp";
+
+                using (var cmd = new SQLiteCommand(query, conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        results.Add(new HeatProductionResult
+                        {
+                            Timestamp = DateTime.Parse(reader["Timestamp"].ToString()),
+                            AssetName = reader["Asset Name"].ToString(),
+                            HeatProduced = Convert.ToDouble(reader["Produced Heat"]),
+                            ProductionCost = Convert.ToDouble(reader["Production Cost"]),
+                            Emissions = Convert.ToDouble(reader["Emissions"])
+                        });
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error loading results from RDM: {ex.Message}");
+        }
+        return results;
+    }
+}
 public class HeatProductionResult
 {
     public string AssetName { get; set; } = string.Empty;

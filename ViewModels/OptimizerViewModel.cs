@@ -112,11 +112,11 @@ public partial class OptimizerViewModel : ViewModelBase
             OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList()
         );
 
-        // Trigger plot update
-        PlotOptimizationResults?.Invoke(
-            OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
-            HeatDemandData
-        );
+        // Fetch results FROM RDM (not in-memory)
+        OptimizationResults = _resultDataManager.GetLatestResults();
+
+        // Plot the RDM-fetched data
+        PlotOptimizationResults?.Invoke(OptimizationResults, HeatDemandData);
 
         HasOptimized = true;
     }
