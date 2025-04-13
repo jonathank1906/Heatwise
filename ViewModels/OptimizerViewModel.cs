@@ -75,14 +75,16 @@ public partial class OptimizerViewModel : ViewModelBase
     private bool _isCO2Selected;
 
     public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
+    private readonly ResultDataManager _resultDataManager;
 
-    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager)
+
+    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager)
     {
         _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
         _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
+        _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
         _optimizer = new Optimizer(_assetManager, _sourceDataManager);
 
-        // Initialize with default scenario
         _assetManager.SetScenario(0); // Default to Scenario 1
         _isScenario1Selected = true;
     }
@@ -105,7 +107,12 @@ public partial class OptimizerViewModel : ViewModelBase
         // Perform optimization
         OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimisationMode);
 
-        // Trigger plot update with both results and heat demand data
+        // 💾 Save results to database
+        _resultDataManager.SaveResultsToDatabase(
+            OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList()
+        );
+
+        // Trigger plot update
         PlotOptimizationResults?.Invoke(
             OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
             HeatDemandData
@@ -113,6 +120,7 @@ public partial class OptimizerViewModel : ViewModelBase
 
         HasOptimized = true;
     }
+
 
     [RelayCommand]
     private void SetDateRange()

@@ -134,17 +134,3 @@ public class Optimizer
     }
 }
 
-public class HeatProductionResult
-{
-    public string AssetName { get; set; } = string.Empty;
-    public double HeatProduced { get; set; }
-    public double ProductionCost { get; set; }
-    public double Emissions { get; set; }
-    public DateTime Timestamp { get; set; }
-}
-
-public enum OptimisationMode
-{
-    CO2,
-    Cost
-}

@@ -38,7 +38,8 @@ public partial class LoadingWindowViewModel : ViewModelBase
         var sourceDataManager = new SourceDataManager();
 
         var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager));
-        var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager));
+        var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager, new ResultDataManager()));
+
         var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());
 
         foreach (var (text, steps, delay) in messages)
