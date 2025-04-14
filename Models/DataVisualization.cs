@@ -152,4 +152,5 @@ public class DataVisualization
 
         optimizationPlot.Refresh();
     }
+    
 }

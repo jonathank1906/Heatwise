@@ -270,13 +270,8 @@
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Heat Production"
-                                            GroupName="GraphTypeGroup" />
-
-                                        <RadioButton
-                                            Classes="fancy"
-                                            Content="Heat Demand"
                                             GroupName="GraphTypeGroup"
-                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.HeatDemand}}" />
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.HeatProduction}}" />
 
                                         <RadioButton
                                             Classes="fancy"

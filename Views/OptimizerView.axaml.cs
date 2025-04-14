@@ -55,6 +55,7 @@ public partial class OptimizerView : UserControl
                }
            };
 
+
         this.AttachedToVisualTree += (s, e) =>
   {
       _mainWindow = TopLevel.GetTopLevel(this) as Window;

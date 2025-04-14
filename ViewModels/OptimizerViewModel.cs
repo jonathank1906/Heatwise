@@ -30,6 +30,7 @@ public partial class OptimizerViewModel : ViewModelBase
     private readonly AssetManager _assetManager;
     private readonly SourceDataManager _sourceDataManager;
     private readonly Optimizer _optimizer;
+    private readonly ResultDataManager _resultDataManager;
 
     [ObservableProperty]
     private IList<DateTime>? _selectedDates;
@@ -43,7 +44,7 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private OptimisationMode _optimisationMode = OptimisationMode.Cost;
 
-    // Side pane properties
+    // Side pane properties -------------------------------
     private const int OpenWidth = 275;
     private const int ClosedWidth = 0;
 
@@ -56,7 +57,7 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isOpening;
 
-    // Scenario ratio buttons
+    // Scenario radio buttons -------------------------------
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsScenario2Selected))]
     private bool _isScenario1Selected = true;
@@ -64,7 +65,6 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isScenario2Selected;
 
-    // Radio button options
     [ObservableProperty]
     private bool _isSummerSelected;
 
@@ -77,9 +77,6 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isCO2Selected;
 
-    public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
-    private readonly ResultDataManager _resultDataManager;
-
     [ObservableProperty]
     private GraphType _selectedGraphType = GraphType.HeatProduction;
 
@@ -88,7 +85,7 @@ public partial class OptimizerViewModel : ViewModelBase
 
     [ObservableProperty]
     private List<double>? _summerElectricityPriceData;
-
+    public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
     public Action<List<double>>? PlotElectricityPrices { get; set; }
 
     public enum GraphType
@@ -129,32 +126,32 @@ public partial class OptimizerViewModel : ViewModelBase
         PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
     }
 
-    [RelayCommand]
-    private void OptimizeAndPlot()
-    {
-        // Fetch all required data
-        HeatDemandData = _sourceDataManager.GetData(SelectedDataType);
-        HeatDemand = HeatDemandData.Sum(data => data.value);
+[RelayCommand]
+private void OptimizeAndPlot()
+{
+    // Fetch all required data
+    HeatDemandData = _sourceDataManager.GetData(SelectedDataType);
+    HeatDemand = HeatDemandData.Sum(data => data.value);
 
-        // Initialize electricity price data (uncomment when ready)
-        WinterElectricityPriceData = _sourceDataManager.GetWinterElectricityPriceData()
-            .Select(x => x.value).ToList();
-        SummerElectricityPriceData = _sourceDataManager.GetSummerElectricityPriceData()
-            .Select(x => x.value).ToList();
+    // Initialize electricity price data
+    WinterElectricityPriceData = _sourceDataManager.GetWinterElectricityPriceData()
+        .Select(x => x.value).ToList();
+    SummerElectricityPriceData = _sourceDataManager.GetSummerElectricityPriceData()
+        .Select(x => x.value).ToList();
 
-        // Perform optimization
-        OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimisationMode);
+    // Perform optimization
+    OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimisationMode);
 
-        // Save and fetch results
-        _resultDataManager.SaveResultsToDatabase(
-            OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList()
-        );
-        OptimizationResults = _resultDataManager.GetLatestResults();
+    // Save and fetch results
+    _resultDataManager.SaveResultsToDatabase(
+        OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList()
+    );
+    OptimizationResults = _resultDataManager.GetLatestResults();
 
-        // Plot initial graph
-        SwitchGraph(SelectedGraphType);
-        HasOptimized = true;
-    }
+    // Ensure the graph is updated based on the selected graph type
+    HasOptimized = true;
+    SwitchGraph(SelectedGraphType); // Explicitly call SwitchGraph here
+}
 
     public void SwitchGraph(GraphType graphType)
     {
@@ -208,12 +205,10 @@ public partial class OptimizerViewModel : ViewModelBase
     {
         if (OptimizationResults == null || HeatDemandData == null || !HasOptimized) return;
 
-        // Replot with all data
         PlotOptimizationResults?.Invoke(
             OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
             HeatDemandData
         );
-
         SelectedDates?.Clear();
     }
 
