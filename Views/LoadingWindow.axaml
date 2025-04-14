@@ -12,16 +12,16 @@
     x:DataType="vm:LoadingWindowViewModel"
     Background="Transparent"
     PointerPressed="WindowDragMove"
-    SystemDecorations="None"
+    SystemDecorations="{Binding SystemDecorations}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d"
     Icon="/Assets/heat-logo.ico">
 
-    <Border CornerRadius="15">
+    <Border CornerRadius="{Binding CornerRadius}">
         <Border.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="70%,80%">
-                <GradientStop Offset="0.0" Color="#E22D2A" />
-                <GradientStop Offset="1.0" Color="#2E1F20" />
+                <GradientStop Offset="0.0" Color="{Binding GradientColor1}" />
+                <GradientStop Offset="1.0" Color="{Binding GradientColor2}" />
             </LinearGradientBrush>
         </Border.Background>
         <Border.Styles>
