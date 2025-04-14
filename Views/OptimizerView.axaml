@@ -251,6 +251,84 @@
                         Spacing="10">
 
 
+
+                        <Button Classes="toolbar" ToolTip.Tip="Change graph type">
+                            <Button.Flyout>
+                                <Flyout Placement="LeftEdgeAlignedTop">
+                                    <StackPanel Width="200" Spacing="5">
+                                        <TextBlock
+                                            Margin="5,5,5,0"
+                                            FontSize="16"
+                                            FontWeight="Bold"
+                                            Text="Select Graph Type" />
+
+                                        <RadioButton
+                                            Classes="fancy"
+                                            Content="Heat Production"
+                                            GroupName="GraphTypeGroup"
+                                             />
+
+                                        <RadioButton
+                                            Classes="fancy"
+                                            Content="Heat Demand"
+                                            GroupName="GraphTypeGroup"
+                                            IsChecked="{Binding ShowHeatDemand}" />
+
+                                        <RadioButton
+                                            Classes="fancy"
+                                            Content="Production Costs"
+                                            GroupName="GraphTypeGroup"
+                                            />
+
+                                        <RadioButton
+                                            Classes="fancy"
+                                            Content="Electricity Prices"
+                                            GroupName="GraphTypeGroup"
+                                            />
+
+                                        <RadioButton
+                                            Classes="fancy"
+                                            Content="Electricity Production"
+                                            GroupName="GraphTypeGroup"
+                                            />
+
+                                        <RadioButton
+                                            Classes="fancy"
+                                            Content="Electricity Consumption"
+                                            GroupName="GraphTypeGroup"
+                                             />
+
+                                        <RadioButton
+                                            Classes="fancy"
+                                            Content="Fuel Consumption"
+                                            GroupName="GraphTypeGroup"
+                                           />
+
+                                        <RadioButton
+                                            Classes="fancy"
+                                            Content="CO2 Emissions"
+                                            GroupName="GraphTypeGroup"
+                                           />
+
+                                        <RadioButton
+                                            Classes="fancy"
+                                            Content="Expenses and Profit"
+                                            GroupName="GraphTypeGroup"
+                                            />
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Orientation="Vertical">
+                                <Image
+                                    Width="25"
+                                    Height="25"
+                                    Source="{SvgImage Assets/swapgraphs.svg}" />
+                            </StackPanel>
+                        </Button>
+
                         <Button
                             Classes="toolbar"
                             Click="OpenCalendarPopup"
