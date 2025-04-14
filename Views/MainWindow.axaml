@@ -242,10 +242,10 @@
                 Padding="0,0,0,0"
                 TabStripPlacement="Top"
                 ZIndex="2"
-                SelectedIndex="1">
+                SelectedIndex="0">
                 <TabControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="3" />
+                        <UniformGrid Columns="2" />
                     </ItemsPanelTemplate>
                 </TabControl.ItemsPanel>
 
@@ -258,10 +258,6 @@
                             Text="{Binding}" />
                     </DataTemplate>
                 </TabControl.Resources>
-
-                <TabItem Header="Source Data Viewer" HeaderTemplate="{StaticResource TabHeaderTemplate}">
-                    <local:SourceDataManagerView DataContext="{Binding SourceDataManagerViewModel}" />
-                </TabItem>
 
                 <TabItem Header="Asset Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
                     <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />

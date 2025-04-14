@@ -3,6 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+    xmlns:conv="clr-namespace:Sem2Proj.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Sem2Proj.ViewModels"
@@ -15,6 +16,10 @@
     <Design.DataContext>
         <vm:OptimizerViewModel />
     </Design.DataContext>
+
+    <UserControl.Resources>
+        <conv:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+    </UserControl.Resources>
 
     <UserControl.Styles>
         <!--  Fancy RadioButton Style with circle indicator  -->
@@ -265,56 +270,49 @@
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Heat Production"
-                                            GroupName="GraphTypeGroup"
-                                             />
+                                            GroupName="GraphTypeGroup" />
 
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Heat Demand"
                                             GroupName="GraphTypeGroup"
-                                            IsChecked="{Binding ShowHeatDemand}" />
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.HeatDemand}}" />
 
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Production Costs"
-                                            GroupName="GraphTypeGroup"
-                                            />
+                                            GroupName="GraphTypeGroup" />
 
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Electricity Prices"
                                             GroupName="GraphTypeGroup"
-                                            />
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityPrices}}" />
 
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Electricity Production"
-                                            GroupName="GraphTypeGroup"
-                                            />
+                                            GroupName="GraphTypeGroup" />
 
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Electricity Consumption"
-                                            GroupName="GraphTypeGroup"
-                                             />
+                                            GroupName="GraphTypeGroup" />
 
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Fuel Consumption"
-                                            GroupName="GraphTypeGroup"
-                                           />
+                                            GroupName="GraphTypeGroup" />
 
                                         <RadioButton
                                             Classes="fancy"
                                             Content="CO2 Emissions"
-                                            GroupName="GraphTypeGroup"
-                                           />
+                                            GroupName="GraphTypeGroup" />
 
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Expenses and Profit"
-                                            GroupName="GraphTypeGroup"
-                                            />
+                                            GroupName="GraphTypeGroup" />
                                     </StackPanel>
                                 </Flyout>
                             </Button.Flyout>

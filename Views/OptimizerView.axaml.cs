@@ -7,17 +7,19 @@ using Avalonia.Interactivity;
 using System;
 using Sem2Proj.Models;
 using Avalonia;
+using ScottPlot.Avalonia;
 
 namespace Sem2Proj.Views;
 
 public partial class OptimizerView : UserControl
 {
-    private bool _tooltipsEnabled = true; // Default to true
+    private AvaPlot _plot;
+    private bool _tooltipsEnabled = true;
     private Window? _mainWindow;
     private CalendarWindow? _calendarWindow;
+    private TooltipWindow? _tooltipWindow;
     private bool _hasAutoOpenedWindow = false;
     private string? _lastTooltipContent;
-    private TooltipWindow? _tooltipWindow;
     private ScottPlot.Plottables.Scatter? _heatDemandPlot;
     private ScottPlot.Plottables.Crosshair? _hoverCrosshair;
     private readonly Dictionary<string, Color> _machineColors = new()
@@ -35,17 +37,24 @@ public partial class OptimizerView : UserControl
     private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
     private List<HeatProductionResult>? _currentOptimizationResults;
     private List<HeatProductionResult>? _currentFilteredResults;
+    private readonly DataVisualization _dataVisualization = new();
 
     public OptimizerView()
     {
         InitializeComponent();
-        var plt = OptimizationPlot.Plot;
+        _plot = this.Find<AvaPlot>("OptimizationPlot");
 
-        plt.Legend.IsVisible = true;
-        plt.Legend.Location = Alignment.UpperCenter;
-        plt.Legend.Orientation = Orientation.Horizontal; // This makes items flow horizontally
-        plt.Legend.Margin = new(0, 0, 0, -25); // Adjust bottom margin to move it down
-        plt.Legend.Alignment = Alignment.UpperCenter;
+        DataContextChanged += (sender, e) =>
+           {
+               if (DataContext is OptimizerViewModel vm)
+               {
+                   vm.PlotOptimizationResults = (results, demand) =>
+                       _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
+                   vm.PlotElectricityPrices = (prices) =>
+                       _dataVisualization.PlotElectricityPrice(OptimizationPlot, prices);
+               }
+           };
+
         this.AttachedToVisualTree += (s, e) =>
   {
       _mainWindow = TopLevel.GetTopLevel(this) as Window;
@@ -87,6 +96,8 @@ public partial class OptimizerView : UserControl
             }
         };
     }
+
+
 
     private void MainWindow_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
@@ -243,7 +254,6 @@ public partial class OptimizerView : UserControl
         plt.Axes.Bottom.TickLabelStyle.Rotation = 45;
         plt.Axes.Bottom.TickLabelStyle.OffsetY = 20;
 
-        // Rest of your method remains the same...
         OptimizationPlot.PointerMoved += (s, e) =>
         {
             if (_currentFilteredResults == null || _currentHeatDemandData == null || !_tooltipsEnabled)
@@ -362,7 +372,7 @@ public partial class OptimizerView : UserControl
     {
         if (_tooltipWindow == null || _tooltipWindow.IsClosed)
         {
-            return; // Don't create window automatically - only update if open
+            return;
         }
         _tooltipWindow?.UpdateContent(text);
     }
@@ -372,7 +382,7 @@ public partial class OptimizerView : UserControl
         var viewModel = DataContext as OptimizerViewModel;
         if (viewModel == null || !viewModel.HasOptimized)
         {
-            return; // Don't do anything if not optimized yet
+            return;
         }
 
         if (_tooltipWindow == null || _tooltipWindow.IsClosed)
