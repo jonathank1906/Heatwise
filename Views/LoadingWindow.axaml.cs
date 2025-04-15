@@ -36,6 +36,7 @@ public partial class LoadingWindow : Window
                 };
 
                 mainWindow.Show();
+                mainWindow.Activate();
                 Close();
             });
         }
