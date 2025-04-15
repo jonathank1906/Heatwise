@@ -15,6 +15,7 @@
     SystemDecorations="{Binding SystemDecorations}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d"
+    Topmost="True"
     Icon="/Assets/heat-logo.ico">
 
     <Border CornerRadius="{Binding CornerRadius}">
