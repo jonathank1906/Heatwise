@@ -11,13 +11,11 @@ namespace Sem2Proj.Views
     {
         public bool IsClosed { get; private set; }
         public IEnumerable<DateTime> SelectedDates => OptimizationCalendar.SelectedDates;
-        public event EventHandler<IEnumerable<DateTime>> DatesSelected;
+        public event EventHandler<IEnumerable<DateTime>>? DatesSelected;
 
-
-        public event EventHandler ResetRequested;
         public CalendarWindow()
         {
-            InitializeComponent(); // ← CRITICAL!
+            InitializeComponent(); // ← CRITICAL!  -- no shit lol
             this.Closed += (s, e) => IsClosed = true;
         }
 
@@ -55,7 +53,7 @@ namespace Sem2Proj.Views
                     rangeStart = date;
                     rangeEnd = date;
                 }
-                else if (date == rangeEnd.Value.AddDays(1))
+                else if (date == rangeEnd!.Value.AddDays(1))
                 {
                     rangeEnd = date;
                 }
@@ -69,7 +67,7 @@ namespace Sem2Proj.Views
 
             if (rangeStart.HasValue)
             {
-                OptimizationCalendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd.Value));
+                OptimizationCalendar.BlackoutDates.Add(new CalendarDateRange(rangeStart.Value, rangeEnd!.Value));
             }
         }
 

@@ -84,7 +84,7 @@ public partial class AssetManagerViewModel : ObservableObject
         }
 
         // Maintain selection if possible
-        SelectedAsset = DisplayedAssets.Contains(SelectedAsset)
+        SelectedAsset = DisplayedAssets.Contains(SelectedAsset!)
             ? SelectedAsset
             : DisplayedAssets.FirstOrDefault();
 

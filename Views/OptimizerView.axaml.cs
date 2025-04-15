@@ -42,7 +42,7 @@ public partial class OptimizerView : UserControl
     public OptimizerView()
     {
         InitializeComponent();
-        _plot = this.Find<AvaPlot>("OptimizationPlot");
+        _plot = this.Find<AvaPlot>("OptimizationPlot")!;
 
         DataContextChanged += (sender, e) =>
            {
@@ -419,7 +419,7 @@ public partial class OptimizerView : UserControl
             // Position near the button
             var button = sender as Control;
             var screenPosition = button?.PointToScreen(new Point(0, button.Bounds.Height));
-            _calendarWindow.Position = new PixelPoint((int)screenPosition.Value.X, (int)screenPosition.Value.Y);
+            _calendarWindow.Position = new PixelPoint((int)screenPosition!.Value.X, (int)screenPosition.Value.Y);
 
             _calendarWindow.InitializeCalendar(_currentHeatDemandData.Select(x => x.timestamp));
             _calendarWindow.Show();
@@ -461,7 +461,11 @@ public partial class OptimizerView : UserControl
     {
         if (DataContext is OptimizerViewModel viewModel)
         {
-            await viewModel.ExportToCsv(TopLevel.GetTopLevel(this) as Window);
+            var parentWindow = TopLevel.GetTopLevel(this) as Window;
+            if (parentWindow != null)
+            {
+                await viewModel.ExportToCsv(parentWindow);
+            }
         }
     }
 }

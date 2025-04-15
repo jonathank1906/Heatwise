@@ -97,8 +97,8 @@ public class ResultDataManager
                     {
                         results.Add(new HeatProductionResult
                         {
-                            Timestamp = DateTime.Parse(reader["Timestamp"].ToString()),
-                            AssetName = reader["Asset Name"].ToString(),
+                            Timestamp = DateTime.Parse(reader["Timestamp"].ToString()!),
+                            AssetName = reader["Asset Name"].ToString()!,
                             HeatProduced = Convert.ToDouble(reader["Produced Heat"]),
                             ProductionCost = Convert.ToDouble(reader["Production Cost"]),
                             Emissions = Convert.ToDouble(reader["Emissions"])

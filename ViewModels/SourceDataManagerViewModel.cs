@@ -19,7 +19,7 @@ public partial class SourceDataManagerViewModel : ViewModelBase
     private bool _isOpening;
 
     [RelayCommand]
-    private async Task TriggerPane()
+    private void TriggerPane()
     {
         IsOpening = !IsPaneOpen;
         IsPaneOpen = !IsPaneOpen;

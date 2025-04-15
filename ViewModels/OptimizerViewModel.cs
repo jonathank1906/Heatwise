@@ -119,7 +119,7 @@ public partial class OptimizerViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task TriggerPane()
+    private void TriggerPane()
     {
         IsOpening = !IsPaneOpen;
         IsPaneOpen = !IsPaneOpen;

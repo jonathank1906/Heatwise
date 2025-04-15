@@ -38,7 +38,7 @@ namespace Sem2Proj.Views
         public void UpdateContent(string text)
         {
             var textBlock = this.FindControl<TextBlock>("TooltipText");
-            textBlock.Text = text;
+            textBlock!.Text = text;
         }
 
         public void MinimizeWithMainWindow()
