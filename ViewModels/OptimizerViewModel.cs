@@ -108,7 +108,6 @@ public partial class OptimizerViewModel : ViewModelBase
         SwitchGraph(value);
     }
 
-
     public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager)
     {
         _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
@@ -265,7 +264,6 @@ public partial class OptimizerViewModel : ViewModelBase
                 }
                 break;
         }
-
         SelectedDates?.Clear();
     }
 
