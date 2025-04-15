@@ -152,5 +152,58 @@ public class DataVisualization
 
         optimizationPlot.Refresh();
     }
+
+    public void PlotExpenses(AvaPlot optimizationPlot, List<HeatProductionResult> results)
+    {
+        var plt = optimizationPlot.Plot;
+        plt.Clear();
+
+        // Set dark theme
+        var bgColor = new Color("#1e1e1e");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(new Color("#FFFFFF"));
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+
+        // Group results by timestamp and calculate total production cost per timestamp
+        var groupedResults = results
+            .GroupBy(r => r.Timestamp)
+            .OrderBy(g => g.Key)
+            .Select(g => new
+            {
+                Timestamp = g.Key,
+                TotalCost = g.Sum(r => r.ProductionCost)
+            })
+            .ToList();
+
+        // Prepare data for plotting
+        double[] timestamps = groupedResults.Select((g, i) => (double)i).ToArray();
+        double[] costs = groupedResults.Select(g => g.TotalCost).ToArray();
+
+        // Plot production costs
+        var costPlot = plt.Add.Scatter(timestamps, costs);
+        costPlot.Color = Colors.Orange;
+        costPlot.LineWidth = 2;
+        costPlot.MarkerSize = 0;
+
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Production Costs",
+            LineColor = Colors.Orange,
+            LineWidth = 2
+        });
+
+        // Set plot titles and labels
+        plt.Title("Production Costs Over Time");
+        plt.XLabel("Time");
+        plt.YLabel("Cost (DKK)");
+        plt.Axes.Margins(bottom: 0.02, top: 0.1);
+        plt.HideGrid();
+
+        optimizationPlot.Refresh();
+    }
     
 }

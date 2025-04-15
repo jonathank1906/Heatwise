@@ -87,6 +87,7 @@ public partial class OptimizerViewModel : ViewModelBase
     private List<double>? _summerElectricityPriceData;
     public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
     public Action<List<double>>? PlotElectricityPrices { get; set; }
+    public Action<List<HeatProductionResult>>? PlotExpenses { get; set; }
 
     public enum GraphType
     {
@@ -126,32 +127,32 @@ public partial class OptimizerViewModel : ViewModelBase
         PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
     }
 
-[RelayCommand]
-private void OptimizeAndPlot()
-{
-    // Fetch all required data
-    HeatDemandData = _sourceDataManager.GetData(SelectedDataType);
-    HeatDemand = HeatDemandData.Sum(data => data.value);
+    [RelayCommand]
+    private void OptimizeAndPlot()
+    {
+        // Fetch all required data
+        HeatDemandData = _sourceDataManager.GetData(SelectedDataType);
+        HeatDemand = HeatDemandData.Sum(data => data.value);
 
-    // Initialize electricity price data
-    WinterElectricityPriceData = _sourceDataManager.GetWinterElectricityPriceData()
-        .Select(x => x.value).ToList();
-    SummerElectricityPriceData = _sourceDataManager.GetSummerElectricityPriceData()
-        .Select(x => x.value).ToList();
+        // Initialize electricity price data
+        WinterElectricityPriceData = _sourceDataManager.GetWinterElectricityPriceData()
+            .Select(x => x.value).ToList();
+        SummerElectricityPriceData = _sourceDataManager.GetSummerElectricityPriceData()
+            .Select(x => x.value).ToList();
 
-    // Perform optimization
-    OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimisationMode);
+        // Perform optimization
+        OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimisationMode);
 
-    // Save and fetch results
-    _resultDataManager.SaveResultsToDatabase(
-        OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList()
-    );
-    OptimizationResults = _resultDataManager.GetLatestResults();
+        // Save and fetch results
+        _resultDataManager.SaveResultsToDatabase(
+            OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList()
+        );
+        OptimizationResults = _resultDataManager.GetLatestResults();
 
-    // Ensure the graph is updated based on the selected graph type
-    HasOptimized = true;
-    SwitchGraph(SelectedGraphType); // Explicitly call SwitchGraph here
-}
+        // Ensure the graph is updated based on the selected graph type
+        HasOptimized = true;
+        SwitchGraph(SelectedGraphType); // Explicitly call SwitchGraph here
+    }
 
     public void SwitchGraph(GraphType graphType)
     {
@@ -172,6 +173,12 @@ private void OptimizeAndPlot()
                     : _sourceDataManager.GetSummerElectricityPriceData().Select(x => x.value).ToList();
 
                 PlotElectricityPrices?.Invoke(electricityData);
+                break;
+            case GraphType.ProductionCosts:
+                if (OptimizationResults != null)
+                {
+                    PlotExpenses?.Invoke(OptimizationResults);
+                }
                 break;
         }
     }
