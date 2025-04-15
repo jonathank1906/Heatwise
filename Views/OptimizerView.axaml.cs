@@ -45,17 +45,19 @@ public partial class OptimizerView : UserControl
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
 
         DataContextChanged += (sender, e) =>
-               {
-                   if (DataContext is OptimizerViewModel vm)
-                   {
-                       vm.PlotOptimizationResults = (results, demand) =>
-                           _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
-                       vm.PlotElectricityPrices = (prices) =>
-                           _dataVisualization.PlotElectricityPrice(OptimizationPlot, prices);
-                       vm.PlotExpenses = (results) =>
-                           _dataVisualization.PlotExpenses(OptimizationPlot, results);
-                   }
-               };
+    {
+        if (DataContext is OptimizerViewModel vm)
+        {
+            vm.PlotOptimizationResults = (results, demand) =>
+                _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
+            vm.PlotElectricityPrices = (prices) =>
+                _dataVisualization.PlotElectricityPrice(OptimizationPlot, prices);
+            vm.PlotExpenses = (results) =>
+                _dataVisualization.PlotExpenses(OptimizationPlot, results);
+            vm.PlotEmissions = (results) =>
+                _dataVisualization.PlotEmissions(OptimizationPlot, results);
+        }
+    };
 
 
         this.AttachedToVisualTree += (s, e) =>

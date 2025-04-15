@@ -88,6 +88,7 @@ public partial class OptimizerViewModel : ViewModelBase
     public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
     public Action<List<double>>? PlotElectricityPrices { get; set; }
     public Action<List<HeatProductionResult>>? PlotExpenses { get; set; }
+    public Action<List<HeatProductionResult>>? PlotEmissions { get; set; }
 
     public enum GraphType
     {
@@ -178,6 +179,12 @@ public partial class OptimizerViewModel : ViewModelBase
                 if (OptimizationResults != null)
                 {
                     PlotExpenses?.Invoke(OptimizationResults);
+                }
+                break;
+            case GraphType.CO2Emissions:
+                if (OptimizationResults != null)
+                {
+                    PlotEmissions?.Invoke(OptimizationResults);
                 }
                 break;
         }

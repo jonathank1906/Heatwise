@@ -28,7 +28,7 @@ public class DataVisualization
     {
         var plt = optimizationPlot.Plot;
         plt.Clear();
-        
+
         // Set dark theme
         var bgColor = new Color("#1e1e1e");
         plt.FigureBackground.Color = bgColor;
@@ -205,5 +205,58 @@ public class DataVisualization
 
         optimizationPlot.Refresh();
     }
-    
+
+    public void PlotEmissions(AvaPlot optimizationPlot, List<HeatProductionResult> results)
+    {
+        var plt = optimizationPlot.Plot;
+        plt.Clear();
+
+        // Set dark theme
+        var bgColor = new Color("#1e1e1e");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(new Color("#FFFFFF"));
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+
+        // Group results by timestamp and calculate total emissions per timestamp
+        var groupedResults = results
+            .GroupBy(r => r.Timestamp)
+            .OrderBy(g => g.Key)
+            .Select(g => new
+            {
+                Timestamp = g.Key,
+                TotalEmissions = g.Sum(r => r.Emissions)
+            })
+            .ToList();
+
+        // Prepare data for plotting
+        double[] timestamps = groupedResults.Select((g, i) => (double)i).ToArray();
+        double[] emissions = groupedResults.Select(g => g.TotalEmissions).ToArray();
+
+        // Plot emissions
+        var emissionsPlot = plt.Add.Scatter(timestamps, emissions);
+        emissionsPlot.Color = Colors.Red;
+        emissionsPlot.LineWidth = 2;
+        emissionsPlot.MarkerSize = 0;
+
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Emissions (kg CO2)",
+            LineColor = Colors.Red,
+            LineWidth = 2
+        });
+
+        // Set plot titles and labels
+        plt.Title("Emissions Over Time");
+        plt.XLabel("Time");
+        plt.YLabel("Emissions (kg CO2)");
+        plt.Axes.Margins(bottom: 0.02, top: 0.1);
+        plt.HideGrid();
+
+        optimizationPlot.Refresh();
+    }
+
 }
