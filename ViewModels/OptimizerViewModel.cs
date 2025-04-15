@@ -217,12 +217,55 @@ public partial class OptimizerViewModel : ViewModelBase
     [RelayCommand]
     private void ResetView()
     {
-        if (OptimizationResults == null || HeatDemandData == null || !HasOptimized) return;
+        if (!HasOptimized) return;
 
-        PlotOptimizationResults?.Invoke(
-            OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
-            HeatDemandData
-        );
+        // Depending on which graph is currently selected, reset that specific view
+        switch (SelectedGraphType)
+        {
+            case GraphType.HeatProduction:
+                if (OptimizationResults != null && HeatDemandData != null)
+                {
+                    PlotOptimizationResults?.Invoke(
+                        OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
+                        HeatDemandData
+                    );
+                }
+                break;
+
+            case GraphType.ElectricityPrices:
+                var electricityData = IsWinterSelected
+                    ? _sourceDataManager.GetWinterElectricityPriceData().Select(x => x.value).ToList()
+                    : _sourceDataManager.GetSummerElectricityPriceData().Select(x => x.value).ToList();
+                PlotElectricityPrices?.Invoke(electricityData);
+                break;
+
+            case GraphType.ProductionCosts:
+                if (OptimizationResults != null)
+                {
+                    PlotExpenses?.Invoke(OptimizationResults);
+                }
+                break;
+
+            case GraphType.CO2Emissions:
+                if (OptimizationResults != null)
+                {
+                    PlotEmissions?.Invoke(OptimizationResults);
+                }
+                break;
+
+            // Add cases for other graph types as needed
+            default:
+                // Default to heat production if no specific case matches
+                if (OptimizationResults != null && HeatDemandData != null)
+                {
+                    PlotOptimizationResults?.Invoke(
+                        OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
+                        HeatDemandData
+                    );
+                }
+                break;
+        }
+
         SelectedDates?.Clear();
     }
 

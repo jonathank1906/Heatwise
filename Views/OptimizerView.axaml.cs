@@ -45,29 +45,29 @@ public partial class OptimizerView : UserControl
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
 
         DataContextChanged += (sender, e) =>
-    {
-        if (DataContext is OptimizerViewModel vm)
         {
-            vm.PlotOptimizationResults = (results, demand) =>
-                _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
-            vm.PlotElectricityPrices = (prices) =>
-                _dataVisualization.PlotElectricityPrice(OptimizationPlot, prices);
-            vm.PlotExpenses = (results) =>
-                _dataVisualization.PlotExpenses(OptimizationPlot, results);
-            vm.PlotEmissions = (results) =>
-                _dataVisualization.PlotEmissions(OptimizationPlot, results);
-        }
-    };
+            if (DataContext is OptimizerViewModel vm)
+            {
+                vm.PlotOptimizationResults = (results, demand) =>
+                    _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
+                vm.PlotElectricityPrices = (prices) =>
+                    _dataVisualization.PlotElectricityPrice(OptimizationPlot, prices);
+                vm.PlotExpenses = (results) =>
+                    _dataVisualization.PlotExpenses(OptimizationPlot, results);
+                vm.PlotEmissions = (results) =>
+                    _dataVisualization.PlotEmissions(OptimizationPlot, results);
+            }
+        };
 
 
         this.AttachedToVisualTree += (s, e) =>
-  {
-      _mainWindow = TopLevel.GetTopLevel(this) as Window;
-      if (_mainWindow != null)
-      {
-          _mainWindow.PropertyChanged += MainWindow_PropertyChanged;
-      }
-  };
+        {
+            _mainWindow = TopLevel.GetTopLevel(this) as Window;
+            if (_mainWindow != null)
+            {
+                _mainWindow.PropertyChanged += MainWindow_PropertyChanged;
+            }
+        };
 
         this.DetachedFromVisualTree += (s, e) =>
         {
@@ -101,8 +101,6 @@ public partial class OptimizerView : UserControl
             }
         };
     }
-
-
 
     private void MainWindow_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
@@ -141,7 +139,6 @@ public partial class OptimizerView : UserControl
             _tooltipsEnabled = true;
         }
     }
-
 
     private void PlotResults(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData, bool showHeatDemand)
     {
@@ -338,6 +335,7 @@ public partial class OptimizerView : UserControl
     {
         InitializeTooltipWindow();
     }
+
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         base.OnUnloaded(e);
@@ -347,6 +345,7 @@ public partial class OptimizerView : UserControl
         _calendarWindow = null;
         _hasAutoOpenedWindow = false;
     }
+    
     private void UpdateHeatDemandVisibility(bool showHeatDemand)
     {
         if (_heatDemandPlot == null) return;
