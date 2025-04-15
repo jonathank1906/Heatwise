@@ -89,6 +89,7 @@ public partial class OptimizerViewModel : ViewModelBase
     public Action<List<double>>? PlotElectricityPrices { get; set; }
     public Action<List<HeatProductionResult>>? PlotExpenses { get; set; }
     public Action<List<HeatProductionResult>>? PlotEmissions { get; set; }
+    
 
     public enum GraphType
     {
@@ -153,6 +154,7 @@ public partial class OptimizerViewModel : ViewModelBase
         HasOptimized = true;
         SwitchGraph(SelectedGraphType); // Explicitly call SwitchGraph here
     }
+
 
     public void SwitchGraph(GraphType graphType)
     {

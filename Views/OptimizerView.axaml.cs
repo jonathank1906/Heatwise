@@ -43,13 +43,19 @@ public partial class OptimizerView : UserControl
     {
         InitializeComponent();
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
-
         DataContextChanged += (sender, e) =>
         {
             if (DataContext is OptimizerViewModel vm)
             {
                 vm.PlotOptimizationResults = (results, demand) =>
+                {
+                    // Call the existing plot method
                     _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
+
+                    // Add the crosshair functionality
+                    PlotCrosshair(results, demand);
+                };
+
                 vm.PlotElectricityPrices = (prices) =>
                     _dataVisualization.PlotElectricityPrice(OptimizationPlot, prices);
                 vm.PlotExpenses = (results) =>
@@ -78,6 +84,88 @@ public partial class OptimizerView : UserControl
         };
     }
 
+    private void PlotCrosshair(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
+    {
+        var plt = OptimizationPlot.Plot;
+
+        _hoverCrosshair = null;
+        _currentFilteredResults = results;
+        _currentHeatDemandData = heatDemandData;
+
+        // Add hover crosshair
+        _hoverCrosshair = plt.Add.Crosshair(0, 0);
+        _hoverCrosshair.IsVisible = false;
+
+        _hoverCrosshair.VerticalLine.Color = Colors.Red.WithAlpha(0.6);
+        _hoverCrosshair.HorizontalLine.Color = Colors.Red.WithAlpha(0.6);
+        _hoverCrosshair.VerticalLine.LineWidth = 1.5f;
+        _hoverCrosshair.HorizontalLine.LineWidth = 1.5f;
+
+        // Group results by timestamp
+        var groupedResults = results
+            .Where(r => r.AssetName != "Interval Summary")
+            .GroupBy(r => r.Timestamp)
+            .OrderBy(g => g.Key)
+            .ToList();
+
+        // Crosshair interaction
+        OptimizationPlot.PointerMoved += (s, e) =>
+        {
+            if (_currentFilteredResults == null || _currentHeatDemandData == null || !_tooltipsEnabled)
+            {
+                _hoverCrosshair.IsVisible = false;
+                OptimizationPlot.Refresh();
+                return;
+            }
+
+            var pixelPosition = e.GetPosition(OptimizationPlot);
+            var pixel = new Pixel((float)pixelPosition.X, (float)pixelPosition.Y);
+            var coordinates = plt.GetCoordinates(pixel);
+
+            int barIndex = (int)Math.Round(coordinates.X - 0.5);
+
+            if (barIndex >= 0 && barIndex < groupedResults.Count)
+            {
+                var timestamp = groupedResults[barIndex].Key;
+                var resultsAtTime = _currentFilteredResults
+                    .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
+                    .ToList();
+
+                var heatDemand = _currentHeatDemandData
+                    .FirstOrDefault(h => h.timestamp == timestamp).value;
+
+                string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
+                tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
+                tooltip += "Production:\n";
+
+                foreach (var result in resultsAtTime)
+                {
+                    tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
+                }
+
+                _hoverCrosshair.IsVisible = true;
+                _hoverCrosshair.VerticalLine.Position = barIndex + 1;
+                _hoverCrosshair.HorizontalLine.Position = heatDemand;
+
+                _lastTooltipContent = tooltip;
+
+                if (!_hasAutoOpenedWindow && (_tooltipWindow == null || _tooltipWindow.IsClosed))
+                {
+                    ShowTooltipWindow();
+                    _hasAutoOpenedWindow = true;
+                }
+
+                UpdateTooltipContent(tooltip);
+            }
+            else
+            {
+                _hoverCrosshair.IsVisible = false;
+            }
+
+            OptimizationPlot.Refresh();
+        };
+    }
+
     private void MainWindow_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Property == Window.WindowStateProperty)
@@ -100,7 +188,7 @@ public partial class OptimizerView : UserControl
         if (_tooltipWindow == null || _tooltipWindow.IsClosed)
         {
             _tooltipWindow = new TooltipWindow();
-            _tooltipWindow.Position = new PixelPoint(100, 100); // Default position
+            _tooltipWindow.Position = new PixelPoint(100, 100);
             _tooltipWindow.WindowClosed += (s, e) =>
             {
                 _tooltipWindow = null;
@@ -130,7 +218,7 @@ public partial class OptimizerView : UserControl
         _calendarWindow = null;
         _hasAutoOpenedWindow = false;
     }
-    
+
     private void UpdateHeatDemandVisibility(bool showHeatDemand)
     {
         if (_heatDemandPlot == null) return;
@@ -204,7 +292,6 @@ public partial class OptimizerView : UserControl
                 SetRangeFromCalendar(_calendarWindow.OptimizationCalendar.SelectedDates);
             };
 
-            // Position near the button
             var button = sender as Control;
             var screenPosition = button?.PointToScreen(new Point(0, button.Bounds.Height));
             _calendarWindow.Position = new PixelPoint((int)screenPosition!.Value.X, (int)screenPosition.Value.Y);
@@ -243,7 +330,6 @@ public partial class OptimizerView : UserControl
         }
 
         _currentFilteredResults = filteredResults;
-        // Removed call to PlotResults
     }
 
     private async void OnExportButtonClick(object sender, RoutedEventArgs e)

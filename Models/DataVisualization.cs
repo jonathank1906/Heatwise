@@ -49,9 +49,39 @@ public class DataVisualization
                         FillColor = color
                     });
                     currentBase += result.HeatProduced;
+
+                    // Add to legend if not already added
+                    if (addedToLegend.Add(result.AssetName))
+                    {
+                        plt.Legend.ManualItems.Add(new LegendItem
+                        {
+                            LabelText = result.AssetName,
+                            FillColor = color
+                        });
+                    }
                 }
             }
         }
+
+        // Add heat demand line to the plot
+        if (heatDemandData != null && heatDemandData.Any())
+        {
+            var timestamps = groupedResults.Select((g, i) => (double)(i + 1)).ToArray();
+            var heatDemandValues = heatDemandData.Select(h => h.value).ToArray();
+
+            var heatDemandLine = plt.Add.Scatter(timestamps, heatDemandValues);
+            heatDemandLine.Color = Colors.Red;
+            heatDemandLine.LineWidth = 2;
+            heatDemandLine.MarkerSize = 0;
+
+            plt.Legend.ManualItems.Add(new LegendItem
+            {
+                LabelText = "Heat Demand",
+                LineColor = Colors.Red,
+                LineWidth = 2
+            });
+        }
+
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
     }
@@ -144,6 +174,7 @@ public class DataVisualization
     private void InitializePlot(Plot plt, string title, string xLabel, string yLabel)
     {
         plt.Clear();
+        plt.Legend.ManualItems.Clear();
         var bgColor = new Color("#1e1e1e");
         plt.FigureBackground.Color = bgColor;
         plt.DataBackground.Color = bgColor;
