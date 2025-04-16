@@ -32,6 +32,13 @@ public partial class OptimizerViewModel : ViewModelBase
     private readonly Optimizer _optimizer;
     private readonly ResultDataManager _resultDataManager;
 
+       [RelayCommand]
+    private void ApplyDateRange()
+    {
+        SetDateRange(); // Reuse the existing SetDateRange logic
+    }
+    
+
     [ObservableProperty]
     private IList<DateTime>? _selectedDates;
 

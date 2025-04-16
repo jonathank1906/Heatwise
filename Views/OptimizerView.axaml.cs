@@ -387,7 +387,7 @@ public partial class OptimizerView : UserControl
         if (dates.Count == 0) return;
 
         DateTime startDate = dates.First();
-        DateTime endDate = dates.Last().AddDays(1);
+        DateTime endDate = dates.Last();
 
         var filteredResults = _currentOptimizationResults
             .Where(r => r.Timestamp.Date >= startDate && r.Timestamp.Date <= endDate)

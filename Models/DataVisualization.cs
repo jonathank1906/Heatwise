@@ -95,7 +95,7 @@ public class DataVisualization
                 LineWidth = 2
             });
         }
-
+        SetXAxisTicks(plt, groupedResults.Select(g => g.Key).ToList());
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
     }
@@ -199,7 +199,34 @@ public class DataVisualization
         plt.Legend.FontColor = Colors.White;
         plt.Title(title);
         plt.XLabel(xLabel);
+        
         plt.YLabel(yLabel);
         plt.HideGrid();
+    }
+
+    private void SetXAxisTicks(Plot plt, List<DateTime> timestamps)
+    {
+        string[] labels = new string[timestamps.Count];
+        double[] tickPositions = new double[timestamps.Count];
+
+        DateTime currentDay = DateTime.MinValue;
+        for (int i = 0; i < timestamps.Count; i++)
+        {
+            var timestamp = timestamps[i];
+            if (timestamp.Date != currentDay)
+            {
+                labels[i] = timestamp.ToString("MM/dd");
+                currentDay = timestamp.Date;
+            }
+            else
+            {
+                labels[i] = string.Empty;
+            }
+            tickPositions[i] = i + 1;
+        }
+
+        plt.Axes.Bottom.SetTicks(tickPositions, labels);
+        plt.Axes.Bottom.TickLabelStyle.Rotation = 45;
+        plt.Axes.Bottom.TickLabelStyle.OffsetY = 20;
     }
 }
