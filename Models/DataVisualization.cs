@@ -66,13 +66,27 @@ public class DataVisualization
         // Add heat demand line to the plot
         if (heatDemandData != null && heatDemandData.Any())
         {
-            var timestamps = groupedResults.Select((g, i) => (double)(i + 1)).ToArray();
-            var heatDemandValues = heatDemandData.Select(h => h.value).ToArray();
+            var orderedDemand = heatDemandData
+            .OrderBy(x => x.timestamp)
+            .ToList();
 
-            var heatDemandLine = plt.Add.Scatter(timestamps, heatDemandValues);
+            double[] positions = new double[orderedDemand.Count + 1];
+            double[] values = new double[orderedDemand.Count + 1];
+
+            for (int i = 0; i < orderedDemand.Count; i++)
+            {
+                positions[i] = i + 0.5;
+                values[i] = orderedDemand[i].value;
+            }
+
+            positions[^1] = orderedDemand.Count + 0.5;
+            values[^1] = values[^2];
+
+            var heatDemandLine = plt.Add.Scatter(positions, values);
             heatDemandLine.Color = Colors.Red;
             heatDemandLine.LineWidth = 2;
             heatDemandLine.MarkerSize = 0;
+            heatDemandLine.ConnectStyle = ConnectStyle.StepHorizontal;
 
             plt.Legend.ManualItems.Add(new LegendItem
             {
