@@ -5,24 +5,11 @@ using System;
 
 namespace Sem2Proj.Views
 {
-    public partial class SettingsWindow : Window
+    public partial class SettingsView : UserControl
     {
-        public SettingsWindow()
+        public SettingsView()
         {
             InitializeComponent();
-        }
-
-        private void WindowDragMove(object sender, PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            {
-                BeginMoveDrag(e);
-            }
-        }
-
-        private void CloseWindow(object sender, RoutedEventArgs e)
-        {
-            Close();
         }
     }
 }

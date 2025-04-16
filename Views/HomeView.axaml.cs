@@ -5,24 +5,11 @@ using System;
 
 namespace Sem2Proj.Views
 {
-    public partial class HomeWindow : Window
+    public partial class HomeView : UserControl
     {
-        public HomeWindow()
+        public HomeView()
         {
             InitializeComponent();
-        }
-
-        private void WindowDragMove(object sender, PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            {
-                BeginMoveDrag(e);
-            }
-        }
-
-        private void CloseWindow(object sender, RoutedEventArgs e)
-        {
-            Close();
         }
     }
 }
