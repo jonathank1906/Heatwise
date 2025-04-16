@@ -86,7 +86,7 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private List<double>? _summerElectricityPriceData;
     public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
-    public Action<List<double>>? PlotElectricityPrices { get; set; }
+    public Action<List<(DateTime timestamp, double price)>>? PlotElectricityPrices {get; set;}
     public Action<List<HeatProductionResult>>? PlotExpenses { get; set; }
     public Action<List<HeatProductionResult>>? PlotEmissions { get; set; }
     
@@ -171,8 +171,8 @@ public partial class OptimizerViewModel : ViewModelBase
 
             case GraphType.ElectricityPrices:
                 var electricityData = IsWinterSelected
-                    ? _sourceDataManager.GetWinterElectricityPriceData().Select(x => x.value).ToList()
-                    : _sourceDataManager.GetSummerElectricityPriceData().Select(x => x.value).ToList();
+                    ? _sourceDataManager.GetWinterElectricityPriceData()
+                    : _sourceDataManager.GetSummerElectricityPriceData();
 
                 PlotElectricityPrices?.Invoke(electricityData);
                 break;
@@ -190,6 +190,8 @@ public partial class OptimizerViewModel : ViewModelBase
                 break;
         }
     }
+
+    
 
     [RelayCommand]
     private void SetDateRange()
@@ -235,8 +237,8 @@ public partial class OptimizerViewModel : ViewModelBase
 
             case GraphType.ElectricityPrices:
                 var electricityData = IsWinterSelected
-                    ? _sourceDataManager.GetWinterElectricityPriceData().Select(x => x.value).ToList()
-                    : _sourceDataManager.GetSummerElectricityPriceData().Select(x => x.value).ToList();
+                    ? _sourceDataManager.GetWinterElectricityPriceData()
+                    : _sourceDataManager.GetSummerElectricityPriceData();
                 PlotElectricityPrices?.Invoke(electricityData);
                 break;
 

@@ -57,11 +57,40 @@ public partial class OptimizerView : UserControl
                 };
 
                 vm.PlotElectricityPrices = (prices) =>
-                    _dataVisualization.PlotElectricityPrice(OptimizationPlot, prices);
+          {
+              var priceValues = prices.Select(p => p.price).ToList();  // Extract the price values
+
+              _dataVisualization.PlotElectricityPrice(OptimizationPlot, priceValues);
+
+              // Convert prices to a format compatible with PlotCrosshair
+              var dummyResults = prices.Select(p => new HeatProductionResult
+              {
+                  Timestamp = p.timestamp,
+              }).ToList();
+
+              var dummyDemand = prices.Select(p => (p.timestamp, p.price)).ToList();
+              PlotCrosshair(dummyResults, dummyDemand);
+          };
+
                 vm.PlotExpenses = (results) =>
-                    _dataVisualization.PlotExpenses(OptimizationPlot, results);
+                 {
+                     // Call the existing plot method
+                     _dataVisualization.PlotExpenses(OptimizationPlot, results);
+
+                     // Add the crosshair functionality
+                     var dummyDemand = new List<(DateTime timestamp, double value)>(); // Empty demand for compatibility
+                     PlotCrosshair(results, dummyDemand);
+                 };
+
                 vm.PlotEmissions = (results) =>
+                {
+                    // Call the existing plot method
                     _dataVisualization.PlotEmissions(OptimizationPlot, results);
+
+                    // Add the crosshair functionality
+                    var dummyDemand = new List<(DateTime timestamp, double value)>(); // Empty demand for compatibility
+                    PlotCrosshair(results, dummyDemand);
+                };
             }
         };
 
@@ -92,7 +121,6 @@ public partial class OptimizerView : UserControl
         _currentFilteredResults = results;
         _currentHeatDemandData = heatDemandData;
 
-        // Add hover crosshair
         _hoverCrosshair = plt.Add.Crosshair(0, 0);
         _hoverCrosshair.IsVisible = false;
 
@@ -127,25 +155,63 @@ public partial class OptimizerView : UserControl
             if (barIndex >= 0 && barIndex < groupedResults.Count)
             {
                 var timestamp = groupedResults[barIndex].Key;
-                var resultsAtTime = _currentFilteredResults
-                    .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
-                    .ToList();
-
-                var heatDemand = _currentHeatDemandData
-                    .FirstOrDefault(h => h.timestamp == timestamp).value;
 
                 string tooltip = $"Time: {timestamp:MM/dd HH:mm}\n";
-                tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
-                tooltip += "Production:\n";
 
-                foreach (var result in resultsAtTime)
+                switch ((DataContext as OptimizerViewModel)?.SelectedGraphType)
                 {
-                    tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
+                    case OptimizerViewModel.GraphType.HeatProduction:
+                        var resultsAtTime = _currentFilteredResults
+                            .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
+                            .ToList();
+
+                        var heatDemand = _currentHeatDemandData
+                            .FirstOrDefault(h => h.timestamp == timestamp).value;
+
+                        tooltip += $"Heat Demand: {heatDemand:F2} MW\n";
+                        tooltip += "Production:\n";
+
+                        foreach (var result in resultsAtTime)
+                        {
+                            tooltip += $"- {result.AssetName}: {result.HeatProduced:F2} MW\n";
+                        }
+
+                        _hoverCrosshair.HorizontalLine.Position = heatDemand;
+                        break;
+
+                    case OptimizerViewModel.GraphType.ElectricityPrices:
+                        var electricityPrice = _currentHeatDemandData
+                            .FirstOrDefault(h => h.timestamp == timestamp).value;
+
+                        tooltip += $"Electricity Price: {electricityPrice:F2} DKK\n";
+                        _hoverCrosshair.HorizontalLine.Position = electricityPrice;
+                        break;
+
+                    case OptimizerViewModel.GraphType.ProductionCosts:
+                        var productionCost = _currentFilteredResults
+                            .Where(r => r.Timestamp == timestamp)
+                            .Sum(r => r.ProductionCost);
+
+                        tooltip += $"Production Cost: {productionCost:F2} DKK\n";
+                        _hoverCrosshair.HorizontalLine.Position = productionCost;
+                        break;
+
+                    case OptimizerViewModel.GraphType.CO2Emissions:
+                        var emissions = _currentFilteredResults
+                            .Where(r => r.Timestamp == timestamp)
+                            .Sum(r => r.Emissions);
+
+                        tooltip += $"CO2 Emissions: {emissions:F2} kg\n";
+                        _hoverCrosshair.HorizontalLine.Position = emissions;
+                        break;
+
+                    default:
+                        tooltip += "No data available for this graph type.\n";
+                        break;
                 }
 
                 _hoverCrosshair.IsVisible = true;
                 _hoverCrosshair.VerticalLine.Position = barIndex + 1;
-                _hoverCrosshair.HorizontalLine.Position = heatDemand;
 
                 _lastTooltipContent = tooltip;
 
