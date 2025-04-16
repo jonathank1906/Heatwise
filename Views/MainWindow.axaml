@@ -114,159 +114,181 @@
                     TintOpacity="1" />
             </ExperimentalAcrylicBorder.Material>
         </ExperimentalAcrylicBorder>
-
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-            <!--  Top Header / Title Bar  -->
-            <Border
-                Name="TopHeader"
-                Grid.Row="0"
-                Height="30"
-                Margin="0,0,0,0"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Top"
-                PointerPressed="OnPointerPressed"
-                ZIndex="3">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,15" EndPoint="0,6">
-                        <GradientStop Offset="0" Color="#FF222222" />
-                        <GradientStop Offset="1" Color="#FF333333" />
-                    </LinearGradientBrush>
-                </Border.Background>
+                <!--  Top Header / Title Bar  -->
                 <Border
-                    Height="1"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Bottom"
-                    Background="#99F04444" />
-                <Border.Effect>
-                    <DropShadowEffect
-                        BlurRadius="12"
-                        OffsetX="0"
-                        OffsetY="2"
-                        Opacity="0.7"
-                        Color="Black" />
-                </Border.Effect>
-            </Border>
-
-            <!--  Danfoss logo, home and settings container  -->
-            <StackPanel
-                Name="TopHeaderContainer"
-                Grid.Row="0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Orientation="Horizontal"
-                ZIndex="4">
-                <!--  Danfoss logo  -->
-                <Image
-                    Name="DanfossLogo"
-                    Width="60"
-                    Margin="0,3,0,0"
-                    Source="{SvgImage ../Assets/Danfoss-Logo.svg}"
-                    Stretch="Uniform" />
-
-                <!--  Home button with PathIcon  -->
-                <Button
-                    x:Name="homeButton"
-                    Width="30"
+                    Name="TopHeader"
+                    Grid.Row="0"
                     Height="30"
-                    Margin="10,0,0,0"
+                    Margin="0,0,0,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Top"
+                    PointerPressed="OnPointerPressed"
+                    ZIndex="3">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,15" EndPoint="0,6">
+                            <GradientStop Offset="0" Color="#FF222222" />
+                            <GradientStop Offset="1" Color="#FF333333" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border
+                        Height="1"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom"
+                        Background="#99F04444" />
+                    <Border.Effect>
+                        <DropShadowEffect
+                            BlurRadius="12"
+                            OffsetX="0"
+                            OffsetY="2"
+                            Opacity="0.7"
+                            Color="Black" />
+                    </Border.Effect>
+                </Border>
+
+                <!--  Danfoss logo, home and settings container  -->
+                <StackPanel
+                    Name="TopHeaderContainer"
+                    Grid.Row="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    ZIndex="4">
+                    <!--  Danfoss logo  -->
+                    <Image
+                        Name="DanfossLogo"
+                        Width="60"
+                        Margin="0,3,0,0"
+                        Source="{SvgImage ../Assets/Danfoss-Logo.svg}"
+                        Stretch="Uniform" />
+
+                    <!--  Home button with PathIcon  -->
+                    <Button
+                        x:Name="homeButton"
+                        Width="30"
+                        Height="30"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ShowHome}">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource Home}" />
+                    </Button>
+
+                    <Button
+                        x:Name="settingsButton"
+                        Width="30"
+                        Height="30"
+                        Margin="5,0,0,0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Classes="iconButton gear-clockwise"
+                        Command="{Binding ShowSettings}">
+                        <Button.Styles>
+                            <Style Selector="Button.gear-clockwise:pointerover &gt; Path">
+                                <Style.Animations>
+                                    <Animation IterationCount="1" Duration="0:0:0.4">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="RotateTransform.Angle" Value="0" />
+                                        </KeyFrame>
+                                        <KeyFrame Cue="20%">
+                                            <Setter Property="RotateTransform.Angle" Value="30" />
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Button.Styles>
+                        <Path Data="{StaticResource Settings}" />
+                    </Button>
+                </StackPanel>
+
+                <!--  Bottom Header / Menu Overlay  -->
+                <Border
+                    Grid.Row="1"
+                    Height="45"
+                    VerticalAlignment="Top"
+                    ZIndex="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Offset="0" Color="#FF7043" />
+                            <GradientStop Offset="0.3" Color="#FF5722" />
+                            <GradientStop Offset="0.6" Color="#F44336" />
+                            <GradientStop Offset="1" Color="#E32F2F" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Effect>
+                        <DropShadowEffect
+                            BlurRadius="10"
+                            OffsetX="2"
+                            OffsetY="2"
+                            Opacity="0.6"
+                            Color="#F44336" />
+                    </Border.Effect>
+                </Border>
+
+                <!--  Pages (Views)  -->
+                <TabControl
+                    Grid.Row="1"
+                    Padding="0,0,0,0"
+                    SelectedIndex="0"
+                    TabStripPlacement="Top"
+                    ZIndex="2">
+                    <TabControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="2" />
+                        </ItemsPanelTemplate>
+                    </TabControl.ItemsPanel>
+
+                    <!--  HeaderTemplate for the TabItems  -->
+                    <TabControl.Resources>
+                        <DataTemplate x:Key="TabHeaderTemplate">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Text="{Binding}" />
+                        </DataTemplate>
+                    </TabControl.Resources>
+
+                    <TabItem Header="Asset Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
+                        <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
+                    </TabItem>
+
+                    <TabItem Header="Optimizer" HeaderTemplate="{StaticResource TabHeaderTemplate}">
+                        <local:OptimizerView DataContext="{Binding OptimizerViewModel}" />
+                    </TabItem>
+                </TabControl>
+            </Grid>
+
+            <!--  Popup Overlay  -->
+            <Grid
+                Name="PopupOverlay"
+                Background="#80000000"
+                IsVisible="{Binding IsPopupVisible}"
+                ZIndex="100">
+
+                <!--  Backdrop  -->
+                <Border
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Background="Transparent"
+                    PointerPressed="Backdrop_PointerPressed" />
+
+                <!--  Window Content  -->
+                <ContentControl
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Click="OnHomeButtonClick">
-                    <PathIcon
-                        Width="20"
-                        Height="20"
-                        Data="{StaticResource Home}" />
-                </Button>
-
-                <Button
-                    x:Name="settingsButton"
-                    Width="30"
-                    Height="30"
-                    Margin="5,0,0,0"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Classes="iconButton gear-clockwise"
-                    Click="OnSettingsButtonClick">
-                    <Button.Styles>
-                        <Style Selector="Button.gear-clockwise:pointerover &gt; Path">
-                            <Style.Animations>
-                                <Animation IterationCount="1" Duration="0:0:0.4">
-                                    <KeyFrame Cue="0%">
-                                        <Setter Property="RotateTransform.Angle" Value="0" />
-                                    </KeyFrame>
-                                    <KeyFrame Cue="20%">
-                                        <Setter Property="RotateTransform.Angle" Value="30" />
-                                    </KeyFrame>
-                                </Animation>
-                            </Style.Animations>
-                        </Style>
-                    </Button.Styles>
-                    <Path Data="{StaticResource Settings}" />
-                </Button>
-            </StackPanel>
-
-            <!--  Bottom Header / Menu Overlay  -->
-            <Border
-                Grid.Row="1"
-                Height="45"
-                VerticalAlignment="Top"
-                ZIndex="1">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Offset="0" Color="#FF7043" />
-                        <GradientStop Offset="0.3" Color="#FF5722" />
-                        <GradientStop Offset="0.6" Color="#F44336" />
-                        <GradientStop Offset="1" Color="#E32F2F" />
-                    </LinearGradientBrush>
-                </Border.Background>
-                <Border.Effect>
-                    <DropShadowEffect
-                        BlurRadius="10"
-                        OffsetX="2"
-                        OffsetY="2"
-                        Opacity="0.6"
-                        Color="#F44336" />
-                </Border.Effect>
-            </Border>
-
-            <!--  Pages (Views)  -->
-            <TabControl
-                Grid.Row="1"
-                Padding="0,0,0,0"
-                TabStripPlacement="Top"
-                ZIndex="2"
-                SelectedIndex="0">
-                <TabControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Columns="2" />
-                    </ItemsPanelTemplate>
-                </TabControl.ItemsPanel>
-
-                <!--  HeaderTemplate for the TabItems  -->
-                <TabControl.Resources>
-                    <DataTemplate x:Key="TabHeaderTemplate">
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="{Binding}" />
-                    </DataTemplate>
-                </TabControl.Resources>
-
-                <TabItem Header="Asset Manager" HeaderTemplate="{StaticResource TabHeaderTemplate}">
-                    <local:AssetManagerView DataContext="{Binding AssetManagerViewModel}" />
-                </TabItem>
-
-                <TabItem Header="Optimizer" HeaderTemplate="{StaticResource TabHeaderTemplate}">
-                    <local:OptimizerView DataContext="{Binding OptimizerViewModel}" />
-                </TabItem>
-            </TabControl>
+                    Content="{Binding PopupContent}" />
+            </Grid>
         </Grid>
     </Panel>
 </Window>

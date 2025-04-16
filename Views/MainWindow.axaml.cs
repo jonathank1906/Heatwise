@@ -6,6 +6,7 @@ using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Layout;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Sem2Proj.ViewModels;
 namespace Sem2Proj.Views;
 
 public partial class MainWindow : AppWindow
@@ -42,23 +43,19 @@ public partial class MainWindow : AppWindow
         }
     }
 
+    private void Backdrop_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+        {
+            vm.ClosePopup();
+        }
+    }
+
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && e.GetPosition(this).Y <= TopHeader.Height)
         {
             BeginMoveDrag(e);
         }
-    }
-
-    private async void OnHomeButtonClick(object sender, RoutedEventArgs e)
-    {
-        var homeWindow = new HomeWindow();
-        await homeWindow.ShowDialog(this);
-    }
-
-    private async void OnSettingsButtonClick(object sender, RoutedEventArgs e)
-    {
-        var settingsWindow = new SettingsWindow();
-        await settingsWindow.ShowDialog(this);
     }
 }
