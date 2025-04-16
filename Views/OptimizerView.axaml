@@ -301,7 +301,7 @@
                                         <RadioButton
                                             Classes="fancy"
                                             Content="CO₂ Emissions"
-                                            GroupName="GraphTypeGroup" 
+                                            GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.CO2Emissions}}" />
 
                                         <RadioButton

@@ -49,28 +49,32 @@ public partial class OptimizerView : UserControl
             {
                 vm.PlotOptimizationResults = (results, demand) =>
                 {
+                    _currentOptimizationResults = results;
+
+                    _currentFilteredResults = results;
                     // Call the existing plot method
                     _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
 
                     // Add the crosshair functionality
                     PlotCrosshair(results, demand);
+
                 };
 
                 vm.PlotElectricityPrices = (prices) =>
-          {
-              var priceValues = prices.Select(p => p.price).ToList();  // Extract the price values
+                {
+                    var priceValues = prices.Select(p => p.price).ToList();  // Extract the price values
 
-              _dataVisualization.PlotElectricityPrice(OptimizationPlot, priceValues);
+                    _dataVisualization.PlotElectricityPrice(OptimizationPlot, priceValues);
 
-              // Convert prices to a format compatible with PlotCrosshair
-              var dummyResults = prices.Select(p => new HeatProductionResult
-              {
-                  Timestamp = p.timestamp,
-              }).ToList();
+                    // Convert prices to a format compatible with PlotCrosshair
+                    var dummyResults = prices.Select(p => new HeatProductionResult
+                    {
+                        Timestamp = p.timestamp,
+                    }).ToList();
 
-              var dummyDemand = prices.Select(p => (p.timestamp, p.price)).ToList();
-              PlotCrosshair(dummyResults, dummyDemand);
-          };
+                    var dummyDemand = prices.Select(p => (p.timestamp, p.price)).ToList();
+                    PlotCrosshair(dummyResults, dummyDemand);
+                };
 
                 vm.PlotExpenses = (results) =>
                  {
@@ -345,6 +349,8 @@ public partial class OptimizerView : UserControl
         }
     }
 
+    // Calendar
+    // -------------------------------------------------
     private void OpenCalendarPopup(object sender, RoutedEventArgs e)
     {
         if (_currentHeatDemandData == null || !_currentHeatDemandData.Any())
@@ -358,9 +364,10 @@ public partial class OptimizerView : UserControl
                 SetRangeFromCalendar(_calendarWindow.OptimizationCalendar.SelectedDates);
             };
 
+            // Position near the button
             var button = sender as Control;
             var screenPosition = button?.PointToScreen(new Point(0, button.Bounds.Height));
-            _calendarWindow.Position = new PixelPoint((int)screenPosition!.Value.X, (int)screenPosition.Value.Y);
+            _calendarWindow.Position = new PixelPoint((int)screenPosition.Value.X, (int)screenPosition.Value.Y);
 
             _calendarWindow.InitializeCalendar(_currentHeatDemandData.Select(x => x.timestamp));
             _calendarWindow.Show();
@@ -396,7 +403,10 @@ public partial class OptimizerView : UserControl
         }
 
         _currentFilteredResults = filteredResults;
+        _dataVisualization.PlotHeatProduction(OptimizationPlot, filteredResults, filteredHeatDemand);
+        PlotCrosshair(filteredResults, filteredHeatDemand);
     }
+
 
     private async void OnExportButtonClick(object sender, RoutedEventArgs e)
     {

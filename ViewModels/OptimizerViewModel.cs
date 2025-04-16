@@ -86,10 +86,10 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private List<double>? _summerElectricityPriceData;
     public Action<List<HeatProductionResult>, List<(DateTime timestamp, double value)>>? PlotOptimizationResults { get; set; }
-    public Action<List<(DateTime timestamp, double price)>>? PlotElectricityPrices {get; set;}
+    public Action<List<(DateTime timestamp, double price)>>? PlotElectricityPrices { get; set; }
     public Action<List<HeatProductionResult>>? PlotExpenses { get; set; }
     public Action<List<HeatProductionResult>>? PlotEmissions { get; set; }
-    
+
 
     public enum GraphType
     {
@@ -191,9 +191,7 @@ public partial class OptimizerViewModel : ViewModelBase
         }
     }
 
-    
-
-    [RelayCommand]
+   [RelayCommand]
     private void SetDateRange()
     {
         if (OptimizationResults == null || HeatDemandData == null || !HasOptimized) return;
