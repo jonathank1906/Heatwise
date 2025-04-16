@@ -17,6 +17,7 @@ public partial class OptimizerView : UserControl
     private bool _tooltipsEnabled = true;
     private Window? _mainWindow;
     private CalendarWindow? _calendarWindow;
+    private Flyout? _calendarFlyout;
     private TooltipWindow? _tooltipWindow;
     private bool _hasAutoOpenedWindow = false;
     private string? _lastTooltipContent;
@@ -42,24 +43,49 @@ public partial class OptimizerView : UserControl
     public OptimizerView()
     {
         InitializeComponent();
+        InitializeFlyoutEvents();
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
+        
         DataContextChanged += (sender, e) =>
         {
             if (DataContext is OptimizerViewModel vm)
+    {
+        vm.PlotOptimizationResults = (results, demand) =>
+        {
+            _currentOptimizationResults = results;
+            _currentFilteredResults = results;
+            _currentHeatDemandData = demand;
+            
+            // Initialize calendar dates
+            if (this.FindControl<Calendar>("OptimizationCalendar") is Calendar calendar)
             {
-                vm.PlotOptimizationResults = (results, demand) =>
+                calendar.SelectedDates.Clear();
+                calendar.DisplayDate = demand.FirstOrDefault().timestamp;
+                calendar.BlackoutDates.Clear();
+                
+                // Add all available dates to the calendar
+                var allDates = demand.Select(x => x.timestamp.Date).Distinct().ToList();
+                var minDate = allDates.Min();
+                var maxDate = allDates.Max();
+                
+                calendar.DisplayDateStart = minDate;
+                calendar.DisplayDateEnd = maxDate;
+                
+                // Blackout dates that don't have data
+                var date = minDate;
+                while (date <= maxDate)
                 {
-                    _currentOptimizationResults = results;
-
-                    _currentFilteredResults = results;
-                    // Call the existing plot method
-                    _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
-
-                    // Add the crosshair functionality
-                    PlotCrosshair(results, demand);
-
-                };
-
+                    if (!allDates.Contains(date))
+                    {
+                        calendar.BlackoutDates.Add(new CalendarDateRange(date));
+                    }
+                    date = date.AddDays(1);
+                }
+            }
+            
+            _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
+            PlotCrosshair(results, demand);
+        };
                 vm.PlotElectricityPrices = (prices) =>
                 {
                     var priceValues = prices.Select(p => p.price).ToList();  // Extract the price values
@@ -351,62 +377,83 @@ public partial class OptimizerView : UserControl
 
     // Calendar
     // -------------------------------------------------
-    private void OpenCalendarPopup(object sender, RoutedEventArgs e)
+   private void Calendar_SelectedDatesChanged(object? sender, SelectionChangedEventArgs e)
+{
+    if (sender is not Calendar calendar || _currentHeatDemandData == null)
+        return;
+
+    SetRangeFromCalendar(calendar.SelectedDates);
+}
+
+private void SetDateRange_Click(object? sender, RoutedEventArgs e)
+{
+    if (OptimizationCalendar.SelectedDates == null || _currentHeatDemandData == null)
+        return;
+
+    SetRangeFromCalendar(OptimizationCalendar.SelectedDates);
+    
+    // Close the flyout after applying
+    _calendarFlyout.Hide();
+}
+
+private void CalendarFlyout_Opened(object? sender, EventArgs e)
+{
+    // Reset the view when flyout opens
+    if (DataContext is OptimizerViewModel vm)
     {
-        if (_currentHeatDemandData == null || !_currentHeatDemandData.Any())
-            return;
+        vm.ResetViewCommand.Execute(null);
+    }
+    
+    // Clear previous selections
+    OptimizationCalendar.SelectedDates?.Clear();
+}
 
-        if (_calendarWindow == null || _calendarWindow.IsClosed)
-        {
-            _calendarWindow = new CalendarWindow();
-            _calendarWindow.DatesSelected += (s, args) =>
-            {
-                SetRangeFromCalendar(_calendarWindow.OptimizationCalendar.SelectedDates);
-            };
+private void InitializeFlyoutEvents()
+{
+    // Get the flyout from the button
+    _calendarFlyout = CalendarButton.Flyout as Flyout;
+    
+    if (_calendarFlyout != null)
+    {
+        _calendarFlyout.Opened += CalendarFlyout_Opened;
+    }
+}
 
-            // Position near the button
-            var button = sender as Control;
-            var screenPosition = button?.PointToScreen(new Point(0, button.Bounds.Height));
-            _calendarWindow.Position = new PixelPoint((int)screenPosition.Value.X, (int)screenPosition.Value.Y);
+private void SetRangeFromCalendar(IList<DateTime> selectedDates)
+{
+    if (_currentOptimizationResults == null || _currentHeatDemandData == null)
+        return;
 
-            _calendarWindow.InitializeCalendar(_currentHeatDemandData.Select(x => x.timestamp));
-            _calendarWindow.Show();
-        }
-        else
-        {
-            _calendarWindow.Activate();
-        }
+    if (selectedDates.Count == 0) 
+    {
+        // If nothing is selected, show all data
+        _currentFilteredResults = _currentOptimizationResults;
+        _dataVisualization.PlotHeatProduction(OptimizationPlot, _currentOptimizationResults, _currentHeatDemandData);
+        PlotCrosshair(_currentOptimizationResults, _currentHeatDemandData);
+        return;
     }
 
-    private void SetRangeFromCalendar(IEnumerable<DateTime> selectedDates)
+    var dates = selectedDates.OrderBy(d => d).ToList();
+    DateTime startDate = dates.First();
+    DateTime endDate = dates.Last();
+
+    var filteredResults = _currentOptimizationResults
+        .Where(r => r.Timestamp.Date >= startDate && r.Timestamp.Date <= endDate)
+        .ToList();
+
+    var filteredHeatDemand = _currentHeatDemandData
+        .Where(h => h.timestamp.Date >= startDate && h.timestamp.Date <= endDate)
+        .ToList();
+
+    if (!filteredResults.Any() || !filteredHeatDemand.Any())
     {
-        if (_currentOptimizationResults == null || _currentHeatDemandData == null)
-            return;
-
-        var dates = selectedDates.OrderBy(d => d).ToList();
-        if (dates.Count == 0) return;
-
-        DateTime startDate = dates.First();
-        DateTime endDate = dates.Last();
-
-        var filteredResults = _currentOptimizationResults
-            .Where(r => r.Timestamp.Date >= startDate && r.Timestamp.Date <= endDate)
-            .ToList();
-
-        var filteredHeatDemand = _currentHeatDemandData
-            .Where(h => h.timestamp.Date >= startDate && h.timestamp.Date <= endDate)
-            .ToList();
-
-        if (!filteredResults.Any() || !filteredHeatDemand.Any())
-        {
-            return;
-        }
-
-        _currentFilteredResults = filteredResults;
-        _dataVisualization.PlotHeatProduction(OptimizationPlot, filteredResults, filteredHeatDemand);
-        PlotCrosshair(filteredResults, filteredHeatDemand);
+        return;
     }
 
+    _currentFilteredResults = filteredResults;
+    _dataVisualization.PlotHeatProduction(OptimizationPlot, filteredResults, filteredHeatDemand);
+    PlotCrosshair(filteredResults, filteredHeatDemand);
+}
 
     private async void OnExportButtonClick(object sender, RoutedEventArgs e)
     {

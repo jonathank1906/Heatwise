@@ -323,9 +323,34 @@
                         </Button>
 
                         <Button
+                            x:Name="CalendarButton"
                             Classes="toolbar"
-                            Click="OpenCalendarPopup"
                             ToolTip.Tip="Calendar">
+                            <Button.Flyout>
+                                <Flyout Placement="LeftEdgeAlignedTop">
+                                    <StackPanel Width="300" Spacing="5">
+                                        <TextBlock
+                                            Margin="5,5,5,0"
+                                            FontSize="16"
+                                            FontWeight="Bold"
+                                            Text="Select Date Range"/>
+                                        <Calendar
+                                            x:Name="OptimizationCalendar"
+                                            Background="#2d2d2d"
+                                            BorderBrush="#3e3e3e"
+                                            BorderThickness="5,5,5,5"
+                                            CornerRadius="15,15,15,15"
+                                            Foreground="White"
+                                            SelectionMode="MultipleRange"/>
+                                        <Button
+                                            Width="100"
+                                            Margin="0,10,0,0"
+                                            HorizontalAlignment="Center"
+                                            Click="SetDateRange_Click"
+                                            Content="Apply"/>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
                             <StackPanel
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
