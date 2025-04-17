@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Sem2Proj.Models;
 using Sem2Proj.Interfaces;
+using Avalonia.Threading;
+using System.Threading.Tasks;
 
 namespace Sem2Proj.ViewModels;
 
@@ -11,6 +13,7 @@ public partial class MainWindowViewModel : ObservableObject
 {
     [ObservableProperty] private bool isPopupVisible = false;
     [ObservableProperty] private object? popupContent = null;
+    [ObservableProperty] private double popupOpacity = 0;
 
     // ViewModels
     public AssetManagerViewModel AssetManagerViewModel { get; }
@@ -25,7 +28,9 @@ public partial class MainWindowViewModel : ObservableObject
         AssetManagerViewModel = assetManagerViewModel;
         OptimizerViewModel = optimizerViewModel;
         SourceDataManagerViewModel = sourceDataManagerViewModel;
-        
+
+        // Show the home screen on startup
+        PopupOpacity = 1; // Set the opacity straight to 1 to skip the animation
         ShowHome();
     }
 
@@ -39,19 +44,46 @@ public partial class MainWindowViewModel : ObservableObject
         viewModel.SetCloseAction(ClosePopup);
         PopupContent = viewModel;
         IsPopupVisible = true;
+
+        if (PopupOpacity == 1) return;
+
+        // Animate the popup opacity
+        // Working with the Avalonia animations is a pain so this will do for now
+        Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            for (double i = 0; i <= 1; i += 0.02)
+            {
+                PopupOpacity = i;
+                await Task.Delay(1);
+            }
+            PopupOpacity = 1;
+        });
     }
     public void ClosePopup()
     {
-        // No animations yet
-        IsPopupVisible = false;
-        PopupContent = null;
+        // Animate the popup opacity
+        // Working with the Avalonia animations is a pain so this will do for now
+        Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            for (double i = 1; i > 0; i -= 0.02)
+            {
+                PopupOpacity = i;
+                await Task.Delay(1);
+            }
+
+            PopupOpacity = 0;
+            IsPopupVisible = false;
+            PopupContent = null;
+        });
     }
 
-    [RelayCommand] public void ShowHome()
+    [RelayCommand]
+    public void ShowHome()
     {
         ShowPopup<HomeViewModel>();
     }
-    [RelayCommand] public void ShowSettings()
+    [RelayCommand]
+    public void ShowSettings()
     {
         ShowPopup<SettingsViewModel>();
     }

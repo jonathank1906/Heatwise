@@ -274,6 +274,7 @@
                 Name="PopupOverlay"
                 Background="#D0000000"
                 IsVisible="{Binding IsPopupVisible}"
+                Opacity="{Binding PopupOpacity}"
                 ZIndex="100">
 
                 <!--  Backdrop  -->
@@ -283,12 +284,13 @@
                     Background="Transparent"
                     PointerPressed="Backdrop_PointerPressed" />
 
-                <!--  Window Content  -->
+                <!-- Content  -->
                 <ContentControl
+                    Name="PopupContentControl"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Content="{Binding PopupContent}">
-
+                    
                     <ContentControl.Template>
                         <ControlTemplate>
                             <Border
