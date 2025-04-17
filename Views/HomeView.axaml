@@ -3,65 +3,64 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:Sem2Proj.ViewModels"
-    Width="500"
-    Height="500"
+    Width="650"
+    Height="700"
     x:DataType="vm:HomeViewModel">
 
     <!--  Main Content  -->
-    <Border
-        Padding="10"
-        Background="#FF2D2D2D"
-        CornerRadius="8">
-        <Grid>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+        <Grid ClipToBounds="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Background="Transparent">
-                    <!--  Close Button  -->
-                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Button
-                            Canvas.Right="0"
-                            Width="46"
-                            Height="30"
-                            Padding="10,0,10,0"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Command="{Binding CloseCommand}">
-                            <PathIcon
-                                Width="12"
-                                Height="12"
-                                Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                                Foreground="White" />
-                        </Button>
-                    </Canvas>
-                </Grid>
-
-                <!--  Middle Content  -->
-                <StackPanel
-                    Grid.Row="1"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="20" />
-
-                <!--  Bottom Footer  -->
-                <DockPanel Grid.Row="2" Background="#AB2323">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            Margin="10,0,0,0"
-                            VerticalAlignment="Center"
-                            Foreground="White"
-                            Text="2025 2nd Semester Project" />
-                        <TextBlock
-                            Margin="5"
-                            Foreground="White"
-                            Text="Group 21" />
-                    </StackPanel>
-                </DockPanel>
+            <Grid Grid.Row="0" Background="Transparent">
+                <!--  Close Button  -->
+                <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Button
+                        Canvas.Right="0"
+                        Width="46"
+                        Height="30"
+                        Padding="10,0,10,0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding CloseCommand}">
+                        <PathIcon
+                            Width="12"
+                            Height="12"
+                            Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                            Foreground="White" />
+                    </Button>
+                </Canvas>
             </Grid>
+
+            <!--  Middle Content  -->
+            <StackPanel
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="20">
+                <TextBlock
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="(Welcome)" />
+            </StackPanel>
+
+            <!--  Bottom Footer  -->
+            <DockPanel Grid.Row="2" Background="#AB2323">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        Foreground="White"
+                        Text="2025 2nd Semester Project" />
+                    <TextBlock
+                        Margin="5"
+                        Foreground="White"
+                        Text="Group 21" />
+                </StackPanel>
+            </DockPanel>
         </Grid>
-    </Border>
 </UserControl>

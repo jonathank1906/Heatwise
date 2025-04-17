@@ -272,7 +272,7 @@
             <!--  Popup Overlay  -->
             <Grid
                 Name="PopupOverlay"
-                Background="#80000000"
+                Background="#D0000000"
                 IsVisible="{Binding IsPopupVisible}"
                 ZIndex="100">
 
@@ -287,7 +287,28 @@
                 <ContentControl
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Content="{Binding PopupContent}" />
+                    Content="{Binding PopupContent}">
+
+                    <ContentControl.Template>
+                        <ControlTemplate>
+                            <Border
+                                Background="#FF2D2D2D"
+                                BorderBrush="#FF444444"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                                <Border
+                                    Background="Transparent"
+                                    ClipToBounds="True"
+                                    CornerRadius="8">
+                                    <ContentPresenter
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Content="{TemplateBinding Content}" />
+                                </Border>
+                            </Border>
+                        </ControlTemplate>
+                    </ContentControl.Template>
+                </ContentControl>
             </Grid>
         </Grid>
     </Panel>
