@@ -11,7 +11,11 @@
         CanResize="False"
         Topmost="True">
         
-    <Border CornerRadius="5" Background="#1e1e1e" BorderBrush="#444" BorderThickness="1">
+    <Grid>
+        <!-- Transparent background with reduced opacity -->
+        <Border CornerRadius="5" Background="#1e1e1e" BorderBrush="#444" BorderThickness="1" Opacity="0.8"/>
+
+        <!-- Content area with full opacity -->
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/> <!-- Title bar area -->
@@ -47,5 +51,5 @@
                       Foreground="White"
                       TextWrapping="Wrap"/>
         </Grid>
-    </Border>
+    </Grid>
 </Window>
