@@ -1,0 +1,23 @@
+<UserControl
+    x:Class="Sem2Proj.Views.NotificationView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Sem2Proj.ViewModels"
+    x:DataType="vm:NotificationViewModel">
+
+    <!--  Main Content  -->
+    <Border
+        Width="500"
+        Margin="0,0,0,10"
+        Padding="12"
+        Background="#444"
+        CornerRadius="8"
+        Opacity="0.9">
+        <Grid>
+            <TextBlock
+                HorizontalAlignment="Center"
+                Foreground="White"
+                Text="{Binding Message}" />
+        </Grid>
+    </Border>
+</UserControl>

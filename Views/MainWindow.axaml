@@ -90,6 +90,14 @@
             <Setter Property="Foreground" Value="White" />
         </Style>
 
+        <Style Selector="Button#testButton &gt; PathIcon">
+            <Setter Property="Foreground" Value="#808080" />
+        </Style>
+
+        <Style Selector="Button#testButton:pointerover &gt; PathIcon">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
         <Style Selector="Button.iconButton &gt; Path">
             <Setter Property="Fill" Value="#808080" />
             <Setter Property="Stretch" Value="Uniform" />
@@ -210,6 +218,22 @@
                         </Button.Styles>
                         <Path Data="{StaticResource Settings}" />
                     </Button>
+
+                    <Button
+                        x:Name="testButton"
+                        Width="30"
+                        Height="30"
+                        Margin="5,0,0,0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ShowTest}">
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource Dot}" />
+                    </Button>
                 </StackPanel>
 
                 <!--  Bottom Header / Menu Overlay  -->
@@ -284,13 +308,13 @@
                     Background="Transparent"
                     PointerPressed="Backdrop_PointerPressed" />
 
-                <!-- Content  -->
+                <!--  Content  -->
                 <ContentControl
                     Name="PopupContentControl"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Content="{Binding PopupContent}">
-                    
+
                     <ContentControl.Template>
                         <ControlTemplate>
                             <Border
@@ -312,6 +336,19 @@
                     </ContentControl.Template>
                 </ContentControl>
             </Grid>
+
+            <!--  Notification Area  -->
+            <ItemsControl
+                Margin="10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                ItemsSource="{Binding Notifications}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:NotificationView />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
     </Panel>
 </Window>

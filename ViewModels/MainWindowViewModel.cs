@@ -6,6 +6,8 @@ using Sem2Proj.Models;
 using Sem2Proj.Interfaces;
 using Avalonia.Threading;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using Sem2Proj.Events;
 
 namespace Sem2Proj.ViewModels;
 
@@ -14,6 +16,7 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty] private bool isPopupVisible = false;
     [ObservableProperty] private object? popupContent = null;
     [ObservableProperty] private double popupOpacity = 0;
+    [ObservableProperty] private ObservableCollection<NotificationViewModel> notifications = [];
 
     // ViewModels
     public AssetManagerViewModel AssetManagerViewModel { get; }
@@ -32,6 +35,12 @@ public partial class MainWindowViewModel : ObservableObject
         // Show the home screen on startup
         PopupOpacity = 1; // Set the opacity straight to 1 to skip the animation
         ShowHome();
+
+        // Subscribe to the event to show notifications
+        Notification.OnNewNotification += ShowNotification;
+
+        // Show a test notification on startup
+        ShowNotification("Welcome to the app! This is a notification that will disappear after 3 seconds.");
     }
 
     // A quite fancy method to show a popup
@@ -59,6 +68,7 @@ public partial class MainWindowViewModel : ObservableObject
             PopupOpacity = 1;
         });
     }
+
     public void ClosePopup()
     {
         // Animate the popup opacity
@@ -82,9 +92,38 @@ public partial class MainWindowViewModel : ObservableObject
     {
         ShowPopup<HomeViewModel>();
     }
+
     [RelayCommand]
     public void ShowSettings()
     {
         ShowPopup<SettingsViewModel>();
+    }
+
+    public void ShowNotification(string message)
+    {
+        var notification = new NotificationViewModel(message, RemoveNotification);
+        Notifications.Add(notification);
+
+        // Auto remove after 3 seconds
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            Dispatcher.UIThread.Post(() => RemoveNotification(notification));
+        });
+    }
+
+    private void RemoveNotification(NotificationViewModel vm)
+    {
+        Notifications.Remove(vm);
+    }
+
+
+
+    // Testing
+    private int testCounter = 0;
+
+    [RelayCommand]
+    public void ShowTest()
+    {
+        ShowNotification($"This is a test notification #{++testCounter}");
     }
 }
