@@ -23,7 +23,7 @@ public class DataVisualization
     public void PlotHeatProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Heat Production Optimization", "Days", "Heat (MW)");
+        InitializePlot(plt, "Heat Production Optimization", "", "Heat (MW)");
 
         // Process optimization results (stacked bars)
         var groupedResults = results
@@ -43,7 +43,7 @@ public class DataVisualization
                 {
                     plt.Add.Bar(new Bar
                     {
-                        Position = i + 1,
+                        Position = i,
                         ValueBase = currentBase,
                         Value = currentBase + result.HeatProduced,
                         FillColor = color
@@ -75,11 +75,11 @@ public class DataVisualization
 
             for (int i = 0; i < orderedDemand.Count; i++)
             {
-                positions[i] = i + 0.5;
+                positions[i] = i - 0.5;
                 values[i] = orderedDemand[i].value;
             }
 
-            positions[^1] = orderedDemand.Count + 0.5;
+            positions[^1] = orderedDemand.Count - 0.5;
             values[^1] = values[^2];
 
             var heatDemandLine = plt.Add.Scatter(positions, values);
@@ -103,13 +103,13 @@ public class DataVisualization
     public void PlotElectricityPrice(AvaPlot optimizationPlot, List<double> prices)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Electricity Prices", "Time", "Price");
+        InitializePlot(plt, "Electricity Prices", "", "Electricity Price (DKK/MWh)");
 
         double[] xs = Enumerable.Range(0, prices.Count).Select(i => (double)i).ToArray();
         var plot = plt.Add.Scatter(xs, prices.ToArray());
         plot.Color = Colors.Green;
         plot.LineWidth = 2;
-        plot.MarkerSize = 0;
+        plot.MarkerSize = 5;
 
         plt.Legend.ManualItems.Add(new LegendItem
         {
@@ -125,7 +125,7 @@ public class DataVisualization
     public void PlotExpenses(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Production Costs Over Time", "Time", "Cost (DKK)");
+        InitializePlot(plt, "Production Costs", "", "Cost (DKK)");
 
         // Group results by timestamp and calculate total production cost per timestamp
         var groupedResults = results
@@ -151,7 +151,7 @@ public class DataVisualization
         var costPlot = plt.Add.Scatter(timestamps, costs);
         costPlot.Color = Colors.Orange;
         costPlot.LineWidth = 2;
-        costPlot.MarkerSize = 0;
+        costPlot.MarkerSize = 5;
 
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
@@ -160,7 +160,7 @@ public class DataVisualization
     public void PlotEmissions(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Emissions Over Time", "Time", "Emissions (kg CO2)");
+        InitializePlot(plt, "Emissions", "", "Emissions (kg CO2)");
 
         // Group results by timestamp and calculate total emissions per timestamp
         var groupedResults = results
@@ -179,7 +179,7 @@ public class DataVisualization
         var emissionsPlot = plt.Add.Scatter(timestamps, emissions);
         emissionsPlot.Color = Colors.Red;
         emissionsPlot.LineWidth = 2;
-        emissionsPlot.MarkerSize = 0;
+        emissionsPlot.MarkerSize = 5;
 
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
@@ -199,7 +199,7 @@ public class DataVisualization
         plt.Legend.FontColor = Colors.White;
         plt.Title(title);
         plt.XLabel(xLabel);
-        
+
         plt.YLabel(yLabel);
         plt.HideGrid();
     }
@@ -222,11 +222,9 @@ public class DataVisualization
             {
                 labels[i] = string.Empty;
             }
-            tickPositions[i] = i + 1;
+            tickPositions[i] = i;
         }
 
         plt.Axes.Bottom.SetTicks(tickPositions, labels);
-        plt.Axes.Bottom.TickLabelStyle.Rotation = 45;
-        plt.Axes.Bottom.TickLabelStyle.OffsetY = 20;
     }
 }

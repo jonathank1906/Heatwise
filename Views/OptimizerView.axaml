@@ -155,6 +155,11 @@
                     VerticalAlignment="Top"
                     Spacing="10">
 
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Text="Optimization Settings" />
                     <TextBlock FontSize="18" Text="Preset" />
                     <RadioButton
                         Classes="fancy"
@@ -333,7 +338,7 @@
                                             Margin="5,5,5,0"
                                             FontSize="16"
                                             FontWeight="Bold"
-                                            Text="Select Date Range"/>
+                                            Text="Select Date Range" />
                                         <Calendar
                                             x:Name="OptimizationCalendar"
                                             Background="#2d2d2d"
@@ -341,13 +346,13 @@
                                             BorderThickness="5,5,5,5"
                                             CornerRadius="15,15,15,15"
                                             Foreground="White"
-                                            SelectionMode="MultipleRange"/>
+                                            SelectionMode="MultipleRange" />
                                         <Button
                                             Width="100"
                                             Margin="0,10,0,0"
                                             HorizontalAlignment="Center"
                                             Click="SetDateRange_Click"
-                                            Content="Apply"/>
+                                            Content="Apply" />
                                     </StackPanel>
                                 </Flyout>
                             </Button.Flyout>
