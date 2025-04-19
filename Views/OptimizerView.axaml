@@ -229,23 +229,22 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Graph Area  -->
                 <Grid Grid.Column="0">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid>
+                        <ScottPlot:AvaPlot
+                            x:Name="OptimizationPlot"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            IsVisible="{Binding HasOptimized}" />
+                        
                         <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
                             FontSize="18"
                             Foreground="White"
                             IsVisible="{Binding !HasOptimized}"
                             Text="Click Optimize to get started" />
-
-                        <Grid>
-                            <ScottPlot:AvaPlot
-                                x:Name="OptimizationPlot"
-                                Width="1500"
-                                Height="900"
-                                IsVisible="{Binding HasOptimized}" />
-                        </Grid>
-                    </StackPanel>
+                    </Grid>
                 </Grid>
 
                 <!--  Vertical Toolbar  -->
