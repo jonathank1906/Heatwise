@@ -32,12 +32,22 @@ public partial class OptimizerViewModel : ViewModelBase
     private readonly Optimizer _optimizer;
     private readonly ResultDataManager _resultDataManager;
 
-       [RelayCommand]
+    public event Action<List<DateTime>>? UpdateXAxisTicks;
+    [RelayCommand]
     private void ApplyDateRange()
     {
         SetDateRange(); // Reuse the existing SetDateRange logic
     }
-    
+
+    [ObservableProperty]
+    private List<HeatProductionResult>? _filteredOptimizationResults;
+
+    [ObservableProperty]
+    private List<(DateTime timestamp, double value)>? _filteredHeatDemandData;
+
+    [ObservableProperty]
+    private List<(DateTime timestamp, double price)>? _filteredElectricityPriceData;
+
 
     [ObservableProperty]
     private IList<DateTime>? _selectedDates;
@@ -167,65 +177,143 @@ public partial class OptimizerViewModel : ViewModelBase
     {
         if (!HasOptimized) return;
 
-        switch (graphType)
+        // Always use full data when resetting (SelectedDates is null)
+        if (SelectedDates == null || SelectedDates.Count == 0)
         {
-            case GraphType.HeatProduction:
-                if (OptimizationResults != null && HeatDemandData != null)
-                {
-                    PlotOptimizationResults?.Invoke(OptimizationResults, HeatDemandData);
-                }
-                break;
+            switch (graphType)
+            {
+                case GraphType.HeatProduction:
+                    if (OptimizationResults != null && HeatDemandData != null)
+                    {
+                        PlotOptimizationResults?.Invoke(OptimizationResults, HeatDemandData);
+                    }
+                    break;
 
-            case GraphType.ElectricityPrices:
-                var electricityData = IsWinterSelected
-                    ? _sourceDataManager.GetWinterElectricityPriceData()
-                    : _sourceDataManager.GetSummerElectricityPriceData();
+                case GraphType.ElectricityPrices:
+                    var electricityData = IsWinterSelected
+                        ? _sourceDataManager.GetWinterElectricityPriceData()
+                        : _sourceDataManager.GetSummerElectricityPriceData();
+                    PlotElectricityPrices?.Invoke(electricityData);
+                    break;
 
-                PlotElectricityPrices?.Invoke(electricityData);
-                break;
-            case GraphType.ProductionCosts:
-                if (OptimizationResults != null)
-                {
-                    PlotExpenses?.Invoke(OptimizationResults);
-                }
-                break;
-            case GraphType.CO2Emissions:
-                if (OptimizationResults != null)
-                {
-                    PlotEmissions?.Invoke(OptimizationResults);
-                }
-                break;
+                case GraphType.ProductionCosts:
+                    if (OptimizationResults != null)
+                    {
+                        PlotExpenses?.Invoke(OptimizationResults);
+                    }
+                    break;
+
+                case GraphType.CO2Emissions:
+                    if (OptimizationResults != null)
+                    {
+                        PlotEmissions?.Invoke(OptimizationResults);
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            // Use filtered data if dates are selected
+            RefreshCurrentView();
         }
     }
 
-   [RelayCommand]
+    [RelayCommand]
     private void SetDateRange()
     {
         if (OptimizationResults == null || HeatDemandData == null || !HasOptimized) return;
 
-        // Get selected dates from the calendar (passed via command parameter)
-        if (SelectedDates == null || SelectedDates.Count == 0) return;
+        // If no dates are selected, reset to full data
+        if (SelectedDates == null || SelectedDates.Count == 0)
+        {
+            FilteredOptimizationResults = OptimizationResults;
+            FilteredHeatDemandData = HeatDemandData;
+
+            // Get fresh electricity data based on season
+            var electricityData = IsWinterSelected
+                ? _sourceDataManager.GetWinterElectricityPriceData()
+                : _sourceDataManager.GetSummerElectricityPriceData();
+            FilteredElectricityPriceData = electricityData;
+
+            // Update the current view
+            RefreshCurrentView();
+            return;
+        }
 
         var orderedDates = SelectedDates.OrderBy(d => d).ToList();
         DateTime startDate = orderedDates.First();
         DateTime endDate = orderedDates.Last().AddDays(1);
 
-        // Filter both optimization results and heat demand data
-        var filteredResults = OptimizationResults
+        // Always filter all data sets, but only show the current view
+        FilteredOptimizationResults = OptimizationResults
             .Where(r => r.Timestamp >= startDate && r.Timestamp <= endDate)
             .ToList();
 
-        var filteredHeatDemand = HeatDemandData
+        FilteredHeatDemandData = HeatDemandData
             .Where(h => h.timestamp >= startDate && h.timestamp <= endDate)
             .ToList();
 
-        PlotOptimizationResults?.Invoke(filteredResults, filteredHeatDemand);
+        var electricityPriceData = (IsWinterSelected
+            ? _sourceDataManager.GetWinterElectricityPriceData()
+            : _sourceDataManager.GetSummerElectricityPriceData())
+            .Where(p => p.timestamp >= startDate && p.timestamp <= endDate)
+            .ToList();
+        FilteredElectricityPriceData = electricityPriceData;
+
+        // Update the current view
+        RefreshCurrentView();
+    }
+
+    private void RefreshCurrentView()
+    {
+        switch (SelectedGraphType)
+        {
+            case GraphType.HeatProduction:
+                if (FilteredOptimizationResults != null && FilteredHeatDemandData != null)
+                {
+                    PlotOptimizationResults?.Invoke(FilteredOptimizationResults, FilteredHeatDemandData);
+                }
+                break;
+
+            case GraphType.ElectricityPrices:
+                if (FilteredElectricityPriceData != null)
+                {
+                    PlotElectricityPrices?.Invoke(FilteredElectricityPriceData);
+                }
+                break;
+
+            case GraphType.ProductionCosts:
+                if (FilteredOptimizationResults != null)
+                {
+                    PlotExpenses?.Invoke(FilteredOptimizationResults);
+                }
+                break;
+
+            case GraphType.CO2Emissions:
+                if (FilteredOptimizationResults != null)
+                {
+                    PlotEmissions?.Invoke(FilteredOptimizationResults);
+                }
+                break;
+        }
     }
 
     [RelayCommand]
     private void ResetView()
     {
         if (!HasOptimized) return;
+
+        if (OptimizationResults != null)
+        {
+            var timestamps = OptimizationResults
+                .Select(r => r.Timestamp)
+                .Distinct()
+                .OrderBy(t => t)
+                .ToList();
+
+            UpdateXAxisTicks?.Invoke(timestamps); // Add this event
+        }
+
 
         // Depending on which graph is currently selected, reset that specific view
         switch (SelectedGraphType)
@@ -270,6 +358,7 @@ public partial class OptimizerViewModel : ViewModelBase
                         OptimizationResults.Where(r => r.AssetName != "Interval Summary").ToList(),
                         HeatDemandData
                     );
+
                 }
                 break;
         }

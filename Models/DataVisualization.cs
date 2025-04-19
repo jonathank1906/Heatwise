@@ -188,6 +188,7 @@ public class DataVisualization
     private void InitializePlot(Plot plt, string title, string xLabel, string yLabel)
     {
         plt.Clear();
+        
         plt.Legend.ManualItems.Clear();
         var bgColor = new Color("#1e1e1e");
         plt.FigureBackground.Color = bgColor;
@@ -204,7 +205,7 @@ public class DataVisualization
         plt.HideGrid();
     }
 
-    private void SetXAxisTicks(Plot plt, List<DateTime> timestamps)
+    public void SetXAxisTicks(Plot plt, List<DateTime> timestamps)
     {
         string[] labels = new string[timestamps.Count];
         double[] tickPositions = new double[timestamps.Count];

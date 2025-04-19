@@ -50,6 +50,11 @@ public partial class OptimizerView : UserControl
         {
             if (DataContext is OptimizerViewModel vm)
             {
+                vm.UpdateXAxisTicks += (timestamps) =>
+    {
+        _dataVisualization.SetXAxisTicks(OptimizationPlot.Plot, timestamps);
+        OptimizationPlot.Refresh();
+    };
                 vm.PlotOptimizationResults = (results, demand) =>
                 {
                     _currentOptimizationResults = results;
@@ -386,6 +391,7 @@ public partial class OptimizerView : UserControl
             return;
 
         SetRangeFromCalendar(calendar.SelectedDates);
+        OptimizationPlot.Refresh();
     }
 
     private void SetDateRange_Click(object? sender, RoutedEventArgs e)
@@ -397,6 +403,7 @@ public partial class OptimizerView : UserControl
 
         // Close the flyout after applying
         _calendarFlyout.Hide();
+        OptimizationPlot.Refresh();
     }
 
     private void CalendarFlyout_Opened(object? sender, EventArgs e)
@@ -409,6 +416,7 @@ public partial class OptimizerView : UserControl
 
         // Clear previous selections
         OptimizationCalendar.SelectedDates?.Clear();
+        OptimizationPlot.Refresh();
     }
 
     private void InitializeFlyoutEvents()
@@ -424,38 +432,25 @@ public partial class OptimizerView : UserControl
 
     private void SetRangeFromCalendar(IList<DateTime> selectedDates)
     {
-        if (_currentOptimizationResults == null || _currentHeatDemandData == null)
-            return;
-
-        if (selectedDates.Count == 0)
+        if (DataContext is OptimizerViewModel vm)
         {
-            // If nothing is selected, show all data
-            _currentFilteredResults = _currentOptimizationResults;
-            _dataVisualization.PlotHeatProduction(OptimizationPlot, _currentOptimizationResults, _currentHeatDemandData);
-            PlotCrosshair(_currentOptimizationResults, _currentHeatDemandData);
-            return;
+            vm.SelectedDates = selectedDates.ToList();
+            vm.SetDateRangeCommand.Execute(null);
+
+            // Update the X-axis ticks with the filtered timestamps
+            if (_currentFilteredResults != null)
+            {
+                var filteredTimestamps = _currentFilteredResults
+                    .Select(r => r.Timestamp)
+                    .Distinct()
+                    .OrderBy(t => t)
+                    .ToList();
+
+                _dataVisualization.SetXAxisTicks(OptimizationPlot.Plot, filteredTimestamps);
+            }
+
+            OptimizationPlot.Refresh();
         }
-
-        var dates = selectedDates.OrderBy(d => d).ToList();
-        DateTime startDate = dates.First();
-        DateTime endDate = dates.Last();
-
-        var filteredResults = _currentOptimizationResults
-            .Where(r => r.Timestamp.Date >= startDate && r.Timestamp.Date <= endDate)
-            .ToList();
-
-        var filteredHeatDemand = _currentHeatDemandData
-            .Where(h => h.timestamp.Date >= startDate && h.timestamp.Date <= endDate)
-            .ToList();
-
-        if (!filteredResults.Any() || !filteredHeatDemand.Any())
-        {
-            return;
-        }
-
-        _currentFilteredResults = filteredResults;
-        _dataVisualization.PlotHeatProduction(OptimizationPlot, filteredResults, filteredHeatDemand);
-        PlotCrosshair(filteredResults, filteredHeatDemand);
     }
 
     // Export to CSV

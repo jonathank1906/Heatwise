@@ -173,7 +173,7 @@
                         Name="DanfossLogo"
                         Width="60"
                         Margin="0,3,0,0"
-                        Source="{SvgImage ../Assets/danfoss-logo.svg}"
+                        Source="{SvgImage ../Assets/Danfoss-Logo.svg}"
                         Stretch="Uniform" />
 
                     <!--  Home button with PathIcon  -->
