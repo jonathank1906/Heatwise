@@ -94,7 +94,7 @@ public partial class OptimizerView : UserControl
                 vm.PlotElectricityPrices = (prices) =>
                 {
                     var priceValues = prices.Select(p => p.price).ToList();  // Extract the price values
-
+                    InitializeCalendar(prices.Select(p => (p.timestamp, p.price)).ToList());
                     _dataVisualization.PlotElectricityPrice(OptimizationPlot, priceValues);
 
                     // Convert prices to a format compatible with PlotCrosshair
@@ -109,21 +109,21 @@ public partial class OptimizerView : UserControl
 
                 vm.PlotExpenses = (results) =>
                  {
-                     // Call the existing plot method
-                     _dataVisualization.PlotExpenses(OptimizationPlot, results);
+                     _currentFilteredResults = results;
+                     var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
 
-                     // Add the crosshair functionality
-                     var dummyDemand = new List<(DateTime timestamp, double value)>(); // Empty demand for compatibility
+                     InitializeCalendar(dummyDemand); // Initialize calendar with expense data timestamps
+                     _dataVisualization.PlotExpenses(OptimizationPlot, results);
                      PlotCrosshair(results, dummyDemand);
                  };
 
                 vm.PlotEmissions = (results) =>
                 {
-                    // Call the existing plot method
-                    _dataVisualization.PlotEmissions(OptimizationPlot, results);
+                    _currentFilteredResults = results;
+                    var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
 
-                    // Add the crosshair functionality
-                    var dummyDemand = new List<(DateTime timestamp, double value)>(); // Empty demand for compatibility
+                    InitializeCalendar(dummyDemand); // Initialize calendar with emissions data timestamps
+                    _dataVisualization.PlotEmissions(OptimizationPlot, results);
                     PlotCrosshair(results, dummyDemand);
                 };
             }
@@ -450,6 +450,35 @@ public partial class OptimizerView : UserControl
             }
 
             OptimizationPlot.Refresh();
+        }
+    }
+
+    private void InitializeCalendar(List<(DateTime timestamp, double value)> data)
+    {
+        if (this.FindControl<Calendar>("OptimizationCalendar") is Calendar calendar)
+        {
+            calendar.SelectedDates.Clear();
+            calendar.DisplayDate = data.FirstOrDefault().timestamp;
+            calendar.BlackoutDates.Clear();
+
+            // Add all available dates to the calendar
+            var allDates = data.Select(x => x.timestamp.Date).Distinct().ToList();
+            var minDate = allDates.Min();
+            var maxDate = allDates.Max();
+
+            calendar.DisplayDateStart = minDate;
+            calendar.DisplayDateEnd = maxDate;
+
+            // Blackout dates that don't have data
+            var date = minDate;
+            while (date <= maxDate)
+            {
+                if (!allDates.Contains(date))
+                {
+                    calendar.BlackoutDates.Add(new CalendarDateRange(date));
+                }
+                date = date.AddDays(1);
+            }
         }
     }
 
