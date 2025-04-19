@@ -1,13 +1,12 @@
-using System;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Sem2Proj.Models;
 using Sem2Proj.Interfaces;
 using Avalonia.Threading;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using Sem2Proj.Events;
+using Sem2Proj.Enums;
+using System;
 
 namespace Sem2Proj.ViewModels;
 
@@ -40,7 +39,7 @@ public partial class MainWindowViewModel : ObservableObject
         Notification.OnNewNotification += ShowNotification;
 
         // Show a test notification on startup
-        ShowNotification("Welcome to the app! This is a notification that will disappear after 3 seconds.");
+        ShowNotification("Welcome to the app! This is a notification that will disappear after 3 seconds.", NotificationType.Information);
     }
 
     // A quite fancy method to show a popup
@@ -99,9 +98,9 @@ public partial class MainWindowViewModel : ObservableObject
         ShowPopup<SettingsViewModel>();
     }
 
-    public void ShowNotification(string message)
+    public void ShowNotification(string message, NotificationType type)
     {
-        var notification = new NotificationViewModel(message, RemoveNotification);
+        var notification = new NotificationViewModel(message, type, RemoveNotification);
         Notifications.Add(notification);
 
         // Auto remove after 3 seconds
@@ -124,6 +123,9 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     public void ShowTest()
     {
-        ShowNotification($"This is a test notification #{++testCounter}");
+        var random = new Random();
+        var values = Enum.GetValues<NotificationType>();
+        var randomType = (NotificationType)values.GetValue(random.Next(values.Length))!;
+        ShowNotification($"This is a test notification #{++testCounter}", randomType);
     }
 }

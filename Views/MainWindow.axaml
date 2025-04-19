@@ -173,7 +173,7 @@
                         Name="DanfossLogo"
                         Width="60"
                         Margin="0,3,0,0"
-                        Source="{SvgImage ../Assets/Danfoss-Logo.svg}"
+                        Source="{SvgImage ../Assets/danfoss-logo.svg}"
                         Stretch="Uniform" />
 
                     <!--  Home button with PathIcon  -->
@@ -221,8 +221,8 @@
 
                     <Button
                         x:Name="testButton"
-                        Width="30"
-                        Height="30"
+                        Width="25"
+                        Height="25"
                         Margin="5,0,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"

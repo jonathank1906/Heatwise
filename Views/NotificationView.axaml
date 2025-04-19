@@ -7,15 +7,60 @@
 
     <!--  Main Content  -->
     <Border
-        Width="500"
         Margin="0,0,0,10"
-        Padding="12"
-        Background="#444"
+        Padding="10"
+        Background="#333"
+        BorderBrush="#555"
+        BorderThickness="1"
         CornerRadius="8"
-        Opacity="0.9">
+        Opacity="0.95">
         <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Image
+                Name="Checkmark"
+                Width="20"
+                Height="20"
+                Margin="0,0,10,0"
+                HorizontalAlignment="Left"
+                Opacity="{Binding CheckmarkOpacity}"
+                Source="{SvgImage Assets/check-circle.svg}" />
+            <Image
+                Name="Cross"
+                Width="20"
+                Height="20"
+                Margin="0,0,10,0"
+                HorizontalAlignment="Left"
+                Opacity="{Binding CrossOpacity}"
+                Source="{SvgImage Assets/cross-circle.svg}" />
+
+            <Image
+                Name="Warning"
+                Width="20"
+                Height="20"
+                Margin="0,0,10,0"
+                HorizontalAlignment="Left"
+                Opacity="{Binding WarningOpacity}"
+                Source="{SvgImage Assets/warning-circle.svg}" />
+
+            <Image
+                Name="Information"
+                Width="20"
+                Height="20"
+                Margin="0,0,10,0"
+                HorizontalAlignment="Left"
+                Opacity="{Binding InformationOpacity}0"
+                Source="{SvgImage Assets/info-circle.svg}" />
+
             <TextBlock
+                Grid.Column="1"
                 HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="14"
+                FontWeight="Bold"
                 Foreground="White"
                 Text="{Binding Message}" />
         </Grid>
