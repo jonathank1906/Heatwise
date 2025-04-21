@@ -11,46 +11,14 @@
     mc:Ignorable="d">
 
     <UserControl.Styles>
-        <Style Selector="ProgressBar.thick-track">
-            <Setter Property="Height" Value="24" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Background" Value="#444444" />
-            <Setter Property="CornerRadius" Value="0" />
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
-                        <Grid>
-                            <Border
-                                Name="PART_Track"
-                                Height="20"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="{TemplateBinding CornerRadius}" />
-                            <Border
-                                Name="PART_Indicator"
-                                Height="16"
-                                Background="{TemplateBinding Foreground}"
-                                CornerRadius="{TemplateBinding CornerRadius}" />
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter>
-        </Style>
-
-        <Style Selector="Button#editButton &gt; Path">
-            <Setter Property="Fill" Value="#808080" />
-        </Style>
-
-        <Style Selector="Button#editButton:pointerover &gt; Path">
-            <Setter Property="Fill" Value="White" />
-        </Style>
-
         <Style Selector="Border.value-box">
             <Setter Property="Background" Value="#BFBFBF" />
             <Setter Property="Padding" Value="5,2" />
-            <Setter Property="Margin" Value="0,-15,0,0" />
+            <Setter Property="Margin" Value="0,6,0,15" />
             <Setter Property="Height" Value="24" />
             <Setter Property="Width" Value="45" />
             <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="CornerRadius" Value="5" />
         </Style>
 
         <Style Selector="Border.value-box &gt; TextBlock">
@@ -74,479 +42,255 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid
-        Background="#1e1e1e"
-        ColumnDefinitions="200,*"
-        RowDefinitions="Auto,*,Auto">
-        <!--  Left Column: Static Navigation  -->
-        <StackPanel
-            Grid.Row="1"
-            Grid.RowSpan="2"
-            Width="200"
-            Background="#252526">
-            <ComboBox
-                Margin="10,10,10,15"
-                ItemsSource="{Binding AvailableScenarios}"
-                PlaceholderText="Select view"
-                SelectedItem="{Binding SelectedScenario, Mode=TwoWay}">
-                <ComboBox.Styles>
-                    <Style Selector="ComboBox">
-                        <Setter Property="FontSize" Value="16" />
-                        <Setter Property="Foreground" Value="White" />
-                        <Setter Property="Background" Value="#333333" />
-                    </Style>
-                    <Style Selector="ComboBox:pointerover">
-                        <Setter Property="Background" Value="#444444" />
-                    </Style>
-                    <Style Selector="ComboBoxItem">
-                        <Setter Property="Foreground" Value="White" />
-                        <Setter Property="Background" Value="#252526" />
-                    </Style>
-                </ComboBox.Styles>
-            </ComboBox>
+    <Grid Background="#1e1e1e" RowDefinitions="Auto,Auto,*">
 
-            <ListBox
-                Margin="0,0,0,10"
-                Padding="0"
-                ItemsSource="{Binding DisplayedAssets}"
-                SelectedItem="{Binding SelectedAsset, Mode=TwoWay}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
+        <!--  Top Bar  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="1"
+            Height="50"
+            Margin="20,20,20,0"
+            Background="#3E3E3E"
+            CornerRadius="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel
+                    Grid.Column="0"
+                    Margin="10,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Button
+                        Padding="0,0"
+                        HorizontalAlignment="Left"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding NavigateToCommand}"
+                        CommandParameter="Production Units">
                         <TextBlock
-                            Margin="5"
-                            FontSize="16"
-                            Text="{Binding Name}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            Text="Production Units" />
+                    </Button>
+
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="&gt;" />
+
+
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        IsVisible="{Binding !ShowScenarioSelection}"
+                        Text="{Binding SelectedScenario}" />
+
+                </StackPanel>
+
+                <!--  Button  -->
+                <Button
+                    Grid.Column="1"
+                    Width="120"
+                    Height="35"
+                    Margin="5,0,8,0"
+                    HorizontalAlignment="Center"
+                    Background="#0078d7"
+                    Content="Configure Units"
+                    CornerRadius="5"
+                    Foreground="White" />
+            </Grid>
+        </Border>
 
         <!--  Right Column: Scrollable Content  -->
         <ScrollViewer
-            Grid.Row="1"
-            Grid.RowSpan="2"
-            Grid.Column="1"
-            HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="20">
-                <!--  Main Content Grid  -->
-                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="50" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <!--  Image Section  -->
-                    <Grid Grid.Column="0" HorizontalAlignment="Center">
-                        <!--  Shadow container  -->
+            Grid.Row="2"
+            Padding="20"
+            IsVisible="{Binding ShowAssetDetails}">
+            <ItemsControl ItemsSource="{Binding CurrentScenarioAssets}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
                         <Border
-                            Width="450"
-                            Height="300"
-                            Background="Transparent"
+                            Margin="0,0,0,30"
+                            Padding="20"
+                            Background="#252526"
                             CornerRadius="15">
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="10" Color="Black" />
-                            </Border.Effect>
-                        </Border>
+                            <Grid ColumnDefinitions="Auto,20,*">
+                                <!--  Machine Image - Restored original working version  -->
+                                <Grid Grid.Column="0" HorizontalAlignment="Center">
+                                    <!--  Shadow container  -->
+                                    <Border
+                                        Width="300"
+                                        Height="200"
+                                        Background="Transparent"
+                                        CornerRadius="10">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="10" Color="Black" />
+                                        </Border.Effect>
+                                    </Border>
 
-                        <!--  Image with rounded corners  -->
-                        <Border
-                            Width="450"
-                            Height="300"
-                            ClipToBounds="True"
-                            CornerRadius="15">
-                            <Border.Clip>
-                                <RectangleGeometry
-                                    RadiusX="15"
-                                    RadiusY="15"
-                                    Rect="0,0,450,300" />
-                            </Border.Clip>
-                            <Image Source="{Binding ImageFromBinding}" Stretch="UniformToFill" />
-                        </Border>
-                    </Grid>
-
-                    <!--  Progress Bars Section  -->
-                    <Border
-                        Grid.Column="2"
-                        Background="#252526"
-                        ClipToBounds="True"
-                        CornerRadius="15">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="10" Color="Black" />
-                        </Border.Effect>
-                        <Grid Margin="10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <!--  Title and button row  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Max Heat label  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Max Heat progress  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Production Costs label  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Production Costs progress  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  CO₂ Emissions label  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  CO₂ Emissions progress  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Gas Consumption label  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Gas Consumption progress  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Oil Consumption label  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Oil Consumption progress  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Max Electricity label  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  Max Electricity progress  -->
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <!--  Title  -->
-                            <TextBlock
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="3"
-                                Margin="5,5,5,15"
-                                HorizontalAlignment="Center"
-                                FontSize="20"
-                                FontWeight="Bold"
-                                Foreground="White"
-                                Text="{Binding SelectedAsset.Name}" />
-
-                            <!--  Edit Button  -->
-                            <Button
-                                Name="editButton"
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Width="30"
-                                Height="30"
-                                Margin="0,0,5,0"
-                                Padding="0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top"
-                                Background="Transparent"
-                                BorderThickness="0">
-                                <Path
-                                    Width="20"
-                                    Height="20"
-                                    Data="{StaticResource Edit}"
-                                    Stretch="Uniform" />
-                            </Button>
-
-                            <!--  Progress bars and labels  -->
-                            <TextBlock
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Margin="0,6,6,0"
-                                HorizontalAlignment="Left"
-                                Foreground="White"
-                                Text="Max Heat" />
-                            <ProgressBar
-                                Grid.Row="2"
-                                Grid.Column="0"
-                                Margin="0,0,0,15"
-                                HorizontalAlignment="Stretch"
-                                Classes="thick-track"
-                                Maximum="5"
-                                Minimum="0"
-                                Value="{Binding SelectedAsset.MaxHeat}" />
-                            <Border
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                HorizontalAlignment="Left"
-                                Classes="value-box">
-                                <Grid HorizontalAlignment="Center">
-                                    <TextBlock
-                                        FontWeight="Bold"
-                                        Foreground="Black"
-                                        Text="{Binding SelectedAsset.MaxHeat, StringFormat={}{0:F1}}" />
+                                    <!--  Image with rounded corners  -->
+                                    <Border
+                                        Width="300"
+                                        Height="200"
+                                        ClipToBounds="True"
+                                        CornerRadius="10">
+                                        <Border.Clip>
+                                            <RectangleGeometry
+                                                RadiusX="10"
+                                                RadiusY="10"
+                                                Rect="0,0,300,200" />
+                                        </Border.Clip>
+                                        <Image Source="{Binding ImageFromBinding}" Stretch="UniformToFill" />
+                                    </Border>
                                 </Grid>
-                            </Border>
-                            <TextBlock
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                Margin="50,2,0,0"
-                                Classes="unit-text"
-                                Text="MW" />
 
-                            <TextBlock
-                                Grid.Row="3"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Margin="0,6,6,0"
-                                HorizontalAlignment="Left"
-                                Foreground="White"
-                                Text="Production Costs" />
-                            <ProgressBar
-                                Grid.Row="4"
-                                Grid.Column="0"
-                                Margin="0,0,0,15"
-                                HorizontalAlignment="Stretch"
-                                Classes="thick-track"
-                                Maximum="990"
-                                Minimum="0"
-                                Value="{Binding SelectedAsset.ProductionCosts}" />
-                            <Border
-                                Grid.Row="4"
-                                Grid.Column="1"
-                                HorizontalAlignment="Left"
-                                Classes="value-box">
-                                <Grid HorizontalAlignment="Center">
-                                    <TextBlock
-                                        FontWeight="Bold"
-                                        Foreground="Black"
-                                        Text="{Binding SelectedAsset.ProductionCosts, StringFormat={}{0:F1}}" />
-                                </Grid>
-                            </Border>
-                            <TextBlock
-                                Grid.Row="4"
-                                Grid.Column="1"
-                                Margin="50,2,0,0"
-                                Classes="unit-text"
-                                Text="DKK / MWh(th)" />
+                                <!--  Machine Details  -->
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Classes="machine-name" Text="{Binding Name}" />
 
-                            <TextBlock
-                                Grid.Row="5"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Margin="0,6,6,0"
-                                HorizontalAlignment="Left"
-                                Foreground="White"
-                                Text="CO₂ Emissions" />
-                            <ProgressBar
-                                Grid.Row="6"
-                                Grid.Column="0"
-                                Margin="0,0,0,14"
-                                HorizontalAlignment="Stretch"
-                                Classes="thick-track"
-                                Maximum="650"
-                                Minimum="0"
-                                Value="{Binding SelectedAsset.Emissions}" />
-                            <Border
-                                Grid.Row="6"
-                                Grid.Column="1"
-                                HorizontalAlignment="Left"
-                                Classes="value-box">
-                                <Grid HorizontalAlignment="Center">
-                                    <TextBlock
-                                        FontWeight="Bold"
-                                        Foreground="Black"
-                                        Text="{Binding SelectedAsset.Emissions, StringFormat={}{0:F1}}" />
-                                </Grid>
-                            </Border>
-                            <TextBlock
-                                Grid.Row="6"
-                                Grid.Column="1"
-                                Margin="50,2,0,0"
-                                Classes="unit-text"
-                                Text="kg / MWh(th)" />
-
-                            <TextBlock
-                                Grid.Row="7"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Margin="0,6,6,0"
-                                HorizontalAlignment="Left"
-                                Foreground="White"
-                                Text="Gas Consumption" />
-                            <ProgressBar
-                                Grid.Row="8"
-                                Grid.Column="0"
-                                Margin="0,0,0,15"
-                                HorizontalAlignment="Stretch"
-                                Classes="thick-track"
-                                Maximum="1.8"
-                                Minimum="0"
-                                Value="{Binding SelectedAsset.GasConsumption}" />
-                            <Border
-                                Grid.Row="8"
-                                Grid.Column="1"
-                                HorizontalAlignment="Left"
-                                Classes="value-box">
-                                <Grid HorizontalAlignment="Center">
-                                    <TextBlock
-                                        FontWeight="Bold"
-                                        Foreground="Black"
-                                        Text="{Binding SelectedAsset.GasConsumption, StringFormat={}{0:F1}}" />
-                                </Grid>
-                            </Border>
-                            <TextBlock
-                                Grid.Row="8"
-                                Grid.Column="1"
-                                Margin="50,2,0,0"
-                                Classes="unit-text"
-                                Text="MWh(gas) / MWh(th)" />
-
-                            <TextBlock
-                                Grid.Row="9"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Margin="0,6,6,0"
-                                HorizontalAlignment="Left"
-                                Foreground="White"
-                                Text="Oil Consumption" />
-                            <ProgressBar
-                                Grid.Row="10"
-                                Grid.Column="0"
-                                Margin="0,0,0,15"
-                                HorizontalAlignment="Stretch"
-                                Classes="thick-track"
-                                Maximum="1.5"
-                                Minimum="0"
-                                Value="{Binding SelectedAsset.OilConsumption}" />
-                            <Border
-                                Grid.Row="10"
-                                Grid.Column="1"
-                                HorizontalAlignment="Left"
-                                Classes="value-box">
-                                <Grid HorizontalAlignment="Center">
-                                    <TextBlock
-                                        FontWeight="Bold"
-                                        Foreground="Black"
-                                        Text="{Binding SelectedAsset.OilConsumption, StringFormat={}{0:F1}}" />
-                                </Grid>
-                            </Border>
-                            <TextBlock
-                                Grid.Row="10"
-                                Grid.Column="1"
-                                Margin="50,2,0,0"
-                                Classes="unit-text"
-                                Text="MWh(oil) / MWh(th)" />
-
-                            <TextBlock
-                                Grid.Row="11"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Margin="0,6,6,0"
-                                HorizontalAlignment="Left"
-                                Foreground="White"
-                                Text="Max Electricity" />
-                            <ProgressBar
-                                Grid.Row="12"
-                                Grid.Column="0"
-                                Margin="0,0,0,15"
-                                HorizontalAlignment="Stretch"
-                                Classes="thick-track"
-                                Maximum="-6"
-                                Minimum="0"
-                                Value="{Binding SelectedAsset.MaxElectricity}" />
-                            <Border
-                                Grid.Row="12"
-                                Grid.Column="1"
-                                HorizontalAlignment="Left"
-                                Classes="value-box">
-                                <Grid HorizontalAlignment="Center">
-                                    <TextBlock
-                                        FontWeight="Bold"
-                                        Foreground="Black"
-                                        Text="{Binding SelectedAsset.MaxElectricity, StringFormat={}{0:F1}}" />
-                                </Grid>
-                            </Border>
-                            <TextBlock
-                                Grid.Row="12"
-                                Grid.Column="1"
-                                Margin="50,2,0,0"
-                                Classes="unit-text"
-                                Text="MW" />
-                        </Grid>
-                    </Border>
-                </Grid>
-
-                <!--  Heating Grid Section  -->
-                <StackPanel Margin="0,100,0,0">
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <!--  Heating Grid Image  -->
-                        <Border
-                            Grid.Column="0"
-                            Width="550"
-                            Height="400"
-                            CornerRadius="15">
-                            <Border.Clip>
-                                <RectangleGeometry
-                                    RadiusX="15"
-                                    RadiusY="15"
-                                    Rect="0,0,550,400" />
-                            </Border.Clip>
-                            <Image
-                                Width="550"
-                                Height="400"
-                                Source="{Binding GridImageFromBinding}"
-                                Stretch="UniformToFill" />
-                        </Border>
-
-                        <!--  Heating Grid Info  -->
-                        <StackPanel
-                            Grid.Column="2"
-                            Width="300"
-                            VerticalAlignment="Center">
-                            <Border
-                                Background="#252526"
-                                ClipToBounds="True"
-                                CornerRadius="15">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="10" Color="Black" />
-                                </Border.Effect>
-                                <StackPanel Margin="15">
-                                    <TextBlock
-                                        Margin="0,0,0,10"
-                                        FontSize="18"
-                                        FontWeight="Bold"
-                                        Foreground="White"
-                                        Text="Grid Specifications" />
-
-                                    <StackPanel Margin="0,5">
+                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                                        <!--  Max Heat  -->
                                         <TextBlock
-                                            FontSize="14"
-                                            Foreground="#BFBFBF"
-                                            Text="Architecture" />
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Classes="parameter-label"
+                                            Text="Max Heat:" />
                                         <TextBlock
-                                            FontSize="16"
-                                            Foreground="White"
-                                            Text="{Binding GridInfo.Architecture}" />
-                                    </StackPanel>
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Classes="parameter-value"
+                                            Text="{Binding MaxHeat, StringFormat={}{0:F1} MW}" />
 
-                                    <StackPanel Margin="0,5">
+                                        <!--  Production Costs  -->
                                         <TextBlock
-                                            FontSize="14"
-                                            Foreground="#BFBFBF"
-                                            Text="Size" />
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Classes="parameter-label"
+                                            Text="Production Costs:" />
                                         <TextBlock
-                                            FontSize="16"
-                                            Foreground="White"
-                                            Text="{Binding GridInfo.Size}" />
-                                    </StackPanel>
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Classes="parameter-value"
+                                            Text="{Binding ProductionCosts, StringFormat={}{0:F1} DKK/MWh(th)}" />
 
-                                    <StackPanel Margin="0,5">
+                                        <!--  CO₂ Emissions  -->
                                         <TextBlock
-                                            FontSize="14"
-                                            Foreground="#BFBFBF"
-                                            Text="Name" />
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Classes="parameter-label"
+                                            Text="CO₂ Emissions:" />
                                         <TextBlock
-                                            FontSize="16"
-                                            Foreground="White"
-                                            Text="{Binding GridInfo.Name}" />
-                                    </StackPanel>
+                                            Grid.Row="2"
+                                            Grid.Column="1"
+                                            Classes="parameter-value"
+                                            Text="{Binding Emissions, StringFormat={}{0:F1} kg/MWh(th)}" />
+
+                                        <!--  Gas Consumption  -->
+                                        <TextBlock
+                                            Grid.Row="3"
+                                            Grid.Column="0"
+                                            Classes="parameter-label"
+                                            Text="Gas Consumption:" />
+                                        <TextBlock
+                                            Grid.Row="3"
+                                            Grid.Column="1"
+                                            Classes="parameter-value"
+                                            Text="{Binding GasConsumption, StringFormat={}{0:F1} MWh(gas)/MWh(th)}" />
+
+                                        <!--  Oil Consumption  -->
+                                        <TextBlock
+                                            Grid.Row="4"
+                                            Grid.Column="0"
+                                            Classes="parameter-label"
+                                            Text="Oil Consumption:" />
+                                        <TextBlock
+                                            Grid.Row="4"
+                                            Grid.Column="1"
+                                            Classes="parameter-value"
+                                            Text="{Binding OilConsumption, StringFormat={}{0:F1} MWh(oil)/MWh(th)}" />
+
+                                        <!--  Max Electricity  -->
+                                        <TextBlock
+                                            Grid.Row="5"
+                                            Grid.Column="0"
+                                            Classes="parameter-label"
+                                            Text="Max Electricity:" />
+                                        <TextBlock
+                                            Grid.Row="5"
+                                            Grid.Column="1"
+                                            Classes="parameter-value"
+                                            Text="{Binding MaxElectricity, StringFormat={}{0:F1} MW}" />
+                                    </Grid>
                                 </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-            </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </ScrollViewer>
+        <Grid
+            Grid.Row="2"
+            Grid.Column="1"
+            Background="#1e1e1e"
+            IsVisible="{Binding ShowScenarioSelection}">
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="20">
+                <TextBlock
+                    Margin="0,0,0,30"
+                    HorizontalAlignment="Center"
+                    FontSize="24"
+                    Foreground="White"
+                    Text="Select a Preset" />
+
+                <Button
+                    Width="200"
+                    Height="60"
+                    Background="#0078d7"
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="All Assets"
+                    CornerRadius="10">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="White"
+                        Text="All Assets" />
+                </Button>
+
+                <Button
+                    Width="200"
+                    Height="60"
+                    Background="#0078d7"
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="Scenario 1"
+                    CornerRadius="10">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="White"
+                        Text="Scenario 1" />
+                </Button>
+
+                <Button
+                    Width="200"
+                    Height="60"
+                    Background="#0078d7"
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="Scenario 2"
+                    CornerRadius="10">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="White"
+                        Text="Scenario 2" />
+                </Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

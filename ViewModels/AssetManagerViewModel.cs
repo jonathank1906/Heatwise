@@ -6,12 +6,24 @@ using System.IO;
 using Sem2Proj.Models;
 using System.Linq;
 using System.Diagnostics;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
+using Avalonia.Media.Imaging;
 
 namespace Sem2Proj.ViewModels;
 
+
 public partial class AssetManagerViewModel : ObservableObject
 {
+    [ObservableProperty]
+    private ObservableCollection<AssetModel> _currentScenarioAssets = new();
     private readonly AssetManager _assetManager;
+
+    [ObservableProperty]
+    private bool _showScenarioSelection;
+
+    [ObservableProperty]
+    private bool _showAssetDetails = true;
 
     [ObservableProperty]
     private ObservableCollection<AssetModel> _displayedAssets;
@@ -25,6 +37,8 @@ public partial class AssetManagerViewModel : ObservableObject
 
     [ObservableProperty]
     private Bitmap? _imageFromBinding;
+
+    public string ImageSource { get; set; } 
 
     [ObservableProperty]
     private Bitmap? _gridImageFromBinding;
@@ -45,50 +59,30 @@ public partial class AssetManagerViewModel : ObservableObject
 
         // Set default state
         SelectedScenario = "All Assets";
-        _displayedAssets = new ObservableCollection<AssetModel>(_assetManager.AllAssets);
-
-        if (_displayedAssets.Count > 0)
-        {
-            SelectedAsset = _displayedAssets[0];
-        }
 
         // Load initial grid image if available
         if (GridInfo?.ImageSource != null)
         {
             LoadGridImageFromSource(GridInfo.ImageSource);
         }
-
-        Debug.WriteLine($"ViewModel initialized with {_displayedAssets.Count} assets");
     }
-
-    private void UpdateDisplayedAssets()
+    [RelayCommand]
+    private void NavigateTo(string destination)
     {
-        Debug.WriteLine($"Changing scenario to: {SelectedScenario}");
-
-        if (SelectedScenario == "All Assets")
+        if (destination == "Production Units")
         {
-            DisplayedAssets = new ObservableCollection<AssetModel>(_assetManager.AllAssets);
-        }
-        else
-        {
-            var preset = _assetManager.Presets.FirstOrDefault(p => p.Name == SelectedScenario);
-            if (preset != null)
-            {
-                var scenarioAssets = _assetManager.AllAssets
-                    .Where(a => preset.Machines.Contains(a.Name))
-                    .ToList();
-
-                DisplayedAssets = new ObservableCollection<AssetModel>(scenarioAssets);
-                Debug.WriteLine($"Loaded {scenarioAssets.Count} assets for scenario {SelectedScenario}");
-            }
+            ShowScenarioSelection = true;
+            ShowAssetDetails = false;
+            // Keep SelectedScenario as is (don't set to null)
+            return;
         }
 
-        // Maintain selection if possible
-        SelectedAsset = DisplayedAssets.Contains(SelectedAsset!)
-            ? SelectedAsset
-            : DisplayedAssets.FirstOrDefault();
-
-        Debug.WriteLine($"Now displaying {DisplayedAssets.Count} assets");
+        if (destination == "All Assets" || AvailableScenarios.Contains(destination))
+        {
+            ShowScenarioSelection = false;
+            ShowAssetDetails = true;
+            SelectedScenario = destination == "All Assets" ? "All Assets" : destination;
+        }
     }
 
     partial void OnSelectedAssetChanged(AssetModel? value)
@@ -102,18 +96,52 @@ public partial class AssetManagerViewModel : ObservableObject
 
     partial void OnSelectedScenarioChanged(string? value)
     {
-        UpdateDisplayedAssets();
+        if (value == "All Assets")
+        {
+            CurrentScenarioAssets = new ObservableCollection<AssetModel>(
+                _assetManager.AllAssets.Select(a => new AssetModel
+                {
+                    Name = a.Name,
+                    MaxHeat = a.MaxHeat,
+                    ProductionCosts = a.ProductionCosts,
+                    Emissions = a.Emissions,
+                    GasConsumption = a.GasConsumption,
+                    OilConsumption = a.OilConsumption,
+                    MaxElectricity = a.MaxElectricity,
+                    ImageFromBinding = LoadImageFromSource(a.ImageSource)
+                })
+            );
+        }
+        else
+        {
+            var preset = _assetManager.Presets.FirstOrDefault(p => p.Name == value);
+            CurrentScenarioAssets = preset != null
+                ? new ObservableCollection<AssetModel>(
+                    _assetManager.AllAssets
+                        .Where(a => preset.Machines.Contains(a.Name))
+                        .Select(a => new AssetModel
+                        {
+                            Name = a.Name,
+                            MaxHeat = a.MaxHeat,
+                            ProductionCosts = a.ProductionCosts,
+                            Emissions = a.Emissions,
+                            GasConsumption = a.GasConsumption,
+                            OilConsumption = a.OilConsumption,
+                            MaxElectricity = a.MaxElectricity,
+                            ImageFromBinding = LoadImageFromSource(a.ImageSource)
+                        }))
+                : new ObservableCollection<AssetModel>();
+        }
+
+        ShowScenarioSelection = false;
+        ShowAssetDetails = true;
     }
 
-    private void LoadImageFromSource(string imageSource)
+    private Bitmap? LoadImageFromSource(string imageSource)
     {
         try
         {
-            if (string.IsNullOrEmpty(imageSource))
-            {
-                ImageFromBinding = null;
-                return;
-            }
+            if (string.IsNullOrEmpty(imageSource)) return null;
 
             var normalizedPath = imageSource.TrimStart('/', '\\');
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
@@ -123,20 +151,16 @@ public partial class AssetManagerViewModel : ObservableObject
             {
                 using (var stream = File.OpenRead(fullPath))
                 {
-                    ImageFromBinding = new Bitmap(stream);
+                    return new Bitmap(stream);
                 }
             }
-            else
-            {
-                Debug.WriteLine($"Image not found at: {fullPath}");
-                ImageFromBinding = null;
-            }
+            Debug.WriteLine($"Image not found at: {fullPath}");
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error loading image: {ex.Message}");
-            ImageFromBinding = null;
         }
+        return null;
     }
 
     private void LoadGridImageFromSource(string imageSource)

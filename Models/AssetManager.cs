@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Avalonia.Media.Imaging;
+
 
 namespace Sem2Proj.Models
 {
@@ -190,6 +192,7 @@ namespace Sem2Proj.Models
     {
         [ObservableProperty] private string name = string.Empty;
         [ObservableProperty] private string imageSource = string.Empty;
+          [ObservableProperty] private Bitmap? _imageFromBinding;
         [ObservableProperty] private double maxHeat;
         [ObservableProperty] private double productionCosts;
         [ObservableProperty] private double emissions;
