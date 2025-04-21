@@ -14,7 +14,7 @@
         <Style Selector="Border.value-box">
             <Setter Property="Background" Value="#BFBFBF" />
             <Setter Property="Padding" Value="5,2" />
-            <Setter Property="Margin" Value="0,6,0,15" />
+            <Setter Property="Margin" Value="40,6,0,6" />
             <Setter Property="Height" Value="24" />
             <Setter Property="Width" Value="45" />
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -30,7 +30,7 @@
         </Style>
 
         <Style Selector="TextBlock.unit-text">
-            <Setter Property="Margin" Value="5,0" />
+            <Setter Property="Margin" Value="10,6,0,6" />
             <Setter Property="Foreground" Value="White" />
         </Style>
 
@@ -138,15 +138,15 @@
 
                                     <!--  Image with rounded corners  -->
                                     <Border
-                                        Width="300"
-                                        Height="200"
+                                        Width="350"
+                                        Height="250"
                                         ClipToBounds="True"
                                         CornerRadius="10">
                                         <Border.Clip>
                                             <RectangleGeometry
                                                 RadiusX="10"
                                                 RadiusY="10"
-                                                Rect="0,0,300,200" />
+                                                Rect="0,0,350,250" />
                                         </Border.Clip>
                                         <Image Source="{Binding ImageFromBinding}" Stretch="UniformToFill" />
                                     </Border>
@@ -154,80 +154,156 @@
 
                                 <!--  Machine Details  -->
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Classes="machine-name" Text="{Binding Name}" />
+                                    <TextBlock
+                                        Classes="machine-name"
+                                        FontSize="20"
+                                        FontWeight="Bold"
+                                        Text="{Binding Name}" />
 
-                                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                                    <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
                                         <!--  Max Heat  -->
                                         <TextBlock
                                             Grid.Row="0"
                                             Grid.Column="0"
-                                            Classes="parameter-label"
-                                            Text="Max Heat:" />
-                                        <TextBlock
+                                            Margin="0,6,6,0"
+                                            HorizontalAlignment="Left"
+                                            Foreground="White"
+                                            Text="Max Heat" />
+                                        <Border
                                             Grid.Row="0"
                                             Grid.Column="1"
-                                            Classes="parameter-value"
-                                            Text="{Binding MaxHeat, StringFormat={}{0:F1} MW}" />
+                                            HorizontalAlignment="Left"
+                                            Classes="value-box">
+                                            <TextBlock
+                                                FontWeight="Bold"
+                                                Foreground="Black"
+                                                Text="{Binding MaxHeat, StringFormat={}{0:F1}}" />
+                                        </Border>
+                                        <TextBlock
+                                            Grid.Row="0"
+                                            Grid.Column="2"
+                                            Classes="unit-text"
+                                            Text="MW" />
 
                                         <!--  Production Costs  -->
                                         <TextBlock
                                             Grid.Row="1"
                                             Grid.Column="0"
-                                            Classes="parameter-label"
-                                            Text="Production Costs:" />
-                                        <TextBlock
+                                            Margin="0,6,6,0"
+                                            HorizontalAlignment="Left"
+                                            Foreground="White"
+                                            Text="Production Costs" />
+                                        <Border
                                             Grid.Row="1"
                                             Grid.Column="1"
-                                            Classes="parameter-value"
-                                            Text="{Binding ProductionCosts, StringFormat={}{0:F1} DKK/MWh(th)}" />
+                                            HorizontalAlignment="Left"
+                                            Classes="value-box">
+                                            <TextBlock
+                                                FontWeight="Bold"
+                                                Foreground="Black"
+                                                Text="{Binding ProductionCosts, StringFormat={}{0:F1}}" />
+                                        </Border>
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="2"
+                                            Classes="unit-text"
+                                            Text="DKK / MWh(th)" />
 
                                         <!--  CO₂ Emissions  -->
                                         <TextBlock
                                             Grid.Row="2"
                                             Grid.Column="0"
-                                            Classes="parameter-label"
-                                            Text="CO₂ Emissions:" />
-                                        <TextBlock
+                                            Margin="0,6,6,0"
+                                            HorizontalAlignment="Left"
+                                            Foreground="White"
+                                            Text="CO₂ Emissions" />
+                                        <Border
                                             Grid.Row="2"
                                             Grid.Column="1"
-                                            Classes="parameter-value"
-                                            Text="{Binding Emissions, StringFormat={}{0:F1} kg/MWh(th)}" />
+                                            HorizontalAlignment="Left"
+                                            Classes="value-box">
+                                            <TextBlock
+                                                FontWeight="Bold"
+                                                Foreground="Black"
+                                                Text="{Binding Emissions, StringFormat={}{0:F1}}" />
+                                        </Border>
+                                        <TextBlock
+                                            Grid.Row="2"
+                                            Grid.Column="2"
+                                            Classes="unit-text"
+                                            Text="kg / MWh(th)" />
 
                                         <!--  Gas Consumption  -->
                                         <TextBlock
                                             Grid.Row="3"
                                             Grid.Column="0"
-                                            Classes="parameter-label"
-                                            Text="Gas Consumption:" />
-                                        <TextBlock
+                                            Margin="0,6,6,0"
+                                            HorizontalAlignment="Left"
+                                            Foreground="White"
+                                            Text="Gas Consumption" />
+                                        <Border
                                             Grid.Row="3"
                                             Grid.Column="1"
-                                            Classes="parameter-value"
-                                            Text="{Binding GasConsumption, StringFormat={}{0:F1} MWh(gas)/MWh(th)}" />
+                                            HorizontalAlignment="Left"
+                                            Classes="value-box">
+                                            <TextBlock
+                                                FontWeight="Bold"
+                                                Foreground="Black"
+                                                Text="{Binding GasConsumption, StringFormat={}{0:F1}}" />
+                                        </Border>
+                                        <TextBlock
+                                            Grid.Row="3"
+                                            Grid.Column="2"
+                                            Classes="unit-text"
+                                            Text="MWh(gas) / MWh(th)" />
 
                                         <!--  Oil Consumption  -->
                                         <TextBlock
                                             Grid.Row="4"
                                             Grid.Column="0"
-                                            Classes="parameter-label"
-                                            Text="Oil Consumption:" />
-                                        <TextBlock
+                                            Margin="0,6,6,0"
+                                            HorizontalAlignment="Left"
+                                            Foreground="White"
+                                            Text="Oil Consumption" />
+                                        <Border
                                             Grid.Row="4"
                                             Grid.Column="1"
-                                            Classes="parameter-value"
-                                            Text="{Binding OilConsumption, StringFormat={}{0:F1} MWh(oil)/MWh(th)}" />
+                                            HorizontalAlignment="Left"
+                                            Classes="value-box">
+                                            <TextBlock
+                                                FontWeight="Bold"
+                                                Foreground="Black"
+                                                Text="{Binding OilConsumption, StringFormat={}{0:F1}}" />
+                                        </Border>
+                                        <TextBlock
+                                            Grid.Row="4"
+                                            Grid.Column="2"
+                                            Classes="unit-text"
+                                            Text="MWh(oil) / MWh(th)" />
 
                                         <!--  Max Electricity  -->
                                         <TextBlock
                                             Grid.Row="5"
                                             Grid.Column="0"
-                                            Classes="parameter-label"
-                                            Text="Max Electricity:" />
-                                        <TextBlock
+                                            Margin="0,6,6,0"
+                                            HorizontalAlignment="Left"
+                                            Foreground="White"
+                                            Text="Max Electricity" />
+                                        <Border
                                             Grid.Row="5"
                                             Grid.Column="1"
-                                            Classes="parameter-value"
-                                            Text="{Binding MaxElectricity, StringFormat={}{0:F1} MW}" />
+                                            HorizontalAlignment="Left"
+                                            Classes="value-box">
+                                            <TextBlock
+                                                FontWeight="Bold"
+                                                Foreground="Black"
+                                                Text="{Binding MaxElectricity, StringFormat={}{0:F1}}" />
+                                        </Border>
+                                        <TextBlock
+                                            Grid.Row="5"
+                                            Grid.Column="2"
+                                            Classes="unit-text"
+                                            Text="MW" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
