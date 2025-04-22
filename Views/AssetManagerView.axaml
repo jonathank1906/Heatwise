@@ -95,8 +95,9 @@
 
                 </StackPanel>
 
+
                 <!--  Button  -->
-                <Button
+                <!-- <Button
                     Grid.Column="1"
                     Width="120"
                     Height="35"
@@ -105,7 +106,7 @@
                     Background="#0078d7"
                     Content="Configure Units"
                     CornerRadius="5"
-                    Foreground="White" />
+                    Foreground="White" /> -->
             </Grid>
         </Border>
 
@@ -340,6 +341,12 @@
                         Foreground="White"
                         Text="All Assets" />
                 </Button>
+                <Button 
+            Command="{Binding ShowSettingsCommand}"
+            Content="Settings"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Margin="10"/>
 
                 <Button
                     Width="200"

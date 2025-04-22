@@ -2,7 +2,6 @@ using System;
 using FluentAvalonia.UI.Windowing;
 using Avalonia.Input;
 using Avalonia;
-using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Layout;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -49,9 +48,9 @@ public partial class MainWindow : AppWindow
     private void Backdrop_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (DataContext is MainWindowViewModel vm)
-        {
-            vm.ClosePopup();
-        }
+    {
+        vm.PopupService.ClosePopup();
+    }
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)

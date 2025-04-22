@@ -193,47 +193,9 @@
                             Data="{StaticResource Home}" />
                     </Button>
 
-                    <Button
-                        x:Name="settingsButton"
-                        Width="30"
-                        Height="30"
-                        Margin="5,0,0,0"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Classes="iconButton gear-clockwise"
-                        Command="{Binding ShowSettings}">
-                        <Button.Styles>
-                            <Style Selector="Button.gear-clockwise:pointerover &gt; Path">
-                                <Style.Animations>
-                                    <Animation IterationCount="1" Duration="0:0:0.4">
-                                        <KeyFrame Cue="0%">
-                                            <Setter Property="RotateTransform.Angle" Value="0" />
-                                        </KeyFrame>
-                                        <KeyFrame Cue="20%">
-                                            <Setter Property="RotateTransform.Angle" Value="30" />
-                                        </KeyFrame>
-                                    </Animation>
-                                </Style.Animations>
-                            </Style>
-                        </Button.Styles>
-                        <Path Data="{StaticResource Settings}" />
-                    </Button>
 
-                    <Button
-                        x:Name="testButton"
-                        Width="25"
-                        Height="25"
-                        Margin="5,0,0,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding ShowTest}">
-                        <PathIcon
-                            Width="20"
-                            Height="20"
-                            Data="{StaticResource Dot}" />
-                    </Button>
+
+
                 </StackPanel>
 
                 <!--  Bottom Header / Menu Overlay  -->
@@ -294,11 +256,13 @@
             </Grid>
 
             <!--  Popup Overlay  -->
+            <!--  In MainWindow.xaml - keep your existing PopupOverlay section  -->
+            <!--  Popup Overlay section - corrected  -->
             <Grid
                 Name="PopupOverlay"
                 Background="#D0000000"
-                IsVisible="{Binding IsPopupVisible}"
-                Opacity="{Binding PopupOpacity}"
+                IsVisible="{Binding PopupService.IsPopupVisible, Mode=OneWay}"
+                Opacity="1"
                 ZIndex="100">
 
                 <!--  Backdrop  -->
@@ -310,11 +274,9 @@
 
                 <!--  Content  -->
                 <ContentControl
-                    Name="PopupContentControl"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Content="{Binding PopupContent}">
-
+                    Content="{Binding PopupService.PopupContent, Mode=OneWay}">
                     <ContentControl.Template>
                         <ControlTemplate>
                             <Border
@@ -336,7 +298,6 @@
                     </ContentControl.Template>
                 </ContentControl>
             </Grid>
-
             <!--  Notification Area  -->
             <ItemsControl
                 Margin="10"

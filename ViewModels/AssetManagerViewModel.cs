@@ -9,12 +9,15 @@ using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using Avalonia.Media.Imaging;
+using Sem2Proj.Interfaces;
+using Sem2Proj.Services;
 
 namespace Sem2Proj.ViewModels;
 
 
 public partial class AssetManagerViewModel : ObservableObject
 {
+    private readonly IPopupService _popupService;
     [ObservableProperty]
     private ObservableCollection<AssetModel> _currentScenarioAssets = new();
     private readonly AssetManager _assetManager;
@@ -38,7 +41,7 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private Bitmap? _imageFromBinding;
 
-    public string ImageSource { get; set; } 
+    public string ImageSource { get; set; }
 
     [ObservableProperty]
     private Bitmap? _gridImageFromBinding;
@@ -47,9 +50,10 @@ public partial class AssetManagerViewModel : ObservableObject
 
     public HeatingGrid? GridInfo => _assetManager.GridInfo;
 
-    public AssetManagerViewModel(AssetManager assetManager)
+    public AssetManagerViewModel(AssetManager assetManager, IPopupService popupService)
     {
         _assetManager = assetManager;
+        _popupService = popupService;
 
         // Initialize scenarios list
         AvailableScenarios = new ObservableCollection<string>(
@@ -195,5 +199,10 @@ public partial class AssetManagerViewModel : ObservableObject
             Debug.WriteLine($"Error loading grid image: {ex.Message}");
             GridImageFromBinding = null;
         }
+    }
+    [RelayCommand]
+    public void ShowSettings()
+    {
+        _popupService.ShowPopup<SettingsViewModel>();
     }
 }

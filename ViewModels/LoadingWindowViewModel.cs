@@ -11,6 +11,8 @@ using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia;
 using Avalonia.Media;
+using Sem2Proj.Interfaces;
+using Sem2Proj.Services;
 
 namespace Sem2Proj.ViewModels;
 
@@ -56,7 +58,10 @@ public partial class LoadingWindowViewModel : ViewModelBase
         var assetManager = new AssetManager();
         var sourceDataManager = new SourceDataManager();
 
-        var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager));
+        // Create the PopupService first
+        var popupService = new PopupService();
+
+        var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager, popupService));
         var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager, new ResultDataManager()));
         var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());
 
@@ -72,7 +77,13 @@ public partial class LoadingWindowViewModel : ViewModelBase
 
         await Task.Delay(50);
 
-        var mainVM = new MainWindowViewModel(assetManagerViewModel, optimizerViewModel, sourceDataManagerViewModel);
+        // Pass the popupService to MainWindowViewModel
+        var mainVM = new MainWindowViewModel(
+            assetManagerViewModel,
+            optimizerViewModel,
+            sourceDataManagerViewModel,
+            popupService);
+
         onMainWindowReady?.Invoke(mainVM);
     }
 }
