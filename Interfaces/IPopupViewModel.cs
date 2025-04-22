@@ -1,5 +1,3 @@
-// IPopupService.cs
-using System;
 using System.ComponentModel;
 
 namespace Sem2Proj.Interfaces;
@@ -12,9 +10,4 @@ public interface IPopupService : INotifyPropertyChanged
     void ShowPopup<TViewModel>() where TViewModel : IPopupViewModel, new();
     void ShowPopup(IPopupViewModel viewModel);
     void ClosePopup();
-}
-
-public interface IPopupViewModel
-{
-    void SetCloseAction(Action close);
 }
