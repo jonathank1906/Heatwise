@@ -7,19 +7,16 @@ using Sem2Proj.Models;
 using System.Linq;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.Generic;
-using Avalonia.Media.Imaging;
 using Sem2Proj.Interfaces;
-using Sem2Proj.Services;
 using Sem2Proj.Enums;
-using Sem2Proj.Events;
-
+using Avalonia.Controls;
 
 namespace Sem2Proj.ViewModels;
 
 
 public partial class AssetManagerViewModel : ObservableObject
 {
+    private Flyout? _calendarFlyout;
     private readonly IPopupService _popupService;
     [ObservableProperty]
     private ObservableCollection<AssetModel> _currentScenarioAssets = new();

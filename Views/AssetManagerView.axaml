@@ -82,7 +82,7 @@
                         FontSize="18"
                         FontWeight="Bold"
                         Foreground="White"
-                        Text="&gt;" />
+                        Text="/" />
 
 
                     <TextBlock
@@ -106,7 +106,7 @@
                     Background="#0078d7"
                     Content="Configure Units"
                     CornerRadius="5"
-                    Foreground="White" /> -->
+                    Foreground="White" />-->
             </Grid>
         </Border>
 
@@ -313,11 +313,55 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
         <Grid
             Grid.Row="2"
             Grid.Column="1"
             Background="#1e1e1e"
             IsVisible="{Binding ShowScenarioSelection}">
+            <Grid
+                Grid.Row="2"
+                Grid.Column="1"
+                Background="#1e1e1e"
+                IsVisible="{Binding ShowScenarioSelection}">
+                <StackPanel
+                    Margin="20"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal">
+
+                    <Button
+                        Width="150"
+                        Height="40"
+                        Background="#0078d7"
+                        Command="{Binding ShowSettingsCommand}"
+                        CornerRadius="5">
+                        <Button.Content>
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal">
+                                <Path
+                                    Width="24"
+                                    Height="24"
+                                    Margin="0,0,8,0"
+                                    VerticalAlignment="Center"
+                                    Data="{StaticResource Add}"
+                                    Fill="White"
+                                    Stretch="Uniform" />
+                                <TextBlock
+                                    Margin="0,0,0,3"
+                                    VerticalAlignment="Center"
+                                    FontSize="18"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    Text="Create New" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
             <StackPanel
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -341,12 +385,6 @@
                         Foreground="White"
                         Text="All Assets" />
                 </Button>
-                <Button 
-            Command="{Binding ShowSettingsCommand}"
-            Content="Settings"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Margin="10"/>
 
                 <Button
                     Width="200"
