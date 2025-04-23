@@ -58,6 +58,15 @@
                 <ScrollViewer Padding="20">
                     <StackPanel Spacing="15">
                         <StackPanel Spacing="5">
+                            <TextBlock Foreground="White" Text="Save to Preset:" />
+                            <ComboBox
+                                Background="#3E3E3E"
+                                Foreground="White"
+                                ItemsSource="{Binding AvailablePresets}"
+                                SelectedItem="{Binding SelectedPreset}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="5">
                             <TextBlock Foreground="White" Text="Machine Name:" />
                             <TextBox
                                 Background="#3E3E3E"
@@ -144,7 +153,7 @@
                                 Watermark="Enter preset name" />
                         </StackPanel>
 
-                       
+
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

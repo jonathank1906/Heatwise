@@ -17,8 +17,9 @@ namespace Sem2Proj.ViewModels;
 
 public partial class AssetManagerViewModel : ObservableObject
 {
+
     [ObservableProperty]
-private ICommand? _parentDeleteCommand;
+    private ICommand? _parentDeleteCommand;
     private Flyout? _calendarFlyout;
     private readonly IPopupService _popupService;
     [ObservableProperty]
@@ -116,7 +117,7 @@ private ICommand? _parentDeleteCommand;
                     OilConsumption = a.OilConsumption,
                     MaxElectricity = a.MaxElectricity,
                     ImageFromBinding = LoadImageFromSource(a.ImageSource),
-                     DeleteCommand = DeleteMachineCommand
+                    DeleteCommand = DeleteMachineCommand
                 })
             );
         }
@@ -137,7 +138,7 @@ private ICommand? _parentDeleteCommand;
                             OilConsumption = a.OilConsumption,
                             MaxElectricity = a.MaxElectricity,
                             ImageFromBinding = LoadImageFromSource(a.ImageSource),
-                             DeleteCommand = DeleteMachineCommand
+                            DeleteCommand = DeleteMachineCommand
                         }))
                 : new ObservableCollection<AssetModel>();
         }
@@ -211,30 +212,41 @@ private ICommand? _parentDeleteCommand;
         var settingsViewModel = new SettingsViewModel(_assetManager, _popupService);
 
         settingsViewModel.AssetCreatedSuccessfully += () =>
-        {
-            // Refresh the data
-            _assetManager.RefreshAssets();
+  {
+      // This is the key fix - completely rebuild the collection
+      var current = SelectedScenario;
+      CurrentScenarioAssets = new ObservableCollection<AssetModel>(
+          current == "All Assets"
+              ? _assetManager.AllAssets.Select(CreateAssetModel)
+              : _assetManager.Presets
+                  .FirstOrDefault(p => p.Name == current)?
+                  .Machines
+                  .Select(m => _assetManager.AllAssets.FirstOrDefault(a => a.Name == m))
+                  .Where(a => a != null)
+                  .Select(CreateAssetModel)
+                  ?? Enumerable.Empty<AssetModel>()
+      );
+  };
 
-            // Force UI update by reassigning the collection
-            CurrentScenarioAssets = new ObservableCollection<AssetModel>(
-                _assetManager.AllAssets.Select(a => new AssetModel
-                {
-                    Name = a.Name,
-                    MaxHeat = a.MaxHeat,
-                    ProductionCosts = a.ProductionCosts,
-                    Emissions = a.Emissions,
-                    GasConsumption = a.GasConsumption,
-                    OilConsumption = a.OilConsumption,
-                    MaxElectricity = a.MaxElectricity,
-                    ImageFromBinding = LoadImageFromSource(a.ImageSource)
-                })
-            );
 
-            Debug.WriteLine("New asset created and view refreshed");
-            Events.Notification.Invoke("New asset created successfully!", NotificationType.Confirmation);
-        };
 
         _popupService.ShowPopup(settingsViewModel);
+    }
+
+    private AssetModel CreateAssetModel(AssetModel source)
+    {
+        return new AssetModel
+        {
+            Name = source.Name,
+            MaxHeat = source.MaxHeat,
+            ProductionCosts = source.ProductionCosts,
+            Emissions = source.Emissions,
+            GasConsumption = source.GasConsumption,
+            OilConsumption = source.OilConsumption,
+            MaxElectricity = source.MaxElectricity,
+            ImageFromBinding = LoadImageFromSource(source.ImageSource),
+            DeleteCommand = DeleteMachineCommand
+        };
     }
     [RelayCommand]
     private void DeleteMachine(string machineName)

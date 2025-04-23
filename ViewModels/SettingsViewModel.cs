@@ -5,12 +5,18 @@ using CommunityToolkit.Mvvm.Input;
 using Sem2Proj.Interfaces;
 using System.Diagnostics;
 using Sem2Proj.Models;
+using System.Linq;
 
 namespace Sem2Proj.ViewModels;
 
 
 public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
 {
+     [ObservableProperty]
+    private string[] _availablePresets = Array.Empty<string>();
+
+    [ObservableProperty]
+    private string? _selectedPreset;
     [ObservableProperty]
     private string _presetName = string.Empty;
     public event Action? AssetCreatedSuccessfully;
@@ -55,6 +61,13 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
         _assetManager = assetManager;
         _popupService = popupService;
         CloseCommand = new RelayCommand(() => _popupService.ClosePopup());
+
+        // Initialize available presets
+        AvailablePresets = assetManager.Presets.Select(p => p.Name).ToArray();
+        if (AvailablePresets.Length > 0)
+        {
+            SelectedPreset = AvailablePresets[0];
+        }
     }
 
     public void SetCloseAction(Action closeCallback)
@@ -99,12 +112,14 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
             productionCost,
             emissions,
             gasConsumption,
-            oilConsumption
+            oilConsumption,
+            SelectedPreset 
         );
 
         if (success)
         {
             Debug.WriteLine($"Successfully created new asset '{MachineName}'");
+             _assetManager.RefreshAssets();
             AssetCreatedSuccessfully?.Invoke();
             CloseCommand.Execute(null);
         }
