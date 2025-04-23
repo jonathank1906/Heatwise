@@ -5,9 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Sem2Proj.ViewModels"
+    x:Name="userControl"
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:AssetManagerViewModel"
+    Tag="{Binding}"
     mc:Ignorable="d">
 
     <UserControl.Styles>
@@ -75,7 +77,7 @@
                             FontSize="18"
                             FontWeight="Bold"
                             Foreground="White"
-                            Text="Production Units" />
+                            Text="Presets" />
                     </Button>
 
                     <TextBlock
@@ -95,6 +97,54 @@
                         Text="{Binding SelectedScenario}" />
 
                 </StackPanel>
+
+                <Button
+                    Grid.Column="0"
+                    Width="110"
+                    Height="40"
+                    Margin="0,0,8,0"
+                    HorizontalAlignment="Center"
+                    Background="#0078d7"
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="All Assets"
+                    CornerRadius="10">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="White"
+                        Text="All Assets" />
+                </Button>
+
+                <Button
+                    Grid.Column="1"
+                    Width="200"
+                    Height="40"
+                    Margin="5,0,8,0"
+                    HorizontalAlignment="Center"
+                    Background="#0078d7"
+                    CornerRadius="5">
+                    <Button.Content>
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Path
+                                Width="24"
+                                Height="24"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource Edit}"
+                                Fill="White"
+                                Stretch="Uniform" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                Text="Configure Units" />
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
                 <Button
                     Grid.Column="2"
                     Width="110"
@@ -118,7 +168,6 @@
                                 Fill="White"
                                 Stretch="Uniform" />
                             <TextBlock
-                                Margin="0,0,0,3"
                                 VerticalAlignment="Center"
                                 FontSize="18"
                                 FontWeight="Bold"
@@ -156,6 +205,25 @@
                             Background="#252526"
                             CornerRadius="15">
                             <Grid ColumnDefinitions="Auto,20,*">
+                                <Button
+                                    Grid.Column="2"
+                                    Width="30"
+                                    Height="30"
+                                    Margin="0,-10,-10,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding DeleteCommand}"
+                                    CommandParameter="{Binding Name}">
+                                    <Path
+                                        Width="20"
+                                        Height="20"
+                                        Data="{StaticResource TrashIcon}"
+                                        Fill="Red"
+                                        Stretch="Uniform" />
+                                </Button>
+
                                 <!--  Machine Image - Restored original working version  -->
                                 <Grid Grid.Column="0" HorizontalAlignment="Center">
                                     <!--  Shadow container  -->
@@ -362,19 +430,6 @@
                     FontSize="24"
                     Foreground="White"
                     Text="Select a Preset" />
-
-                <Button
-                    Width="200"
-                    Height="60"
-                    Background="#0078d7"
-                    Command="{Binding NavigateToCommand}"
-                    CommandParameter="All Assets"
-                    CornerRadius="10">
-                    <TextBlock
-                        FontSize="18"
-                        Foreground="White"
-                        Text="All Assets" />
-                </Button>
 
                 <Button
                     Width="200"

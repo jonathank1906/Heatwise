@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Avalonia.Media.Imaging;
+using System.Windows.Input;
 
 
 namespace Sem2Proj.Models;
@@ -248,27 +249,80 @@ public class AssetManager
             return false;
         }
     }
- // In AssetManager.cs
-public void RefreshAssets()
-{
-    // Clear existing collections
-    AllAssets.Clear();
-    Presets.Clear();
-    
-    // Reload from database
-    using (var conn = new SQLiteConnection(_dbPath))
+    // In AssetManager.cs
+    public void RefreshAssets()
     {
-        conn.Open();
-        LoadAllAssets(conn);
-        LoadAllPresets(conn);
+        // Clear existing collections
+        AllAssets.Clear();
+        Presets.Clear();
+
+        // Reload from database
+        using (var conn = new SQLiteConnection(_dbPath))
+        {
+            conn.Open();
+            LoadAllAssets(conn);
+            LoadAllPresets(conn);
+        }
+
+        // Reapply current scenario if one was selected
+        if (SelectedScenarioIndex >= 0)
+        {
+            SetScenario(SelectedScenarioIndex);
+        }
     }
-    
-    // Reapply current scenario if one was selected
-    if (SelectedScenarioIndex >= 0)
+
+    public bool RemoveMachineFromPreset(string presetName, string machineName)
     {
-        SetScenario(SelectedScenarioIndex);
+        try
+        {
+            using (var conn = new SQLiteConnection(_dbPath))
+            {
+                conn.Open();
+
+                // Get the preset ID
+                var preset = Presets.FirstOrDefault(p => p.Name == presetName);
+                if (preset == null) return false;
+
+                // Get the asset ID
+                var asset = AllAssets.FirstOrDefault(a => a.Name == machineName);
+                if (asset == null) return false;
+
+                // Find the asset ID in the database (since our in-memory model might not have IDs)
+                int assetId;
+                const string getAssetIdQuery = "SELECT Id FROM AM_Assets WHERE Name = @name";
+                using (var cmd = new SQLiteCommand(getAssetIdQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@name", machineName);
+                    var result = cmd.ExecuteScalar();
+                    if (result == null || result == DBNull.Value) return false;
+                    assetId = Convert.ToInt32(result);
+                }
+
+                // Remove from the preset
+                const string deleteQuery = "DELETE FROM AM_PresetAssets WHERE PresetId = @presetId AND AssetId = @assetId";
+                using (var cmd = new SQLiteCommand(deleteQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@presetId", preset.Id);
+                    cmd.Parameters.AddWithValue("@assetId", assetId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        // Update the in-memory model
+                        preset.Machines.Remove(machineName);
+                        RefreshAssets();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error removing machine from preset: {ex.Message}");
+            return false;
+        }
     }
-}
 }
 
 
@@ -291,6 +345,8 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty] private double gasConsumption;
     [ObservableProperty] private double oilConsumption;
     [ObservableProperty] private double maxElectricity;
+    [ObservableProperty]
+    private ICommand? deleteCommand;
 
     public bool IsElectricBoiler => MaxElectricity < 0;
     public bool IsGenerator => MaxElectricity > 0;

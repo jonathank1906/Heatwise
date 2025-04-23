@@ -10,12 +10,15 @@ using CommunityToolkit.Mvvm.Input;
 using Sem2Proj.Interfaces;
 using Sem2Proj.Enums;
 using Avalonia.Controls;
+using System.Windows.Input;
 
 namespace Sem2Proj.ViewModels;
 
 
 public partial class AssetManagerViewModel : ObservableObject
 {
+    [ObservableProperty]
+private ICommand? _parentDeleteCommand;
     private Flyout? _calendarFlyout;
     private readonly IPopupService _popupService;
     [ObservableProperty]
@@ -62,7 +65,7 @@ public partial class AssetManagerViewModel : ObservableObject
         );
 
         // Set default state
-        SelectedScenario = "All Assets";
+        SelectedScenario = "Scenario 1";
 
         // Load initial grid image if available
         if (GridInfo?.ImageSource != null)
@@ -112,7 +115,8 @@ public partial class AssetManagerViewModel : ObservableObject
                     GasConsumption = a.GasConsumption,
                     OilConsumption = a.OilConsumption,
                     MaxElectricity = a.MaxElectricity,
-                    ImageFromBinding = LoadImageFromSource(a.ImageSource)
+                    ImageFromBinding = LoadImageFromSource(a.ImageSource),
+                     DeleteCommand = DeleteMachineCommand
                 })
             );
         }
@@ -132,7 +136,8 @@ public partial class AssetManagerViewModel : ObservableObject
                             GasConsumption = a.GasConsumption,
                             OilConsumption = a.OilConsumption,
                             MaxElectricity = a.MaxElectricity,
-                            ImageFromBinding = LoadImageFromSource(a.ImageSource)
+                            ImageFromBinding = LoadImageFromSource(a.ImageSource),
+                             DeleteCommand = DeleteMachineCommand
                         }))
                 : new ObservableCollection<AssetModel>();
         }
@@ -230,5 +235,23 @@ public partial class AssetManagerViewModel : ObservableObject
         };
 
         _popupService.ShowPopup(settingsViewModel);
+    }
+    [RelayCommand]
+    private void DeleteMachine(string machineName)
+    {
+        if (SelectedScenario == null || SelectedScenario == "All Assets") return;
+
+        bool success = _assetManager.RemoveMachineFromPreset(SelectedScenario, machineName);
+
+        if (success)
+        {
+            // Refresh the current view
+            OnSelectedScenarioChanged(SelectedScenario);
+            Events.Notification.Invoke($"Machine {machineName} removed from preset", NotificationType.Confirmation);
+        }
+        else
+        {
+            Events.Notification.Invoke($"Failed to remove machine {machineName}", NotificationType.Error);
+        }
     }
 }
