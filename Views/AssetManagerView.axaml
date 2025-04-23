@@ -331,7 +331,7 @@
                     Orientation="Horizontal">
 
                     <Button
-                        Width="150"
+                        Width="110"
                         Height="40"
                         Background="#0078d7"
                         Command="{Binding ShowSettingsCommand}"
@@ -355,7 +355,7 @@
                                     FontSize="18"
                                     FontWeight="Bold"
                                     Foreground="White"
-                                    Text="Create New" />
+                                    Text="Create" />
                             </StackPanel>
                         </Button.Content>
                     </Button>
