@@ -11,6 +11,9 @@ using System.Collections.Generic;
 using Avalonia.Media.Imaging;
 using Sem2Proj.Interfaces;
 using Sem2Proj.Services;
+using Sem2Proj.Enums;
+using Sem2Proj.Events;
+
 
 namespace Sem2Proj.ViewModels;
 
@@ -203,6 +206,32 @@ public partial class AssetManagerViewModel : ObservableObject
     [RelayCommand]
     public void ShowSettings()
     {
-        _popupService.ShowPopup<SettingsViewModel>();
+        var settingsViewModel = new SettingsViewModel(_assetManager, _popupService);
+
+        settingsViewModel.AssetCreatedSuccessfully += () =>
+        {
+            // Refresh the data
+            _assetManager.RefreshAssets();
+
+            // Force UI update by reassigning the collection
+            CurrentScenarioAssets = new ObservableCollection<AssetModel>(
+                _assetManager.AllAssets.Select(a => new AssetModel
+                {
+                    Name = a.Name,
+                    MaxHeat = a.MaxHeat,
+                    ProductionCosts = a.ProductionCosts,
+                    Emissions = a.Emissions,
+                    GasConsumption = a.GasConsumption,
+                    OilConsumption = a.OilConsumption,
+                    MaxElectricity = a.MaxElectricity,
+                    ImageFromBinding = LoadImageFromSource(a.ImageSource)
+                })
+            );
+
+            Debug.WriteLine("New asset created and view refreshed");
+            Events.Notification.Invoke("New asset created successfully!", NotificationType.Confirmation);
+        };
+
+        _popupService.ShowPopup(settingsViewModel);
     }
 }

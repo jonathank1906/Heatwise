@@ -7,46 +7,117 @@
     Height="700"
     x:DataType="vm:SettingsViewModel">
 
-    <!--  Main Content  -->
+    <!-- Main Content -->
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
-            <!--  Title bar area  -->
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />  <!-- Title bar -->
+            <RowDefinition Height="*" />     <!-- Form content -->
+            <RowDefinition Height="Auto" />  <!-- Action buttons -->
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="Transparent">
-            <!--  Close Button  -->
-            <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Button
-                    Canvas.Right="0"
-                    Width="46"
-                    Height="30"
-                    Padding="10,0,10,0"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Command="{Binding CloseCommand}">
-                    <PathIcon
-                        Width="12"
-                        Height="12"
-                        Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                        Foreground="White" />
+        <!-- Title Bar -->
+        <Border Grid.Row="0" Background="#333333" Padding="10">
+            <Grid>
+                <TextBlock Text="Create New Machine" 
+                           Foreground="White"
+                           FontSize="18"
+                           VerticalAlignment="Center"/>
+                
+                <Button Command="{Binding CloseCommand}"
+                        HorizontalAlignment="Right"
+                        Background="Transparent"
+                        BorderThickness="0">
+                    <PathIcon Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                             Foreground="White"/>
                 </Button>
-            </Canvas>
-        </Grid>
+            </Grid>
+        </Border>
 
-        <!--  Middle Content  -->
-           <StackPanel
-                Grid.Row="1"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Spacing="20">
-                <TextBlock
-                    FontSize="24"
-                    FontWeight="Bold"
-                    Foreground="White"
-                    Text="(Settings)" />
+        <!-- Form Content -->
+        <ScrollViewer Grid.Row="1" Padding="20">
+            <StackPanel Spacing="15">
+                <!-- Machine Name -->
+                <StackPanel Spacing="5">
+                    <TextBlock Text="Machine Name:" Foreground="White"/>
+                    <TextBox Text="{Binding MachineName}" 
+                             Watermark="Enter machine name"
+                             Background="#3E3E3E"
+                             Foreground="White"
+                             CaretBrush="White"/>
+                </StackPanel>
+
+                <!-- Technical Parameters -->
+                <StackPanel Spacing="5">
+                    <TextBlock Text="Max Heat Output (MW):" Foreground="White"/>
+                    <TextBox Text="{Binding MaxHeatOutput}"
+                             Watermark="0.00"
+                             Background="#3E3E3E"
+                             Foreground="White"
+                             CaretBrush="White"/>
+                </StackPanel>
+
+                <StackPanel Spacing="5">
+                    <TextBlock Text="Max Electricity Output (MW):" Foreground="White"/>
+                    <TextBox Text="{Binding MaxElectricityOutput}"
+                             Watermark="0.00"
+                             Background="#3E3E3E"
+                             Foreground="White"
+                             CaretBrush="White"/>
+                </StackPanel>
+
+                <StackPanel Spacing="5">
+                    <TextBlock Text="Production Cost (DKK/MWh):" Foreground="White"/>
+                    <TextBox Text="{Binding ProductionCost}"
+                             Watermark="0.00"
+                             Background="#3E3E3E"
+                             Foreground="White"
+                             CaretBrush="White"/>
+                </StackPanel>
+
+                <StackPanel Spacing="5">
+                    <TextBlock Text="CO₂ Emissions (kg/MWh):" Foreground="White"/>
+                    <TextBox Text="{Binding Co2Emissions}"
+                             Watermark="0.00"
+                             Background="#3E3E3E"
+                             Foreground="White"
+                             CaretBrush="White"/>
+                </StackPanel>
+
+                <StackPanel Spacing="5">
+                    <TextBlock Text="Gas Consumption (units/hour):" Foreground="White"/>
+                    <TextBox Text="{Binding GasConsumption}"
+                             Watermark="0.00"
+                             Background="#3E3E3E"
+                             Foreground="White"
+                             CaretBrush="White"/>
+                </StackPanel>
+
+                <StackPanel Spacing="5">
+                    <TextBlock Text="Oil Consumption (units/hour):" Foreground="White"/>
+                    <TextBox Text="{Binding OilConsumption}"
+                             Watermark="0.00"
+                             Background="#3E3E3E"
+                             Foreground="White"
+                             CaretBrush="White"/>
+                </StackPanel>
             </StackPanel>
+        </ScrollViewer>
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="2" Background="#252526" Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                <Button Content="Cancel"
+                        Command="{Binding CloseCommand}"
+                        Width="100"
+                        Background="#555555"
+                        Foreground="White"/>
+                        
+                <Button Content="Create"
+                        Command="{Binding CreateMachineCommand}"
+                        Width="100"
+                        Background="#0078D7"
+                        Foreground="White"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

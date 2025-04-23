@@ -40,15 +40,14 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand] 
     public void ShowHome() => PopupService.ShowPopup<HomeViewModel>();
         
-    [RelayCommand] 
-    public void ShowSettings() => PopupService.ShowPopup<SettingsViewModel>();
+   
 
     public void ShowNotification(string message, NotificationType type)
     {
         var notification = new NotificationViewModel(message, type, RemoveNotification);
         Notifications.Add(notification);
 
-        Task.Delay(3000).ContinueWith(_ =>
+        Task.Delay(5000).ContinueWith(_ =>
         {
             Dispatcher.UIThread.Post(() => RemoveNotification(notification));
         });
