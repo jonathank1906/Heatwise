@@ -334,6 +334,28 @@
                             <Button.Flyout>
                                 <Flyout Placement="LeftEdgeAlignedTop">
                                     <StackPanel Width="300" Spacing="5">
+                                        <Button Classes="toolbar" ToolTip.Tip="Help">
+                                            <StackPanel
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Orientation="Vertical">
+                                                <Image
+                                                    Width="22"
+                                                    Height="22"
+                                                    Source="{SvgImage Assets/QuestionMark.svg}" />
+                                            </StackPanel>
+                                            <Button.Flyout>
+                                                <Flyout Placement="LeftEdgeAlignedTop">
+                                                    <StackPanel Width="300" Spacing="5">
+                                                        <TextBlock
+                                                            Margin="5,5,5,0"
+                                                            FontSize="16"
+                                                            FontWeight="Bold"
+                                                            Text="Hold shift to select multiple days" />
+                                                    </StackPanel>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                        </Button>
                                         <TextBlock
                                             Margin="5,5,5,0"
                                             FontSize="16"
@@ -412,6 +434,29 @@
                             Click="OnExportButtonClick"
                             ToolTip.Tip="Export optimized results to a CSV file">
                             <PathIcon Data="{StaticResource Export}" />
+                        </Button>
+
+                        <Button Classes="toolbar" ToolTip.Tip="Help">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Orientation="Vertical">
+                                <Image
+                                    Width="22"
+                                    Height="22"
+                                    Source="{SvgImage Assets/QuestionMark.svg}" />
+                            </StackPanel>
+                            <Button.Flyout>
+                                <Flyout Placement="LeftEdgeAlignedTop">
+                                    <StackPanel Width="300" Spacing="5">
+                                        <TextBlock
+                                            Margin="5,5,5,0"
+                                            FontSize="16"
+                                            FontWeight="Bold"
+                                            Text="Scroll into the graph to zoom in and out" />
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
                         </Button>
                     </StackPanel>
                 </Border>
