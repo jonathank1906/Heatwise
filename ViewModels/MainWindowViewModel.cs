@@ -14,7 +14,7 @@ public partial class MainWindowViewModel : ObservableObject
 {
     public IPopupService PopupService { get; }
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private ObservableCollection<NotificationViewModel> notifications = [];
 
     // ViewModels
@@ -25,7 +25,7 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(
         AssetManagerViewModel assetManagerViewModel,
         OptimizerViewModel optimizerViewModel,
-        SourceDataManagerViewModel sourceDataManagerViewModel, 
+        SourceDataManagerViewModel sourceDataManagerViewModel,
         IPopupService popupService)
     {
         AssetManagerViewModel = assetManagerViewModel;
@@ -37,10 +37,11 @@ public partial class MainWindowViewModel : ObservableObject
         Notification.OnNewNotification += ShowNotification;
     }
 
-    [RelayCommand] 
+    [RelayCommand]
     public void ShowHome() => PopupService.ShowPopup<HomeViewModel>();
-        
-   
+
+    [RelayCommand]
+    public void ShowSettings() => PopupService.ShowPopup<SettingsViewModel>();
 
     public void ShowNotification(string message, NotificationType type)
     {
