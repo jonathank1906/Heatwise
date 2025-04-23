@@ -13,8 +13,6 @@ namespace Sem2Proj.Models;
 
 public class AssetManager
 {
-public event Action? AssetsChanged;
-     private readonly Dictionary<int, List<AssetModel>> _scenarioAssets = new();
     private readonly string _dbPath = "Data Source=Data/heat_optimization.db;Version=3;";
 
     public HeatingGrid? GridInfo { get; private set; }
@@ -149,65 +147,22 @@ public event Action? AssetsChanged;
         }
     }
 
-   public bool SetScenario(int scenarioIndex)
+    public bool SetScenario(int scenarioIndex)
     {
         if (scenarioIndex < 0 || scenarioIndex >= Presets.Count)
+        {
+            Debug.WriteLine($"Invalid scenario index: {scenarioIndex}");
             return false;
-
-        // Check if we already have fresh data for this scenario
-        if (!_scenarioAssets.TryGetValue(scenarioIndex, out var assets))
-        {
-            // Load fresh from database if not cached
-            assets = LoadAssetsForScenario(scenarioIndex);
-            _scenarioAssets[scenarioIndex] = assets;
         }
 
-        CurrentAssets = assets;
-        SelectedScenarioIndex = scenarioIndex;
-        Debug.WriteLine($"Set scenario '{Presets[scenarioIndex].Name}' with {CurrentAssets.Count} assets");
-        return true;
-    }
-
- private List<AssetModel> LoadAssetsForScenario(int scenarioIndex)
-    {
         var preset = Presets[scenarioIndex];
-        var assets = new List<AssetModel>();
+        CurrentAssets = AllAssets
+            .Where(a => preset.Machines.Contains(a.Name))
+            .ToList();
 
-        using (var conn = new SQLiteConnection(_dbPath))
-        {
-            conn.Open();
-            const string query = @"
-                SELECT a.* 
-                FROM AM_Assets a
-                JOIN AM_PresetAssets pa ON a.Id = pa.AssetId
-                WHERE pa.PresetId = @presetId";
-
-            using (var cmd = new SQLiteCommand(query, conn))
-            {
-                cmd.Parameters.AddWithValue("@presetId", preset.Id);
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        assets.Add(new AssetModel
-                        {
-                            Name = reader["Name"].ToString() ?? string.Empty,
-                            // ... other properties ...
-                        });
-                    }
-                }
-            }
-        }
-        return assets;
-    }
-
-    public void RefreshAllScenarios()
-    {
-        _scenarioAssets.Clear();
-        if (SelectedScenarioIndex >= 0)
-        {
-            SetScenario(SelectedScenarioIndex); // This will force a fresh load
-        }
+        SelectedScenarioIndex = scenarioIndex;
+        Debug.WriteLine($"Set scenario '{preset.Name}' with {CurrentAssets.Count} assets");
+        return true;
     }
 
     public bool SetScenario(string scenarioName)
@@ -226,7 +181,7 @@ public event Action? AssetsChanged;
         return AllAssets.FirstOrDefault(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
-    public bool CreateNewAsset(string name, string imagePath, double maxHeat, double maxElectricity,
+public bool CreateNewAsset(string name, string imagePath, double maxHeat, double maxElectricity,
                              double productionCost, double emissions, double gasConsumption,
                              double oilConsumption, string? presetName = null)
     {
@@ -310,7 +265,7 @@ public event Action? AssetsChanged;
                 }
 
                 // Refresh the local collections
-                AssetsChanged?.Invoke();
+              
                 LoadAssetsAndPresetsFromDatabase();
                
                 return true;
@@ -323,11 +278,11 @@ public event Action? AssetsChanged;
         }
     }
 
+    // In AssetManager.cs
     public void RefreshAssets()
     {
         // Clear existing collections
         AllAssets.Clear();
-        CurrentAssets.Clear();
         Presets.Clear();
 
         // Reload from database
@@ -395,24 +350,6 @@ public event Action? AssetsChanged;
         {
             Debug.WriteLine($"Error removing machine from preset: {ex.Message}");
             return false;
-        }
-    }
-     public void RefreshAllData()
-    {
-        // Clear all cached data
-        AllAssets.Clear();
-        CurrentAssets.Clear();
-        Presets.Clear();
-        
-        // Reload everything from database
-        LoadAssetsAndPresetsFromDatabase();
-        
-        // Reapply current scenario if one was selected
-        if (SelectedScenarioIndex >= 0)
-        {
-            // Force a complete refresh of the current scenario
-            var currentScenarioName = Presets[SelectedScenarioIndex].Name;
-            SetScenario(currentScenarioName);
         }
     }
 }
