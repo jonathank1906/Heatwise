@@ -42,6 +42,16 @@
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="White" />
         </Style>
+
+        <Style Selector="ToolTip">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderBrush" Value="#CCCCCC" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
     </UserControl.Styles>
 
     <Grid Background="#1e1e1e" RowDefinitions="Auto,Auto,*">
@@ -215,14 +225,20 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Command="{Binding DeleteCommand}"
-                                    CommandParameter="{Binding Name}">
-                                    <Path
-                                        Width="20"
-                                        Height="20"
-                                        Data="{StaticResource TrashIcon}"
-                                        Fill="Red"
-                                        Stretch="Uniform" />
+                                    CommandParameter="{Binding Name}"
+                                    ToolTip.Tip="Remove from Preset">
+                                    <Grid>
+                                        <Path
+                                            Width="20"
+                                            Height="20"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Data="{StaticResource TrashIcon}"
+                                            Fill="Red"
+                                            Stretch="Uniform" />
+                                    </Grid>
                                 </Button>
+
 
                                 <!--  Machine Image - Restored original working version  -->
                                 <Grid Grid.Column="0" HorizontalAlignment="Center">
