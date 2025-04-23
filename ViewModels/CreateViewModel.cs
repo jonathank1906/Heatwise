@@ -10,7 +10,7 @@ using System.Linq;
 namespace Sem2Proj.ViewModels;
 
 
-public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
+public partial class CreateViewModel : ViewModelBase, IPopupViewModel
 {
      [ObservableProperty]
     private string[] _availablePresets = Array.Empty<string>();
@@ -56,7 +56,7 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
     [ObservableProperty]
     private string? _imagePath;
 
-    public SettingsViewModel(AssetManager assetManager, IPopupService popupService)
+    public CreateViewModel(AssetManager assetManager, IPopupService popupService)
     {
         _assetManager = assetManager;
         _popupService = popupService;

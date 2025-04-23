@@ -209,7 +209,7 @@ public partial class AssetManagerViewModel : ObservableObject
     [RelayCommand]
     public void ShowSettings()
     {
-        var settingsViewModel = new SettingsViewModel(_assetManager, _popupService);
+        var settingsViewModel = new CreateViewModel(_assetManager, _popupService);
 
         settingsViewModel.AssetCreatedSuccessfully += () =>
   {

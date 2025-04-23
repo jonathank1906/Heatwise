@@ -5,9 +5,9 @@ using System;
 
 namespace Sem2Proj.Views
 {
-    public partial class SettingsView : UserControl
+    public partial class CreateView : UserControl
     {
-        public SettingsView()
+        public CreateView()
         {
             InitializeComponent();
         }
