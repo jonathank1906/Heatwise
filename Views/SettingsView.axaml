@@ -33,7 +33,7 @@
             </Canvas>
         </Grid>
 
-       <TabControl Grid.Row="1">
+        <TabControl Grid.Row="1">
             <TabControl.Styles>
                 <Style Selector="TabItem">
                     <Setter Property="Background" Value="#333333" />
@@ -134,11 +134,17 @@
             <TabItem Header="Preset">
                 <ScrollViewer Padding="20">
                     <StackPanel Spacing="15">
-                        <TextBlock
-                            FontSize="16"
-                            Foreground="White"
-                            Text="Preset configuration will go here" />
-                        <!--  Add your preset configuration controls here  -->
+                        <StackPanel Spacing="5">
+                            <TextBlock Foreground="White" Text="Preset Name:" />
+                            <TextBox
+                                Background="#3E3E3E"
+                                CaretBrush="White"
+                                Foreground="White"
+                                Text="{Binding PresetName}"
+                                Watermark="Enter preset name" />
+                        </StackPanel>
+
+                       
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

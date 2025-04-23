@@ -61,7 +61,7 @@ public class AssetManager
 
     private void LoadAllAssets(SQLiteConnection conn)
     {
-        const string query = "SELECT * FROM AM_Assets";
+        const string query = "SELECT * FROM AM_Assets ORDER BY Id ASC";
         using (var cmd = new SQLiteCommand(query, conn))
         using (var reader = cmd.ExecuteReader())
         {

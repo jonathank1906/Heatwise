@@ -11,6 +11,8 @@ namespace Sem2Proj.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
 {
+    [ObservableProperty]
+    private string _presetName = string.Empty;
     public event Action? AssetCreatedSuccessfully;
     private readonly AssetManager _assetManager;
     private readonly IPopupService _popupService;
