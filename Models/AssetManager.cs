@@ -406,6 +406,20 @@ public class Preset
     public string Name { get; set; } = string.Empty;
     public List<string> Machines { get; set; } = new();
     public ICommand? NavigateToPresetCommand { get; set; }
+ public string PresetName => Name;  // Read-only property that returns Name
+    public bool IsSelected { get; set; } = false;
+
+    // Constructor to properly initialize
+    public Preset()
+    {
+    }
+
+    // Helper method to update selection state
+    public void UpdateSelectionState(string machineName)
+    {
+        IsSelected = Machines.Contains(machineName);
+    }
+
 }
 
 public partial class AssetModel : ObservableObject
@@ -420,14 +434,45 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty] private double oilConsumption;
     [ObservableProperty] private double maxElectricity;
     [ObservableProperty] private ICommand? deleteCommand;
-    
-    // Add this property
+
     public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
 
     public bool IsElectricBoiler => MaxElectricity < 0;
     public bool IsGenerator => MaxElectricity > 0;
     public double CostPerMW => ProductionCosts;
     public double EmissionsPerMW => MaxHeat > 0 ? Emissions / MaxHeat : 0;
+
+    [ObservableProperty]
+    private ObservableCollection<PresetSelectionItem> _presetSelections = new();
+
+     public void InitializePresetSelections(IEnumerable<Preset> allPresets)
+    {
+        AvailablePresets.Clear();
+        foreach (var preset in allPresets)
+        {
+            var newPreset = new Preset
+            {
+                Id = preset.Id,
+                Name = preset.Name,
+                Machines = new List<string>(preset.Machines),
+                NavigateToPresetCommand = preset.NavigateToPresetCommand
+            };
+            newPreset.UpdateSelectionState(Name);
+            AvailablePresets.Add(newPreset);
+        }
+    }
+}
+
+public class PresetSelectionItem : ObservableObject
+{
+    public string PresetName { get; }
+    public bool IsSelected { get; set; }
+
+    public PresetSelectionItem(string presetName, bool isSelected)
+    {
+        PresetName = presetName;
+        IsSelected = isSelected;
+    }
 }
 public partial class HeatingGrid : ObservableObject
 {

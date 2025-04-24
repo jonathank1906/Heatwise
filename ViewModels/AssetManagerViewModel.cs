@@ -11,6 +11,7 @@ using Sem2Proj.Interfaces;
 using Sem2Proj.Enums;
 using Avalonia.Controls;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace Sem2Proj.ViewModels;
 
@@ -81,12 +82,13 @@ public partial class AssetManagerViewModel : ObservableObject
             LoadGridImageFromSource(GridInfo.ImageSource);
         }
 
-        AvailablePresets = new ObservableCollection<Preset>(
+         AvailablePresets = new ObservableCollection<Preset>(
         _assetManager.Presets.Select(p => new Preset
         {
+            Id = p.Id,
             Name = p.Name,
-            Machines = p.Machines,
-            NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)) // Assign NavigateToCommand
+            Machines = new List<string>(p.Machines),
+            NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name))
         })
     );
 
@@ -105,6 +107,26 @@ public partial class AssetManagerViewModel : ObservableObject
                 AvailablePresets = new ObservableCollection<Preset>(AvailablePresets)
             })
         );
+         AllAssets = new ObservableCollection<AssetModel>(
+        _assetManager.AllAssets.Select(a => 
+        {
+            var assetModel = new AssetModel
+            {
+                Name = a.Name,
+                MaxHeat = a.MaxHeat,
+                ProductionCosts = a.ProductionCosts,
+                Emissions = a.Emissions,
+                GasConsumption = a.GasConsumption,
+                OilConsumption = a.OilConsumption,
+                MaxElectricity = a.MaxElectricity,
+                ImageFromBinding = LoadImageFromSource(a.ImageSource),
+                DeleteCommand = DeleteMachineCommand
+            };
+            assetModel.InitializePresetSelections(AvailablePresets);
+            return assetModel;
+        })
+    );
+        
     }
 
     [RelayCommand]
