@@ -27,7 +27,7 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private ViewState _currentViewState = ViewState.ScenarioSelection;
     [ObservableProperty]
-    private ICommand? _parentDeleteCommand;
+    private ICommand? _parentRemoveFromPresetCommand;
     private Flyout? _calendarFlyout;
     private readonly IPopupService _popupService;
     [ObservableProperty]
@@ -109,7 +109,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 OilConsumption = a.OilConsumption,
                 MaxElectricity = a.MaxElectricity,
                 ImageFromBinding = LoadImageFromSource(a.ImageSource),
-                DeleteCommand = DeleteMachineCommand
+                RemoveFromPresetCommand = RemoveFromPresetCommand
             };
             
             // Initialize with preset templates - this will set IsSelected correctly
@@ -183,7 +183,7 @@ public partial class AssetManagerViewModel : ObservableObject
                     OilConsumption = a.OilConsumption,
                     MaxElectricity = a.MaxElectricity,
                     ImageFromBinding = LoadImageFromSource(a.ImageSource),
-                    DeleteCommand = DeleteMachineCommand
+                    RemoveFromPresetCommand = RemoveFromPresetCommand
                 })
             );
         }
@@ -205,7 +205,7 @@ public partial class AssetManagerViewModel : ObservableObject
                             OilConsumption = a.OilConsumption,
                             MaxElectricity = a.MaxElectricity,
                             ImageFromBinding = LoadImageFromSource(a.ImageSource),
-                            DeleteCommand = DeleteMachineCommand
+                            RemoveFromPresetCommand = RemoveFromPresetCommand
                         }))
                 : new ObservableCollection<AssetModel>();
         }
@@ -321,11 +321,11 @@ _assetManager.RefreshAssets();
             OilConsumption = source.OilConsumption,
             MaxElectricity = source.MaxElectricity,
             ImageFromBinding = LoadImageFromSource(source.ImageSource),
-            DeleteCommand = DeleteMachineCommand
+            RemoveFromPresetCommand = RemoveFromPresetCommand
         };
     }
     [RelayCommand]
-    private void DeleteMachine(string machineName)
+    private void RemoveFromPreset(string machineName)
     {
         if (SelectedScenario == null || SelectedScenario == "All Assets") return;
 
@@ -363,7 +363,7 @@ _assetManager.RefreshAssets();
             OilConsumption = a.OilConsumption,
             MaxElectricity = a.MaxElectricity,
             ImageFromBinding = LoadImageFromSource(a.ImageSource),
-            DeleteCommand = DeleteMachineCommand
+            RemoveFromPresetCommand = RemoveFromPresetCommand
         })
     );
     

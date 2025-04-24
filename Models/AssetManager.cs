@@ -637,7 +637,7 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty] private double gasConsumption;
     [ObservableProperty] private double oilConsumption;
     [ObservableProperty] private double maxElectricity;
-    [ObservableProperty] private ICommand? deleteCommand;
+    [ObservableProperty] private ICommand? removeFromPresetCommand;
 
     public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
 
