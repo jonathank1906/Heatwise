@@ -2,8 +2,10 @@
     x:Class="Sem2Proj.Views.AssetManagerView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:Sem2Proj.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:Sem2Proj.Views"
     xmlns:vm="using:Sem2Proj.ViewModels"
     x:Name="userControl"
     d:DesignHeight="450"
@@ -11,6 +13,14 @@
     x:DataType="vm:AssetManagerViewModel"
     Tag="{Binding}"
     mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:AssetManagerViewModel />
+    </Design.DataContext>
+
+    <UserControl.Resources>
+        <conv:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+    </UserControl.Resources>
 
     <UserControl.Styles>
         <Style Selector="Border.value-box">
@@ -53,6 +63,7 @@
             <Setter Property="FontSize" Value="12" />
         </Style>
     </UserControl.Styles>
+
 
     <Grid Background="#1e1e1e" RowDefinitions="Auto,Auto,*">
 
@@ -126,11 +137,12 @@
 
                 <Button
                     Grid.Column="1"
-                    Width="200"
+                    Width="150"
                     Height="40"
                     Margin="5,0,8,0"
                     HorizontalAlignment="Center"
                     Background="#0078d7"
+                    Command="{Binding ShowConfigurationCommand}"
                     CornerRadius="5">
                     <Button.Content>
                         <StackPanel
@@ -150,7 +162,7 @@
                                 FontSize="18"
                                 FontWeight="Bold"
                                 Foreground="White"
-                                Text="Configure Units" />
+                                Text="Configure" />
                         </StackPanel>
                     </Button.Content>
                 </Button>
@@ -205,7 +217,7 @@
         <ScrollViewer
             Grid.Row="2"
             Padding="20"
-            IsVisible="{Binding ShowAssetDetails}">
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=AssetDetails}">
             <ItemsControl ItemsSource="{Binding CurrentScenarioAssets}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -430,11 +442,15 @@
             </ItemsControl>
         </ScrollViewer>
 
+        <ContentControl IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
+            <views:ConfigureView DataContext="{Binding}" />
+        </ContentControl>
+
         <Grid
             Grid.Row="2"
             Grid.Column="1"
             Background="#1e1e1e"
-            IsVisible="{Binding ShowScenarioSelection}">
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ScenarioSelection}">
 
             <StackPanel
                 HorizontalAlignment="Center"

@@ -14,10 +14,11 @@ using System.Windows.Input;
 
 namespace Sem2Proj.ViewModels;
 
-
 public partial class AssetManagerViewModel : ObservableObject
 {
 
+    [ObservableProperty]
+    private ViewState _currentViewState = ViewState.ScenarioSelection;
     [ObservableProperty]
     private ICommand? _parentDeleteCommand;
     private Flyout? _calendarFlyout;
@@ -79,18 +80,25 @@ public partial class AssetManagerViewModel : ObservableObject
     {
         if (destination == "Production Units")
         {
-            ShowScenarioSelection = true;
-            ShowAssetDetails = false;
-            // Keep SelectedScenario as is (don't set to null)
+            CurrentViewState = ViewState.ScenarioSelection;
             return;
         }
 
         if (destination == "All Assets" || AvailableScenarios.Contains(destination))
         {
-            ShowScenarioSelection = false;
-            ShowAssetDetails = true;
             SelectedScenario = destination == "All Assets" ? "All Assets" : destination;
+            CurrentViewState = ViewState.AssetDetails;
         }
+        else if (destination == "Configure")
+        {
+            CurrentViewState = ViewState.Configure;
+        }
+    }
+
+    [RelayCommand]
+    private void ShowConfiguration()
+    {
+        CurrentViewState = ViewState.Configure;
     }
 
     partial void OnSelectedAssetChanged(AssetModel? value)
@@ -266,4 +274,11 @@ public partial class AssetManagerViewModel : ObservableObject
             Events.Notification.Invoke($"Failed to remove machine {machineName}", NotificationType.Error);
         }
     }
+}
+
+public enum ViewState
+{
+    ScenarioSelection,
+    AssetDetails,
+    Configure
 }
