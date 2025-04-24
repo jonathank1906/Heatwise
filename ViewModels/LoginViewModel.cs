@@ -32,7 +32,8 @@ public partial class LoginViewModel : ViewModelBase
         {
             ErrorMessage = "Invalid username or password.";
             await Task.Delay(2000);
-            ErrorMessage = "";
+            ErrorMessage = "Invalid username or password."; // Reset error message after 2 seconds
+            Debug.WriteLine("Login failed.");
         }
     }
 
