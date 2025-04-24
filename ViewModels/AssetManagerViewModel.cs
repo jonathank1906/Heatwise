@@ -350,6 +350,22 @@ _assetManager.RefreshAssets();
         CurrentViewState = ViewState.Configure;
         // Refresh the presets to ensure the latest data is shown
         RefreshPresets();
+
+        AllAssets = new ObservableCollection<AssetModel>(
+        _assetManager.AllAssets.Select(a => new AssetModel
+        {
+            Id = a.Id,
+            Name = a.Name,
+            MaxHeat = a.MaxHeat,
+            ProductionCosts = a.ProductionCosts,
+            Emissions = a.Emissions,
+            GasConsumption = a.GasConsumption,
+            OilConsumption = a.OilConsumption,
+            MaxElectricity = a.MaxElectricity,
+            ImageFromBinding = LoadImageFromSource(a.ImageSource),
+            DeleteCommand = DeleteMachineCommand
+        })
+    );
     
     // Also refresh individual assets' preset selections
     foreach (var asset in AllAssets)
