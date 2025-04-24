@@ -1,0 +1,55 @@
+<Window
+    x:Class="Sem2Proj.Views.LoginView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:vm="using:Sem2Proj.ViewModels"
+    x:DataType="vm:LoginViewModel"
+    WindowStartupLocation="CenterScreen"
+    Width="900"
+    Height="550"
+    CanResize="False"
+    Background="White"
+    TransparencyLevelHint="AcrylicBlur"
+    ExtendClientAreaToDecorationsHint="True"
+    SystemDecorations="None">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Side - Login Form -->
+        <StackPanel Grid.Column="0" Margin="40" VerticalAlignment="Center" Spacing="15">
+            <TextBlock Text="Welcome" FontSize="28" FontWeight="Bold" />
+            <TextBlock Text="Username" />
+            <TextBox Text="{Binding Username}" Watermark="Enter username" />
+
+            <TextBlock Text="Password" />
+            <TextBox Text="{Binding Password}" Watermark="Enter password" PasswordChar="*" />
+
+            <TextBlock Foreground="Red" FontSize="12" Text="{Binding ErrorMessage}" />
+
+            <Button
+                Height="40"
+                Width="150"
+                Content="Login"
+                Command="{Binding AttemptLoginCommand}"
+                Background="#0078D7"
+                Foreground="White"
+                CornerRadius="5"
+                HorizontalAlignment="Left" />
+        </StackPanel>
+
+        <!-- Right Side - Image -->
+        <Border Grid.Column="1" Background="#f0f0f0" HorizontalAlignment="Stretch">
+            <Image
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="300"
+                Height="300"
+                Source="/Assets/map.png" /> 
+        </Border>
+    </Grid>
+</Window>
