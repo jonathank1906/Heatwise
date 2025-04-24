@@ -132,6 +132,7 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
     [RelayCommand]
     private void CreatePreset()
     {
+
         if (string.IsNullOrWhiteSpace(PresetName))
         {
             Debug.WriteLine("Preset name cannot be empty.");
@@ -144,8 +145,8 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
         {
             Debug.WriteLine($"Successfully created new preset '{PresetName}'");
             Events.Notification.Invoke($"Preset '{PresetName}' created successfully.", Enums.NotificationType.Confirmation);
-
-             AvailablePresets = _assetManager.Presets.Select(p => p.Name).ToArray();
+            RefreshPresetList();
+            AvailablePresets = _assetManager.Presets.Select(p => p.Name).ToArray();
             AssetCreatedSuccessfully?.Invoke();
             CloseCommand.Execute(null);
         }
@@ -154,5 +155,24 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
             Debug.WriteLine("Failed to create new preset");
             Events.Notification.Invoke("Failed to create new preset.", Enums.NotificationType.Error);
         }
+
+
+
+    }
+
+    private void RefreshPresetList()
+    {
+        // Refresh from AssetManager
+        _assetManager.RefreshAssets();
+
+        // Update local AvailablePresets
+        AvailablePresets = _assetManager.Presets.Select(p => p.Name).ToArray();
+
+        // Reset selection
+        if (AvailablePresets.Length > 0)
+        {
+            SelectedPreset = AvailablePresets[0];
+        }
+        Debug.WriteLine($"Refreshed presets list. Now contains: {string.Join(", ", AvailablePresets)}");
     }
 }

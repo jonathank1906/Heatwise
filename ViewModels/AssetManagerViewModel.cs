@@ -274,7 +274,7 @@ public partial class AssetManagerViewModel : ObservableObject
     public void ShowSettings()
     {
         var settingsViewModel = new CreateViewModel(_assetManager, _popupService);
-
+_assetManager.RefreshAssets();
         settingsViewModel.AssetCreatedSuccessfully += () =>
   {
       // This is the key fix - completely rebuild the collection
@@ -300,7 +300,7 @@ public partial class AssetManagerViewModel : ObservableObject
         );
   };
 
-
+  RefreshPresets();
 
         _popupService.ShowPopup(settingsViewModel);
     }
@@ -344,6 +344,15 @@ public partial class AssetManagerViewModel : ObservableObject
     private void ShowConfiguration()
     {
         CurrentViewState = ViewState.Configure;
+        // Refresh the presets to ensure the latest data is shown
+        RefreshPresets();
+    
+    // Also refresh individual assets' preset selections
+    foreach (var asset in AllAssets)
+    {
+        asset.InitializePresetSelections(AvailablePresets);
+    }
+       Debug.WriteLine("Refreshing presets for configuration view.");
         IsConfiguring = true;
     }
 
@@ -369,10 +378,24 @@ public partial class AssetManagerViewModel : ObservableObject
     }
 
     // Refresh the presets list dynamically
-    public void RefreshPresets()
-    {
-        AvailablePresets = new ObservableCollection<Preset>(_assetManager.Presets);
-    }
+   public void RefreshPresets()
+{
+    // First refresh the underlying data
+    _assetManager.RefreshAssets();
+    
+    // Then update our local collection
+    AvailablePresets = new ObservableCollection<Preset>(
+        _assetManager.Presets.Select(p => new Preset
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Machines = new List<string>(p.Machines),
+            NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name))
+        })
+    );
+    
+    Debug.WriteLine($"Refreshed presets. Now have {AvailablePresets.Count} presets.");
+}
 }
 
 public enum ViewState
