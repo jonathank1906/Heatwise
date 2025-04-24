@@ -420,8 +420,17 @@ private void SaveConfiguration()
         bool presetsUpdated = UpdatePresetAssignments();
         Debug.WriteLine($"Preset assignments update {(presetsUpdated ? "succeeded" : "failed")}");
 
+                RefreshPresets();
+    
+    // Also refresh individual assets' preset selections
+    foreach (var asset in AllAssets)
+    {
+        asset.InitializePresetSelections(AvailablePresets);
+    }
+
         if (allAssetsSaved && presetsUpdated)
         {
+            
             Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
             Debug.WriteLine("\n=== Configuration saved successfully ===");
         }
