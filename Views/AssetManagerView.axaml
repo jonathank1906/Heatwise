@@ -82,10 +82,12 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
+                <!--  Default Top Bar (visible when not configuring)  -->
                 <StackPanel
                     Grid.Column="0"
                     Margin="10,0"
                     VerticalAlignment="Center"
+                    IsVisible="{Binding !IsConfiguring}"
                     Orientation="Horizontal">
                     <Button
                         Padding="0,0"
@@ -108,7 +110,6 @@
                         Foreground="White"
                         Text="/" />
 
-
                     <TextBlock
                         Margin="5,0,0,0"
                         FontSize="18"
@@ -116,9 +117,20 @@
                         Foreground="White"
                         IsVisible="{Binding !ShowScenarioSelection}"
                         Text="{Binding SelectedScenario}" />
-
                 </StackPanel>
 
+                <!--  Configuration Mode Top Bar (visible when configuring)  -->
+                <TextBlock
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    IsVisible="{Binding IsConfiguring}"
+                    Text="Configure Assets" />
+
+                <!--  Default Buttons  -->
                 <Button
                     Grid.Column="0"
                     Width="110"
@@ -128,7 +140,8 @@
                     Background="#0078d7"
                     Command="{Binding NavigateToCommand}"
                     CommandParameter="All Assets"
-                    CornerRadius="10">
+                    CornerRadius="10"
+                    IsVisible="{Binding !IsConfiguring}">
                     <TextBlock
                         FontSize="18"
                         Foreground="White"
@@ -143,12 +156,10 @@
                     HorizontalAlignment="Center"
                     Background="#0078d7"
                     Command="{Binding ShowConfigurationCommand}"
-                    CornerRadius="5">
+                    CornerRadius="5"
+                    IsVisible="{Binding !IsConfiguring}">
                     <Button.Content>
-                        <StackPanel
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal">
                             <Path
                                 Width="24"
                                 Height="24"
@@ -167,6 +178,41 @@
                     </Button.Content>
                 </Button>
 
+                <!--  Configuration Mode Buttons  -->
+                <Button
+                    Grid.Column="1"
+                    Width="100"
+                    Height="40"
+                    Margin="5,0,8,0"
+                    HorizontalAlignment="Center"
+                    Background="#FF5555"
+                    Command="{Binding CancelConfigurationCommand}"
+                    CornerRadius="5"
+                    IsVisible="{Binding IsConfiguring}">
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Cancel" />
+                </Button>
+
+                <Button
+                    Grid.Column="2"
+                    Width="100"
+                    Height="40"
+                    Margin="5,0,8,0"
+                    HorizontalAlignment="Center"
+                    Background="#55AA55"
+                    Command="{Binding SaveConfigurationCommand}"
+                    CornerRadius="5"
+                    IsVisible="{Binding IsConfiguring}">
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Save" />
+                </Button>
+
                 <Button
                     Grid.Column="2"
                     Width="110"
@@ -175,12 +221,10 @@
                     HorizontalAlignment="Center"
                     Background="#0078d7"
                     Command="{Binding ShowSettingsCommand}"
-                    CornerRadius="5">
+                    CornerRadius="5"
+                    IsVisible="{Binding !IsConfiguring}">
                     <Button.Content>
-                        <StackPanel
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal">
                             <Path
                                 Width="24"
                                 Height="24"
@@ -198,18 +242,6 @@
                         </StackPanel>
                     </Button.Content>
                 </Button>
-
-                <!--  Button  -->
-                <!-- <Button
-                    Grid.Column="1"
-                    Width="120"
-                    Height="35"
-                    Margin="5,0,8,0"
-                    HorizontalAlignment="Center"
-                    Background="#0078d7"
-                    Content="Configure Units"
-                    CornerRadius="5"
-                    Foreground="White" />-->
             </Grid>
         </Border>
 

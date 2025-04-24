@@ -16,7 +16,10 @@ namespace Sem2Proj.ViewModels;
 
 public partial class AssetManagerViewModel : ObservableObject
 {
-[ObservableProperty]
+
+    [ObservableProperty]
+    private bool isConfiguring;
+    [ObservableProperty]
     private ObservableCollection<AssetModel> _allAssets;
     [ObservableProperty]
     private ViewState _currentViewState = ViewState.ScenarioSelection;
@@ -91,7 +94,7 @@ public partial class AssetManagerViewModel : ObservableObject
             })
         );
     }
-    
+
     [RelayCommand]
     private void NavigateTo(string destination)
     {
@@ -110,12 +113,6 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             CurrentViewState = ViewState.Configure;
         }
-    }
-
-    [RelayCommand]
-    private void ShowConfiguration()
-    {
-        CurrentViewState = ViewState.Configure;
     }
 
     partial void OnSelectedAssetChanged(AssetModel? value)
@@ -290,6 +287,29 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             Events.Notification.Invoke($"Failed to remove machine {machineName}", NotificationType.Error);
         }
+    }
+    
+
+    [RelayCommand]
+    private void ShowConfiguration()
+    {
+        CurrentViewState = ViewState.Configure;
+         IsConfiguring = true;
+    }
+
+
+    [RelayCommand]
+    private void CancelConfiguration()
+    {
+        IsConfiguring = false;
+        CurrentViewState = ViewState.ScenarioSelection;
+    }
+
+    [RelayCommand]
+    private void SaveConfiguration()
+    {
+        // Add logic to save configuration changes
+        IsConfiguring = false;
     }
 }
 
