@@ -101,7 +101,8 @@ public partial class AssetManagerViewModel : ObservableObject
                 OilConsumption = a.OilConsumption,
                 MaxElectricity = a.MaxElectricity,
                 ImageFromBinding = LoadImageFromSource(a.ImageSource),
-                DeleteCommand = DeleteMachineCommand
+                DeleteCommand = DeleteMachineCommand,
+                AvailablePresets = new ObservableCollection<Preset>(AvailablePresets)
             })
         );
     }

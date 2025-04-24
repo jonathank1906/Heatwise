@@ -7,6 +7,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Avalonia.Media.Imaging;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
 
 
 namespace Sem2Proj.Models;
@@ -418,15 +419,16 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty] private double gasConsumption;
     [ObservableProperty] private double oilConsumption;
     [ObservableProperty] private double maxElectricity;
-    [ObservableProperty]
-    private ICommand? deleteCommand;
+    [ObservableProperty] private ICommand? deleteCommand;
+    
+    // Add this property
+    public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
 
     public bool IsElectricBoiler => MaxElectricity < 0;
     public bool IsGenerator => MaxElectricity > 0;
     public double CostPerMW => ProductionCosts;
     public double EmissionsPerMW => MaxHeat > 0 ? Emissions / MaxHeat : 0;
 }
-
 public partial class HeatingGrid : ObservableObject
 {
     [ObservableProperty] private string _name = string.Empty;
