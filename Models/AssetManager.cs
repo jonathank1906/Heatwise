@@ -596,6 +596,59 @@ public class AssetManager
             return false;
         }
     }
+
+    public bool DeleteMachine(int machineId)
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(_dbPath))
+            {
+                conn.Open();
+
+                // First delete from preset associations
+                const string deletePresetAssociations =
+                    "DELETE FROM AM_PresetAssets WHERE AssetId = @machineId";
+
+                using (var cmd = new SQLiteCommand(deletePresetAssociations, conn))
+                {
+                    cmd.Parameters.AddWithValue("@machineId", machineId);
+                    cmd.ExecuteNonQuery();
+                }
+
+                // Then delete the machine itself
+                const string deleteMachine =
+                    "DELETE FROM AM_Assets WHERE Id = @machineId";
+
+                using (var cmd = new SQLiteCommand(deleteMachine, conn))
+                {
+                    cmd.Parameters.AddWithValue("@machineId", machineId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        // Update in-memory collections
+                        AllAssets.RemoveAll(a => a.Id == machineId);
+                        foreach (var preset in Presets)
+                        {
+                            var machine = AllAssets.FirstOrDefault(a => a.Id == machineId);
+                            if (machine != null)
+                            {
+                                preset.Machines.Remove(machine.Name);
+                            }
+                        }
+
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error deleting machine: {ex.Message}");
+            return false;
+        }
+    }
 }
 
 
@@ -638,6 +691,7 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty] private double oilConsumption;
     [ObservableProperty] private double maxElectricity;
     [ObservableProperty] private ICommand? removeFromPresetCommand;
+    [ObservableProperty] private ICommand? deleteCommand;
 
     public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
 
