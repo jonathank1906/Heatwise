@@ -18,6 +18,8 @@ public partial class AssetManagerViewModel : ObservableObject
 {
 
     [ObservableProperty]
+    private ObservableCollection<Preset> _availablePresets = new();
+    [ObservableProperty]
     private bool isConfiguring;
     [ObservableProperty]
     private ObservableCollection<AssetModel> _allAssets;
@@ -63,7 +65,7 @@ public partial class AssetManagerViewModel : ObservableObject
     {
         _assetManager = assetManager;
         _popupService = popupService;
-
+        AvailablePresets = new ObservableCollection<Preset>(_assetManager.Presets);
         // Initialize scenarios list
         AvailableScenarios = new ObservableCollection<string>(
             new[] { "All Assets" }
@@ -72,12 +74,21 @@ public partial class AssetManagerViewModel : ObservableObject
 
         // Set default state
         SelectedScenario = null;
-
+        CurrentViewState = ViewState.PresetNavigation;
         // Load initial grid image if available
         if (GridInfo?.ImageSource != null)
         {
             LoadGridImageFromSource(GridInfo.ImageSource);
         }
+
+        AvailablePresets = new ObservableCollection<Preset>(
+        _assetManager.Presets.Select(p => new Preset
+        {
+            Name = p.Name,
+            Machines = p.Machines,
+            NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)) // Assign NavigateToCommand
+        })
+    );
 
         AllAssets = new ObservableCollection<AssetModel>(
             _assetManager.AllAssets.Select(a => new AssetModel
@@ -96,23 +107,38 @@ public partial class AssetManagerViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void NavigateTo(string destination)
+private void NavigateToPreset(string presetName)
+{
+    NavigateTo(presetName);
+}
+
+    [RelayCommand]
+    public void NavigateTo(string destination)
     {
-        if (destination == "Production Units")
+        if (destination == "All Assets")
+        {
+            CurrentViewState = ViewState.AssetDetails;
+            SelectedScenario = "All Assets";
+        }
+        else if (_availablePresets.Any(p => p.Name == destination))
+        {
+            CurrentViewState = ViewState.AssetDetails;
+            SelectedScenario = destination;
+        }
+        else if (destination == "PresetNavigation")
+        {
+            CurrentViewState = ViewState.PresetNavigation;
+            SelectedScenario = null;
+        }
+        else if (destination == "Presets")
+        {
+            CurrentViewState = ViewState.PresetNavigation;
+            SelectedScenario = null;
+        }
+        else
         {
             CurrentViewState = ViewState.ScenarioSelection;
             SelectedScenario = null;
-            return;
-        }
-
-        if (destination == "All Assets" || AvailableScenarios.Contains(destination))
-        {
-            SelectedScenario = destination == "All Assets" ? "All Assets" : destination;
-            CurrentViewState = ViewState.AssetDetails;
-        }
-        else if (destination == "Configure")
-        {
-            CurrentViewState = ViewState.Configure;
         }
     }
 
@@ -289,13 +315,13 @@ public partial class AssetManagerViewModel : ObservableObject
             Events.Notification.Invoke($"Failed to remove machine {machineName}", NotificationType.Error);
         }
     }
-    
+
 
     [RelayCommand]
     private void ShowConfiguration()
     {
         CurrentViewState = ViewState.Configure;
-         IsConfiguring = true;
+        IsConfiguring = true;
     }
 
 
@@ -312,11 +338,24 @@ public partial class AssetManagerViewModel : ObservableObject
         // Add logic to save configuration changes
         IsConfiguring = false;
     }
+
+    partial void OnAvailablePresetsChanged(ObservableCollection<Preset> value)
+    {
+        // Notify UI when presets change
+        OnPropertyChanged(nameof(AvailablePresets));
+    }
+
+    // Refresh the presets list dynamically
+    public void RefreshPresets()
+    {
+        AvailablePresets = new ObservableCollection<Preset>(_assetManager.Presets);
+    }
 }
 
 public enum ViewState
 {
     ScenarioSelection,
     AssetDetails,
-    Configure
+    Configure,
+    PresetNavigation
 }

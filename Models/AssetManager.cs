@@ -181,9 +181,9 @@ public class AssetManager
         return AllAssets.FirstOrDefault(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
-public bool CreateNewAsset(string name, string imagePath, double maxHeat, double maxElectricity,
-                             double productionCost, double emissions, double gasConsumption,
-                             double oilConsumption, string? presetName = null)
+    public bool CreateNewAsset(string name, string imagePath, double maxHeat, double maxElectricity,
+                                 double productionCost, double emissions, double gasConsumption,
+                                 double oilConsumption, string? presetName = null)
     {
         try
         {
@@ -265,9 +265,9 @@ public bool CreateNewAsset(string name, string imagePath, double maxHeat, double
                 }
 
                 // Refresh the local collections
-              
+
                 LoadAssetsAndPresetsFromDatabase();
-               
+
                 return true;
             }
         }
@@ -354,47 +354,47 @@ public bool CreateNewAsset(string name, string imagePath, double maxHeat, double
     }
 
     public bool CreateNewPreset(string presetName)
-{
-    try
     {
-        using (var conn = new SQLiteConnection(_dbPath))
+        try
         {
-            conn.Open();
-
-            // Get the current maximum ID
-            int newId = 1;
-            const string getMaxIdQuery = "SELECT MAX(Id) FROM AM_Presets";
-            using (var cmd = new SQLiteCommand(getMaxIdQuery, conn))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
-                var result = cmd.ExecuteScalar();
-                if (result != null && result != DBNull.Value)
+                conn.Open();
+
+                // Get the current maximum ID
+                int newId = 1;
+                const string getMaxIdQuery = "SELECT MAX(Id) FROM AM_Presets";
+                using (var cmd = new SQLiteCommand(getMaxIdQuery, conn))
                 {
-                    newId = Convert.ToInt32(result) + 1;
+                    var result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        newId = Convert.ToInt32(result) + 1;
+                    }
                 }
+
+                // Insert the new preset
+                const string insertPresetQuery = "INSERT INTO AM_Presets (Id, Name) VALUES (@id, @name)";
+                using (var cmd = new SQLiteCommand(insertPresetQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", newId);
+                    cmd.Parameters.AddWithValue("@name", presetName);
+                    cmd.ExecuteNonQuery();
+                }
+
+                // Refresh the in-memory presets
+                RefreshAssets();
+
+                Debug.WriteLine($"New preset created with ID: {newId}, Name: {presetName}");
+                return true;
             }
-
-            // Insert the new preset
-            const string insertPresetQuery = "INSERT INTO AM_Presets (Id, Name) VALUES (@id, @name)";
-            using (var cmd = new SQLiteCommand(insertPresetQuery, conn))
-            {
-                cmd.Parameters.AddWithValue("@id", newId);
-                cmd.Parameters.AddWithValue("@name", presetName);
-                cmd.ExecuteNonQuery();
-            }
-
-            // Refresh the in-memory presets
-            RefreshAssets();
-
-            Debug.WriteLine($"New preset created with ID: {newId}, Name: {presetName}");
-            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error creating preset: {ex.Message}");
+            return false;
         }
     }
-    catch (Exception ex)
-    {
-        Debug.WriteLine($"Error creating preset: {ex.Message}");
-        return false;
-    }
-}
 }
 
 
@@ -404,6 +404,7 @@ public class Preset
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public List<string> Machines { get; set; } = new();
+    public ICommand? NavigateToPresetCommand { get; set; }
 }
 
 public partial class AssetModel : ObservableObject

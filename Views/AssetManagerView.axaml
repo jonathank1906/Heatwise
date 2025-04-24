@@ -95,7 +95,7 @@
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding NavigateToCommand}"
-                        CommandParameter="Production Units">
+                        CommandParameter="Presets">
                         <TextBlock
                             FontSize="18"
                             FontWeight="Bold"
@@ -472,50 +472,12 @@
         </ScrollViewer>
 
 
-        <Grid
-            Grid.Row="2"
-            Grid.Column="1"
-            Background="#1e1e1e"
-            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ScenarioSelection}">
-
-            <StackPanel
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Spacing="20">
-                <TextBlock
-                    Margin="0,0,0,30"
-                    HorizontalAlignment="Center"
-                    FontSize="24"
-                    Foreground="White"
-                    Text="Select a Preset" />
-
-                <Button
-                    Width="200"
-                    Height="60"
-                    Background="#0078d7"
-                    Command="{Binding NavigateToCommand}"
-                    CommandParameter="Scenario 1"
-                    CornerRadius="10">
-                    <TextBlock
-                        FontSize="18"
-                        Foreground="White"
-                        Text="Scenario 1" />
-                </Button>
-
-                <Button
-                    Width="200"
-                    Height="60"
-                    Background="#0078d7"
-                    Command="{Binding NavigateToCommand}"
-                    CommandParameter="Scenario 2"
-                    CornerRadius="10">
-                    <TextBlock
-                        FontSize="18"
-                        Foreground="White"
-                        Text="Scenario 2" />
-                </Button>
-            </StackPanel>
-        </Grid>
+  <ScrollViewer
+    Grid.Row="2"
+    Padding="20"
+    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
+    <views:PresetSelectionView DataContext="{Binding}" />
+</ScrollViewer>
 
         <ScrollViewer
             Grid.Row="2"
