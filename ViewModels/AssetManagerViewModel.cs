@@ -107,10 +107,10 @@ public partial class AssetManagerViewModel : ObservableObject
     }
 
     [RelayCommand]
-private void NavigateToPreset(string presetName)
-{
-    NavigateTo(presetName);
-}
+    private void NavigateToPreset(string presetName)
+    {
+        NavigateTo(presetName);
+    }
 
     [RelayCommand]
     public void NavigateTo(string destination)
@@ -275,6 +275,14 @@ private void NavigateToPreset(string presetName)
                   .Select(CreateAssetModel)
                   ?? Enumerable.Empty<AssetModel>()
       );
+      AvailablePresets = new ObservableCollection<Preset>(
+            _assetManager.Presets.Select(p => new Preset
+            {
+                Name = p.Name,
+                Machines = p.Machines,
+                NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name))
+            })
+        );
   };
 
 

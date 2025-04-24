@@ -144,6 +144,8 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
         {
             Debug.WriteLine($"Successfully created new preset '{PresetName}'");
             Events.Notification.Invoke($"Preset '{PresetName}' created successfully.", Enums.NotificationType.Confirmation);
+
+             AvailablePresets = _assetManager.Presets.Select(p => p.Name).ToArray();
             AssetCreatedSuccessfully?.Invoke();
             CloseCommand.Execute(null);
         }
