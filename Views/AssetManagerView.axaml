@@ -442,9 +442,6 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <ContentControl IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
-            <views:ConfigureView DataContext="{Binding}" />
-        </ContentControl>
 
         <Grid
             Grid.Row="2"
@@ -490,5 +487,12 @@
                 </Button>
             </StackPanel>
         </Grid>
+
+        <ScrollViewer
+            Grid.Row="2"
+            Padding="20"
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
+            <views:ConfigureView DataContext="{Binding}" />
+        </ScrollViewer>
     </Grid>
 </UserControl>

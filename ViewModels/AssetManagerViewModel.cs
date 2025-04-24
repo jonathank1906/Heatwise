@@ -16,7 +16,8 @@ namespace Sem2Proj.ViewModels;
 
 public partial class AssetManagerViewModel : ObservableObject
 {
-
+[ObservableProperty]
+    private ObservableCollection<AssetModel> _allAssets;
     [ObservableProperty]
     private ViewState _currentViewState = ViewState.ScenarioSelection;
     [ObservableProperty]
@@ -74,7 +75,23 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             LoadGridImageFromSource(GridInfo.ImageSource);
         }
+
+        AllAssets = new ObservableCollection<AssetModel>(
+            _assetManager.AllAssets.Select(a => new AssetModel
+            {
+                Name = a.Name,
+                MaxHeat = a.MaxHeat,
+                ProductionCosts = a.ProductionCosts,
+                Emissions = a.Emissions,
+                GasConsumption = a.GasConsumption,
+                OilConsumption = a.OilConsumption,
+                MaxElectricity = a.MaxElectricity,
+                ImageFromBinding = LoadImageFromSource(a.ImageSource),
+                DeleteCommand = DeleteMachineCommand
+            })
+        );
     }
+    
     [RelayCommand]
     private void NavigateTo(string destination)
     {
