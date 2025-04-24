@@ -71,6 +71,7 @@ public class AssetManager
             {
                 AllAssets.Add(new AssetModel
                 {
+                    Id = Convert.ToInt32(reader["Id"]),
                     Name = reader["Name"].ToString() ?? string.Empty,
                     ImageSource = reader["ImageSource"].ToString() ?? string.Empty,
                     MaxHeat = Convert.ToDouble(reader["MaxHeat"]),
@@ -396,6 +397,205 @@ public class AssetManager
             return false;
         }
     }
+
+    public bool UpdateAsset(
+        int id,
+    string name,
+    double maxHeat,
+    double maxElectricity,
+    double productionCosts,
+    double emissions,
+    double gasConsumption,
+    double oilConsumption,
+    string imageSource)
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(_dbPath))
+            {
+                conn.Open();
+
+                const string query = @"
+                UPDATE AM_Assets SET
+                    Name = @name,
+                    MaxHeat = @maxHeat,
+                    MaxElectricity = @maxElectricity,
+                    ProductionCosts = @productionCosts,
+                    Emissions = @emissions,
+                    GasConsumption = @gasConsumption,
+                    OilConsumption = @oilConsumption,
+                    ImageSource = @imageSource
+                WHERE Id = @id";
+
+                using (var cmd = new SQLiteCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
+                    cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
+                    cmd.Parameters.AddWithValue("@productionCosts", productionCosts);
+                    cmd.Parameters.AddWithValue("@emissions", emissions);
+                    cmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
+                    cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
+                    cmd.Parameters.AddWithValue("@imageSource", imageSource);
+
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error updating asset ID {id}: {ex.Message}");
+            return false;
+        }
+    }
+
+    public bool AddMachineToPreset(int presetId, int assetId)
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(_dbPath))
+            {
+                conn.Open();
+
+                // Verify preset exists
+                const string checkPresetQuery = "SELECT COUNT(*) FROM AM_Presets WHERE Id = @presetId";
+                using (var cmd = new SQLiteCommand(checkPresetQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@presetId", presetId);
+                    if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                    {
+                        Debug.WriteLine($"Preset ID {presetId} not found");
+                        return false;
+                    }
+                }
+
+                // Verify asset exists
+                const string checkAssetQuery = "SELECT COUNT(*) FROM AM_Assets WHERE Id = @assetId";
+                using (var cmd = new SQLiteCommand(checkAssetQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@assetId", assetId);
+                    if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                    {
+                        Debug.WriteLine($"Asset ID {assetId} not found");
+                        return false;
+                    }
+                }
+
+                // Check if association already exists
+                const string checkExistsQuery =
+                    "SELECT COUNT(*) FROM AM_PresetAssets WHERE PresetId = @presetId AND AssetId = @assetId";
+                using (var cmd = new SQLiteCommand(checkExistsQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@presetId", presetId);
+                    cmd.Parameters.AddWithValue("@assetId", assetId);
+                    if (Convert.ToInt32(cmd.ExecuteScalar()) > 0)
+                    {
+                        Debug.WriteLine($"Asset {assetId} already in preset {presetId}");
+                        return true;
+                    }
+                }
+
+                // Add to the preset
+                const string insertQuery =
+                    "INSERT INTO AM_PresetAssets (PresetId, AssetId) VALUES (@presetId, @assetId)";
+                using (var cmd = new SQLiteCommand(insertQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@presetId", presetId);
+                    cmd.Parameters.AddWithValue("@assetId", assetId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        // Update in-memory model
+                        var preset = Presets.FirstOrDefault(p => p.Id == presetId);
+                        var asset = AllAssets.FirstOrDefault(a => a.Id == assetId);
+
+                        if (preset != null && asset != null && !preset.Machines.Contains(asset.Name))
+                        {
+                            preset.Machines.Add(asset.Name);
+                        }
+
+                        Debug.WriteLine($"Successfully added asset {assetId} to preset {presetId}");
+                        return true;
+                    }
+                }
+
+                Debug.WriteLine($"Failed to add asset {assetId} to preset {presetId}");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error adding asset {assetId} to preset {presetId}: {ex.Message}");
+            return false;
+        }
+    }
+    public bool IsMachineInPreset(int presetId, int assetId)
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(_dbPath))
+            {
+                conn.Open();
+                const string query = @"
+                SELECT COUNT(*) 
+                FROM AM_PresetAssets 
+                WHERE PresetId = @presetId AND AssetId = @assetId";
+
+                using (var cmd = new SQLiteCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@presetId", presetId);
+                    cmd.Parameters.AddWithValue("@assetId", assetId);
+                    return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error checking preset membership: {ex.Message}");
+            return false;
+        }
+    }
+
+    public bool RemoveMachineFromPreset(int presetId, int assetId)
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(_dbPath))
+            {
+                conn.Open();
+                const string query = @"
+                DELETE FROM AM_PresetAssets 
+                WHERE PresetId = @presetId AND AssetId = @assetId";
+
+                using (var cmd = new SQLiteCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@presetId", presetId);
+                    cmd.Parameters.AddWithValue("@assetId", assetId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        // Update in-memory model
+                        var preset = Presets.FirstOrDefault(p => p.Id == presetId);
+                        var asset = AllAssets.FirstOrDefault(a => a.Id == assetId);
+                        if (preset != null && asset != null)
+                        {
+                            preset.Machines.Remove(asset.Name);
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error removing machine from preset: {ex.Message}");
+            return false;
+        }
+    }
 }
 
 
@@ -406,7 +606,7 @@ public class Preset
     public string Name { get; set; } = string.Empty;
     public List<string> Machines { get; set; } = new();
     public ICommand? NavigateToPresetCommand { get; set; }
- public string PresetName => Name;  // Read-only property that returns Name
+    public string PresetName => Name;  // Read-only property that returns Name
     public bool IsSelected { get; set; } = false;
 
     // Constructor to properly initialize
@@ -420,11 +620,13 @@ public class Preset
         IsSelected = Machines.Contains(machineName);
     }
 
+
+
 }
 
 public partial class AssetModel : ObservableObject
 {
-     [ObservableProperty] 
+    [ObservableProperty]
     private int _id;  // Add this
     [ObservableProperty] private string name = string.Empty;
     [ObservableProperty] private string imageSource = string.Empty;
@@ -447,47 +649,48 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<PresetSelectionItem> _presetSelections = new();
 
-public void InitializePresetSelections(IEnumerable<Preset> allPresets)
-{
-    Debug.WriteLine($"[InitializePresetSelections] Start for machine: {Name}");
-    AvailablePresets.Clear();
-    
-    foreach (var presetTemplate in allPresets)
+    public void InitializePresetSelections(IEnumerable<Preset> allPresets)
     {
-        bool isSelected = presetTemplate.Machines.Contains(Name);
-        
-        var preset = new Preset
+        Debug.WriteLine($"[InitializePresetSelections] Start for machine: {Name}");
+        AvailablePresets.Clear();
+
+        foreach (var presetTemplate in allPresets)
         {
-            Id = presetTemplate.Id,
-            Name = presetTemplate.Name,
-            Machines = new List<string>(presetTemplate.Machines),
-            NavigateToPresetCommand = presetTemplate.NavigateToPresetCommand,
-            IsSelected = isSelected // Directly set from the Machines list
-        };
-        
-        // Double verification
-        Debug.WriteLine($"- Preset '{preset.Name}' (ID: {preset.Id})");
-        Debug.WriteLine($"  Machines in preset: {string.Join(", ", preset.Machines)}");
-        Debug.WriteLine($"  Current machine '{Name}' in preset: {isSelected}");
-        Debug.WriteLine($"  IsSelected set to: {preset.IsSelected}");
-        
-        // Verify the UpdateSelectionForMachine matches our direct setting
-        preset.UpdateSelectionForMachine(Name);
-        if (preset.IsSelected != isSelected)
-        {
-            Debug.WriteLine($"  WARNING: UpdateSelectionForMachine gave different result! {preset.IsSelected}");
+            bool isSelected = presetTemplate.Machines.Contains(Name);
+
+            var preset = new Preset
+            {
+                Id = presetTemplate.Id,
+                Name = presetTemplate.Name,
+                Machines = new List<string>(presetTemplate.Machines),
+                NavigateToPresetCommand = presetTemplate.NavigateToPresetCommand,
+                IsSelected = isSelected // Directly set from the Machines list
+            };
+
+            // Double verification
+            Debug.WriteLine($"- Preset '{preset.Name}' (ID: {preset.Id})");
+            Debug.WriteLine($"  Machines in preset: {string.Join(", ", preset.Machines)}");
+            Debug.WriteLine($"  Current machine '{Name}' in preset: {isSelected}");
+            Debug.WriteLine($"  IsSelected set to: {preset.IsSelected}");
+
+            // Verify the UpdateSelectionForMachine matches our direct setting
+            preset.UpdateSelectionForMachine(Name);
+            if (preset.IsSelected != isSelected)
+            {
+                Debug.WriteLine($"  WARNING: UpdateSelectionForMachine gave different result! {preset.IsSelected}");
+            }
+
+            AvailablePresets.Add(preset);
         }
-        
-        AvailablePresets.Add(preset);
+
+        Debug.WriteLine($"[InitializePresetSelections] Completed for machine: {Name}");
+        Debug.WriteLine($"Final preset states:");
+        foreach (var p in AvailablePresets)
+        {
+            Debug.WriteLine($"- {p.Name}: {p.IsSelected}");
+        }
     }
-    
-    Debug.WriteLine($"[InitializePresetSelections] Completed for machine: {Name}");
-    Debug.WriteLine($"Final preset states:");
-    foreach (var p in AvailablePresets)
-    {
-        Debug.WriteLine($"- {p.Name}: {p.IsSelected}");
-    }
-}
+
 }
 
 public class PresetSelectionItem : ObservableObject

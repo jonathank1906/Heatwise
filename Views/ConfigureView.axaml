@@ -59,7 +59,7 @@
                                 FontSize="20"
                                 FontWeight="Bold"
                                 Foreground="White"
-                                Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=Explicit}"
+                                Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Watermark="{Binding Name}" />
 
                             <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
@@ -75,7 +75,7 @@
                                     Grid.Column="1"
                                     HorizontalAlignment="Left"
                                     Classes="value-box"
-                                    Text="{Binding MaxHeat, Mode=TwoWay, UpdateSourceTrigger=Explicit, StringFormat={}{0:F1}}"
+                                    Text="{Binding MaxHeat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                     Watermark="{Binding MaxHeat, StringFormat={}{0:F1}}" />
                                 <TextBlock
                                     Grid.Row="0"
@@ -97,7 +97,7 @@
                                     Grid.Column="1"
                                     HorizontalAlignment="Left"
                                     Classes="value-box"
-                                    Text="{Binding ProductionCosts, Mode=TwoWay, UpdateSourceTrigger=Explicit, StringFormat={}{0:F1}}"
+                                    Text="{Binding ProductionCosts, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                     Watermark="{Binding ProductionCosts, StringFormat={}{0:F1}}" />
                                 <TextBlock
                                     Grid.Row="1"
@@ -118,7 +118,7 @@
                                     Grid.Column="1"
                                     HorizontalAlignment="Left"
                                     Classes="value-box"
-                                    Text="{Binding Emissions, Mode=TwoWay, UpdateSourceTrigger=Explicit, StringFormat={}{0:F1}}"
+                                    Text="{Binding Emissions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                     Watermark="{Binding Emissions, StringFormat={}{0:F1}}" />
                                 <TextBlock
                                     Grid.Row="2"
@@ -139,7 +139,7 @@
                                     Grid.Column="1"
                                     HorizontalAlignment="Left"
                                     Classes="value-box"
-                                    Text="{Binding GasConsumption, Mode=TwoWay, UpdateSourceTrigger=Explicit, StringFormat={}{0:F1}}"
+                                    Text="{Binding GasConsumption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                     Watermark="{Binding GasConsumption, StringFormat={}{0:F1}}" />
                                 <TextBlock
                                     Grid.Row="3"
@@ -160,7 +160,7 @@
                                     Grid.Column="1"
                                     HorizontalAlignment="Left"
                                     Classes="value-box"
-                                    Text="{Binding OilConsumption, Mode=TwoWay, UpdateSourceTrigger=Explicit, StringFormat={}{0:F1}}"
+                                    Text="{Binding OilConsumption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                     Watermark="{Binding OilConsumption, StringFormat={}{0:F1}}" />
                                 <TextBlock
                                     Grid.Row="4"
@@ -181,7 +181,7 @@
                                     Grid.Column="1"
                                     HorizontalAlignment="Left"
                                     Classes="value-box"
-                                    Text="{Binding MaxElectricity, Mode=TwoWay, UpdateSourceTrigger=Explicit, StringFormat={}{0:F1}}"
+                                    Text="{Binding MaxElectricity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                     Watermark="{Binding MaxElectricity, StringFormat={}{0:F1}}" />
                                 <TextBlock
                                     Grid.Row="5"

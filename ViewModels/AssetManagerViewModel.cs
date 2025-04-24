@@ -100,6 +100,7 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             var assetModel = new AssetModel
             {
+                Id = a.Id,
                 Name = a.Name,
                 MaxHeat = a.MaxHeat,
                 ProductionCosts = a.ProductionCosts,
@@ -173,6 +174,7 @@ public partial class AssetManagerViewModel : ObservableObject
             CurrentScenarioAssets = new ObservableCollection<AssetModel>(
                 _assetManager.AllAssets.Select(a => new AssetModel
                 {
+                    Id = a.Id,
                     Name = a.Name,
                     MaxHeat = a.MaxHeat,
                     ProductionCosts = a.ProductionCosts,
@@ -194,6 +196,7 @@ public partial class AssetManagerViewModel : ObservableObject
                         .Where(a => preset.Machines.Contains(a.Name))
                         .Select(a => new AssetModel
                         {
+                            Id = a.Id,
                             Name = a.Name,
                             MaxHeat = a.MaxHeat,
                             ProductionCosts = a.ProductionCosts,
@@ -309,6 +312,7 @@ _assetManager.RefreshAssets();
     {
         return new AssetModel
         {
+            Id = source.Id,
             Name = source.Name,
             MaxHeat = source.MaxHeat,
             ProductionCosts = source.ProductionCosts,
@@ -364,12 +368,80 @@ _assetManager.RefreshAssets();
         CurrentViewState = ViewState.PresetNavigation;
     }
 
-    [RelayCommand]
-    private void SaveConfiguration()
+[RelayCommand]
+private void SaveConfiguration()
+{
+    try
     {
-        // Add logic to save configuration changes
+        Debug.WriteLine("=== Starting configuration save ===");
+        
+        // Log all assets with their current values
+        Debug.WriteLine($"Found {AllAssets.Count} assets to save:");
+        foreach (var asset in AllAssets)
+        {
+            Debug.WriteLine($"\nAsset: {asset.Name}");
+            Debug.WriteLine($"- MaxHeat: {asset.MaxHeat}");
+            Debug.WriteLine($"- ProductionCosts: {asset.ProductionCosts}");
+            Debug.WriteLine($"- Emissions: {asset.Emissions}");
+            Debug.WriteLine($"- GasConsumption: {asset.GasConsumption}");
+            Debug.WriteLine($"- OilConsumption: {asset.OilConsumption}");
+            Debug.WriteLine($"- MaxElectricity: {asset.MaxElectricity}");
+            Debug.WriteLine($"- ImageSource: {asset.ImageSource ?? "null"}");
+            
+            // Also log preset assignments
+            if (asset.AvailablePresets != null && asset.AvailablePresets.Any())
+            {
+                Debug.WriteLine("Preset Assignments:");
+                foreach (var preset in asset.AvailablePresets)
+                {
+                    Debug.WriteLine($"  - {preset.Name}: {(preset.IsSelected ? "Assigned" : "Not Assigned")}");
+                }
+            }
+        }
+
+        // 1. Save all asset modifications
+        bool allAssetsSaved = true;
+        foreach (var asset in AllAssets)
+        {
+            Debug.WriteLine($"\nAttempting to save asset: {asset.Name}");
+            if (!SaveAssetChanges(asset))
+            {
+                allAssetsSaved = false;
+                Debug.WriteLine($"!! FAILED to save asset: {asset.Name} !!");
+            }
+            else
+            {
+                Debug.WriteLine($"Successfully saved asset: {asset.Name}");
+            }
+        }
+
+        // 2. Update preset assignments
+        Debug.WriteLine("\nUpdating preset assignments...");
+        bool presetsUpdated = UpdatePresetAssignments();
+        Debug.WriteLine($"Preset assignments update {(presetsUpdated ? "succeeded" : "failed")}");
+
+        if (allAssetsSaved && presetsUpdated)
+        {
+            Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
+            Debug.WriteLine("\n=== Configuration saved successfully ===");
+        }
+        else
+        {
+            Events.Notification.Invoke("Some changes failed to save.", NotificationType.Warning);
+            Debug.WriteLine("\n=== Partial save completed with some failures ===");
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"\n!!! Save failed: {ex.Message} !!!");
+        Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
+        Events.Notification.Invoke("Failed to save configuration!", NotificationType.Error);
+    }
+    finally
+    {
         IsConfiguring = false;
     }
+}
 
     partial void OnAvailablePresetsChanged(ObservableCollection<Preset> value)
     {
@@ -396,7 +468,94 @@ _assetManager.RefreshAssets();
     
     Debug.WriteLine($"Refreshed presets. Now have {AvailablePresets.Count} presets.");
 }
+
+
+
+private bool SaveAssetChanges(AssetModel asset)
+{
+    try
+    {
+        // Update the asset in database
+        return _assetManager.UpdateAsset(
+            asset.Id, 
+            asset.Name,
+            asset.MaxHeat,
+            asset.MaxElectricity,
+            asset.ProductionCosts,
+            asset.Emissions,
+            asset.GasConsumption,
+            asset.OilConsumption,
+            asset.ImageSource
+        );
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Failed to save {asset.Name}: {ex.Message}");
+        return false;
+    }
 }
+
+private bool UpdatePresetAssignments()
+{
+    try
+    {
+        Debug.WriteLine("Starting preset assignments update...");
+        bool allUpdatesSuccessful = true;
+
+        foreach (var asset in AllAssets)
+        {
+            Debug.WriteLine($"Updating presets for asset ID {asset.Id} ({asset.Name})");
+
+            foreach (var preset in asset.AvailablePresets)
+            {
+                bool shouldBeInPreset = preset.IsSelected;
+                bool isInPreset = _assetManager.IsMachineInPreset(preset.Id, asset.Id);
+
+                Debug.WriteLine($"- Preset ID {preset.Id} ({preset.Name}): " +
+                              $"Current={isInPreset}, Desired={shouldBeInPreset}");
+
+                if (shouldBeInPreset && !isInPreset)
+                {
+                    Debug.WriteLine($"  Adding to preset ID {preset.Id}");
+                    if (!_assetManager.AddMachineToPreset(preset.Id, asset.Id))
+                    {
+                        Debug.WriteLine($"  !! Failed to add to preset ID {preset.Id}");
+                        allUpdatesSuccessful = false;
+                    }
+                }
+                else if (!shouldBeInPreset && isInPreset)
+                {
+                    Debug.WriteLine($"  Removing from preset ID {preset.Id}");
+                    if (!_assetManager.RemoveMachineFromPreset(preset.Id, asset.Id))
+                    {
+                        Debug.WriteLine($"  !! Failed to remove from preset ID {preset.Id}");
+                        allUpdatesSuccessful = false;
+                    }
+                }
+            }
+        }
+
+        if (allUpdatesSuccessful)
+        {
+            Debug.WriteLine("All preset assignments updated successfully");
+        }
+        else
+        {
+            Debug.WriteLine("Some preset assignments failed to update");
+        }
+
+        return allUpdatesSuccessful;
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"!! Failed to update presets: {ex.Message}");
+        Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
+        return false;
+    }
+}
+}
+
+
 
 public enum ViewState
 {
