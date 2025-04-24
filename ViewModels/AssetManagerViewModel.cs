@@ -337,7 +337,7 @@ public partial class AssetManagerViewModel : ObservableObject
     private void CancelConfiguration()
     {
         IsConfiguring = false;
-        CurrentViewState = ViewState.ScenarioSelection;
+        CurrentViewState = ViewState.PresetNavigation;
     }
 
     [RelayCommand]
