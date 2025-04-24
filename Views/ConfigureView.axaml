@@ -51,11 +51,15 @@
 
                         <!--  Machine Details  -->
                         <StackPanel Grid.Column="2">
-                            <TextBlock
+                            <!--  Machine Name  -->
+                            <TextBox
+                                HorizontalAlignment="Left"
+                                Classes="value-box"
                                 FontSize="20"
                                 FontWeight="Bold"
                                 Foreground="White"
-                                Text="{Binding Name}" />
+                                Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=Explicit}"
+                                Watermark="{Binding Name}" />
 
                             <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
                                 <!--  Max Heat  -->

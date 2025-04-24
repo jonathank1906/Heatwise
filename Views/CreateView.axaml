@@ -135,6 +135,18 @@
                                 Text="{Binding OilConsumption}"
                                 Watermark="0.00" />
                         </StackPanel>
+
+                        <Button
+                            Width="200"
+                            Height="60"
+                            Background="#0078d7"
+                            Command="{Binding CreateMachineCommand}"
+                            CornerRadius="10">
+                            <TextBlock
+                                FontSize="18"
+                                Foreground="White"
+                                Text="Create" />
+                        </Button>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -153,27 +165,20 @@
                                 Watermark="Enter preset name" />
                         </StackPanel>
 
-
+                        <Button
+                            Width="200"
+                            Height="60"
+                            Background="#0078d7"
+                            Command="{Binding CreatePresetCommand}"
+                            CornerRadius="10">
+                            <TextBlock
+                                FontSize="18"
+                                Foreground="White"
+                                Text="Create" />
+                        </Button>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
         </TabControl>
-
-        <Border
-            Grid.Row="2"
-            Padding="10"
-            Background="#252526">
-            <StackPanel
-                HorizontalAlignment="Right"
-                Orientation="Horizontal"
-                Spacing="10">
-                <Button
-                    Width="100"
-                    Background="#0078D7"
-                    Command="{Binding CreateMachineCommand}"
-                    Content="Create"
-                    Foreground="White" />
-            </StackPanel>
-        </Border>
     </Grid>
 </UserControl>

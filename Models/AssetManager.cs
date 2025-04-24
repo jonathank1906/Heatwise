@@ -352,6 +352,49 @@ public bool CreateNewAsset(string name, string imagePath, double maxHeat, double
             return false;
         }
     }
+
+    public bool CreateNewPreset(string presetName)
+{
+    try
+    {
+        using (var conn = new SQLiteConnection(_dbPath))
+        {
+            conn.Open();
+
+            // Get the current maximum ID
+            int newId = 1;
+            const string getMaxIdQuery = "SELECT MAX(Id) FROM AM_Presets";
+            using (var cmd = new SQLiteCommand(getMaxIdQuery, conn))
+            {
+                var result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    newId = Convert.ToInt32(result) + 1;
+                }
+            }
+
+            // Insert the new preset
+            const string insertPresetQuery = "INSERT INTO AM_Presets (Id, Name) VALUES (@id, @name)";
+            using (var cmd = new SQLiteCommand(insertPresetQuery, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", newId);
+                cmd.Parameters.AddWithValue("@name", presetName);
+                cmd.ExecuteNonQuery();
+            }
+
+            // Refresh the in-memory presets
+            RefreshAssets();
+
+            Debug.WriteLine($"New preset created with ID: {newId}, Name: {presetName}");
+            return true;
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Error creating preset: {ex.Message}");
+        return false;
+    }
+}
 }
 
 

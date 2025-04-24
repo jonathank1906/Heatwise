@@ -12,7 +12,7 @@ namespace Sem2Proj.ViewModels;
 
 public partial class CreateViewModel : ViewModelBase, IPopupViewModel
 {
-     [ObservableProperty]
+    [ObservableProperty]
     private string[] _availablePresets = Array.Empty<string>();
 
     [ObservableProperty]
@@ -113,19 +113,44 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
             emissions,
             gasConsumption,
             oilConsumption,
-            SelectedPreset 
+            SelectedPreset
         );
 
         if (success)
         {
             Debug.WriteLine($"Successfully created new asset '{MachineName}'");
-             _assetManager.RefreshAssets();
+            _assetManager.RefreshAssets();
             AssetCreatedSuccessfully?.Invoke();
             CloseCommand.Execute(null);
         }
         else
         {
             Debug.WriteLine("Failed to create new asset");
+        }
+    }
+
+    [RelayCommand]
+    private void CreatePreset()
+    {
+        if (string.IsNullOrWhiteSpace(PresetName))
+        {
+            Debug.WriteLine("Preset name cannot be empty.");
+            Events.Notification.Invoke("Preset name cannot be empty.", Enums.NotificationType.Error);
+            return;
+        }
+
+        bool success = _assetManager.CreateNewPreset(PresetName);
+        if (success)
+        {
+            Debug.WriteLine($"Successfully created new preset '{PresetName}'");
+            Events.Notification.Invoke($"Preset '{PresetName}' created successfully.", Enums.NotificationType.Confirmation);
+            AssetCreatedSuccessfully?.Invoke();
+            CloseCommand.Execute(null);
+        }
+        else
+        {
+            Debug.WriteLine("Failed to create new preset");
+            Events.Notification.Invoke("Failed to create new preset.", Enums.NotificationType.Error);
         }
     }
 }
