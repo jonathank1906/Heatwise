@@ -1,4 +1,5 @@
 <Window
+
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -73,6 +74,8 @@
                     Height="40"
                     Background="#D32F2F"
                     Foreground="White"
+                    BorderBrush="Black"
+                    BorderThickness="2"
                     CornerRadius="5"
                     FontSize="16"
                     FontWeight="Bold"
@@ -95,7 +98,7 @@
                 CornerRadius="10">
                 <StackPanel>
                     <TextBlock
-                        Text="In the heart of every warm home is the silent echo of your dedication and hard work."
+                        Text="In the heart of every warm home is the silent strength of your focus to build this overwhelming project."
                         Foreground="White"
                         FontSize="18"
                         FontWeight="Bold"
@@ -103,7 +106,7 @@
                         Width="300"/>
 
                     <TextBlock
-                        Text="– ChatGPT to Danfoss Employee"
+                        Text="-Random guy to Group 21"
                         Foreground="LightGray"
                         FontSize="12"
                         Margin="0,10,0,0"
