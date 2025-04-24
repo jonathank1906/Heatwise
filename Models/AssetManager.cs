@@ -415,7 +415,7 @@ public class Preset
     }
 
     // Helper method to update selection state
-    public void UpdateSelectionState(string machineName)
+    public void UpdateSelectionForMachine(string machineName)
     {
         IsSelected = Machines.Contains(machineName);
     }
@@ -424,6 +424,8 @@ public class Preset
 
 public partial class AssetModel : ObservableObject
 {
+     [ObservableProperty] 
+    private int _id;  // Add this
     [ObservableProperty] private string name = string.Empty;
     [ObservableProperty] private string imageSource = string.Empty;
     [ObservableProperty] private Bitmap? _imageFromBinding;
@@ -445,22 +447,47 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<PresetSelectionItem> _presetSelections = new();
 
-     public void InitializePresetSelections(IEnumerable<Preset> allPresets)
+public void InitializePresetSelections(IEnumerable<Preset> allPresets)
+{
+    Debug.WriteLine($"[InitializePresetSelections] Start for machine: {Name}");
+    AvailablePresets.Clear();
+    
+    foreach (var presetTemplate in allPresets)
     {
-        AvailablePresets.Clear();
-        foreach (var preset in allPresets)
+        bool isSelected = presetTemplate.Machines.Contains(Name);
+        
+        var preset = new Preset
         {
-            var newPreset = new Preset
-            {
-                Id = preset.Id,
-                Name = preset.Name,
-                Machines = new List<string>(preset.Machines),
-                NavigateToPresetCommand = preset.NavigateToPresetCommand
-            };
-            newPreset.UpdateSelectionState(Name);
-            AvailablePresets.Add(newPreset);
+            Id = presetTemplate.Id,
+            Name = presetTemplate.Name,
+            Machines = new List<string>(presetTemplate.Machines),
+            NavigateToPresetCommand = presetTemplate.NavigateToPresetCommand,
+            IsSelected = isSelected // Directly set from the Machines list
+        };
+        
+        // Double verification
+        Debug.WriteLine($"- Preset '{preset.Name}' (ID: {preset.Id})");
+        Debug.WriteLine($"  Machines in preset: {string.Join(", ", preset.Machines)}");
+        Debug.WriteLine($"  Current machine '{Name}' in preset: {isSelected}");
+        Debug.WriteLine($"  IsSelected set to: {preset.IsSelected}");
+        
+        // Verify the UpdateSelectionForMachine matches our direct setting
+        preset.UpdateSelectionForMachine(Name);
+        if (preset.IsSelected != isSelected)
+        {
+            Debug.WriteLine($"  WARNING: UpdateSelectionForMachine gave different result! {preset.IsSelected}");
         }
+        
+        AvailablePresets.Add(preset);
     }
+    
+    Debug.WriteLine($"[InitializePresetSelections] Completed for machine: {Name}");
+    Debug.WriteLine($"Final preset states:");
+    foreach (var p in AvailablePresets)
+    {
+        Debug.WriteLine($"- {p.Name}: {p.IsSelected}");
+    }
+}
 }
 
 public class PresetSelectionItem : ObservableObject

@@ -220,7 +220,7 @@
                                                                     Margin="0,5"
                                                                     Content="{Binding PresetName}"
                                                                     Foreground="White"
-                                                                    IsChecked="False" />
+                                                                  IsChecked="{Binding IsSelected, Mode=TwoWay}" />
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>

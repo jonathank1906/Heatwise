@@ -63,51 +63,39 @@ public partial class AssetManagerViewModel : ObservableObject
     public HeatingGrid? GridInfo => _assetManager.GridInfo;
 
     public AssetManagerViewModel(AssetManager assetManager, IPopupService popupService)
-    {
-        _assetManager = assetManager;
-        _popupService = popupService;
-        AvailablePresets = new ObservableCollection<Preset>(_assetManager.Presets);
-        // Initialize scenarios list
-        AvailableScenarios = new ObservableCollection<string>(
-            new[] { "All Assets" }
-                .Concat(_assetManager.Presets.Select(p => p.Name))
-        );
+{
+    _assetManager = assetManager;
+    _popupService = popupService;
 
-        // Set default state
-        SelectedScenario = null;
-        CurrentViewState = ViewState.PresetNavigation;
-        // Load initial grid image if available
-        if (GridInfo?.ImageSource != null)
-        {
-            LoadGridImageFromSource(GridInfo.ImageSource);
-        }
-
-         AvailablePresets = new ObservableCollection<Preset>(
+    // First create the presets with their machine lists
+    var presetTemplates = new ObservableCollection<Preset>(
         _assetManager.Presets.Select(p => new Preset
         {
             Id = p.Id,
             Name = p.Name,
-            Machines = new List<string>(p.Machines),
+            Machines = new List<string>(p.Machines), // Create a new list
             NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name))
         })
     );
 
-        AllAssets = new ObservableCollection<AssetModel>(
-            _assetManager.AllAssets.Select(a => new AssetModel
-            {
-                Name = a.Name,
-                MaxHeat = a.MaxHeat,
-                ProductionCosts = a.ProductionCosts,
-                Emissions = a.Emissions,
-                GasConsumption = a.GasConsumption,
-                OilConsumption = a.OilConsumption,
-                MaxElectricity = a.MaxElectricity,
-                ImageFromBinding = LoadImageFromSource(a.ImageSource),
-                DeleteCommand = DeleteMachineCommand,
-                AvailablePresets = new ObservableCollection<Preset>(AvailablePresets)
-            })
-        );
-         AllAssets = new ObservableCollection<AssetModel>(
+    // Initialize scenarios list
+    AvailableScenarios = new ObservableCollection<string>(
+        new[] { "All Assets" }
+            .Concat(presetTemplates.Select(p => p.Name))
+    );
+
+    // Set default state
+    SelectedScenario = null;
+    CurrentViewState = ViewState.PresetNavigation;
+
+    // Load initial grid image if available
+    if (GridInfo?.ImageSource != null)
+    {
+        LoadGridImageFromSource(GridInfo.ImageSource);
+    }
+
+    // Initialize assets with their own preset instances
+    AllAssets = new ObservableCollection<AssetModel>(
         _assetManager.AllAssets.Select(a => 
         {
             var assetModel = new AssetModel
@@ -122,12 +110,16 @@ public partial class AssetManagerViewModel : ObservableObject
                 ImageFromBinding = LoadImageFromSource(a.ImageSource),
                 DeleteCommand = DeleteMachineCommand
             };
-            assetModel.InitializePresetSelections(AvailablePresets);
+            
+            // Initialize with preset templates - this will set IsSelected correctly
+            assetModel.InitializePresetSelections(presetTemplates);
             return assetModel;
         })
     );
-        
-    }
+
+    // Set the available presets
+    AvailablePresets = presetTemplates;
+}
 
     [RelayCommand]
     private void NavigateToPreset(string presetName)
