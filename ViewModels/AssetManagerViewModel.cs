@@ -71,7 +71,7 @@ public partial class AssetManagerViewModel : ObservableObject
         );
 
         // Set default state
-        SelectedScenario = "Scenario 1";
+        SelectedScenario = null;
 
         // Load initial grid image if available
         if (GridInfo?.ImageSource != null)
@@ -101,6 +101,7 @@ public partial class AssetManagerViewModel : ObservableObject
         if (destination == "Production Units")
         {
             CurrentViewState = ViewState.ScenarioSelection;
+            SelectedScenario = null;
             return;
         }
 
