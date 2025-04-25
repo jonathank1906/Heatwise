@@ -156,7 +156,7 @@
                                 HorizontalAlignment="Left"
                                 Background="#3E3E42"
                             
-                              Command="{Binding BrowseImageCommand}"
+                              Click="OnBrowseButtonClick"
                                 Content="Browse Image"
                                 Foreground="White" />
                             <TextBlock
