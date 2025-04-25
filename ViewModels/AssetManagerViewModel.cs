@@ -531,13 +531,13 @@ private bool SaveAssetChanges(AssetModel asset)
         return _assetManager.UpdateAsset(
             asset.Id, 
             asset.Name,
+            asset.ImageSource,
             asset.MaxHeat,
             asset.MaxElectricity,
             asset.ProductionCosts,
             asset.Emissions,
             asset.GasConsumption,
-            asset.OilConsumption,
-            asset.ImageSource
+            asset.OilConsumption
         );
     }
     catch (Exception ex)

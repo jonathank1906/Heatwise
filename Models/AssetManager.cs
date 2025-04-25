@@ -183,126 +183,126 @@ public class AssetManager
         return AllAssets.FirstOrDefault(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
-   public bool CreateNewAsset(string name, string imagePath, double maxHeat, double maxElectricity,
-                         double productionCost, double emissions, double gasConsumption,
-                         double oilConsumption, List<string> presetNames)
-{
-    try
+    public bool CreateNewAsset(string name, string imagePath, double maxHeat, double maxElectricity,
+                          double productionCost, double emissions, double gasConsumption,
+                          double oilConsumption, List<string> presetNames)
     {
-        using (var conn = new SQLiteConnection(_dbPath))
+        try
         {
-            conn.Open();
-
-            // Get the current maximum ID
-            int newId = 1;
-            const string getMaxIdQuery = "SELECT MAX(Id) FROM AM_Assets";
-            using (var cmd = new SQLiteCommand(getMaxIdQuery, conn))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
-                var result = cmd.ExecuteScalar();
-                if (result != null && result != DBNull.Value)
-                {
-                    newId = Convert.ToInt32(result) + 1;
-                }
-            }
+                conn.Open();
 
-            // Insert new asset with explicit ID
-            const string insertAssetQuery = @"
+                // Get the current maximum ID
+                int newId = 1;
+                const string getMaxIdQuery = "SELECT MAX(Id) FROM AM_Assets";
+                using (var cmd = new SQLiteCommand(getMaxIdQuery, conn))
+                {
+                    var result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        newId = Convert.ToInt32(result) + 1;
+                    }
+                }
+
+                // Insert new asset with explicit ID
+                const string insertAssetQuery = @"
                 INSERT INTO AM_Assets 
                 (Id, Name, ImageSource, MaxHeat, MaxElectricity, ProductionCosts, Emissions, GasConsumption, OilConsumption)
                 VALUES
                 (@id, @name, @imageSource, @maxHeat, @maxElectricity, @productionCosts, @emissions, @gasConsumption, @oilConsumption)";
 
-            using (var cmd = new SQLiteCommand(insertAssetQuery, conn))
-            {
-                cmd.Parameters.AddWithValue("@id", newId);
-                cmd.Parameters.AddWithValue("@name", name);
-                cmd.Parameters.AddWithValue("@imageSource", imagePath ?? string.Empty);
-                cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
-                cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
-                cmd.Parameters.AddWithValue("@productionCosts", productionCost);
-                cmd.Parameters.AddWithValue("@emissions", emissions);
-                cmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
-                cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
-
-                cmd.ExecuteNonQuery();
-            }
-
-            Debug.WriteLine($"New asset created with ID: {newId}");
-
-            // Add to all selected presets
-            if (presetNames != null && presetNames.Count > 0)
-            {
-                // Get all preset IDs at once for better performance
-                var presetIdMap = new Dictionary<string, int>();
-                const string getPresetIdsQuery = "SELECT Id, Name FROM AM_Presets WHERE Name IN ({0})";
-                var paramNames = presetNames.Select((_, i) => $"@name{i}").ToList();
-                var inClause = string.Join(",", paramNames);
-
-                using (var cmd = new SQLiteCommand(string.Format(getPresetIdsQuery, inClause), conn))
+                using (var cmd = new SQLiteCommand(insertAssetQuery, conn))
                 {
-                    for (int i = 0; i < presetNames.Count; i++)
-                    {
-                        cmd.Parameters.AddWithValue($"@name{i}", presetNames[i]);
-                    }
+                    cmd.Parameters.AddWithValue("@id", newId);
+                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@imageSource", imagePath ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
+                    cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
+                    cmd.Parameters.AddWithValue("@productionCosts", productionCost);
+                    cmd.Parameters.AddWithValue("@emissions", emissions);
+                    cmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
+                    cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
 
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            presetIdMap[reader.GetString(1)] = reader.GetInt32(0);
-                        }
-                    }
+                    cmd.ExecuteNonQuery();
                 }
 
-                // Insert into selected presets
-                foreach (var presetName in presetNames)
+                Debug.WriteLine($"New asset created with ID: {newId}");
+
+                // Add to all selected presets
+                if (presetNames != null && presetNames.Count > 0)
                 {
-                    if (presetIdMap.TryGetValue(presetName, out int presetId))
+                    // Get all preset IDs at once for better performance
+                    var presetIdMap = new Dictionary<string, int>();
+                    const string getPresetIdsQuery = "SELECT Id, Name FROM AM_Presets WHERE Name IN ({0})";
+                    var paramNames = presetNames.Select((_, i) => $"@name{i}").ToList();
+                    var inClause = string.Join(",", paramNames);
+
+                    using (var cmd = new SQLiteCommand(string.Format(getPresetIdsQuery, inClause), conn))
                     {
-                        const string addToPresetQuery = @"
+                        for (int i = 0; i < presetNames.Count; i++)
+                        {
+                            cmd.Parameters.AddWithValue($"@name{i}", presetNames[i]);
+                        }
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                presetIdMap[reader.GetString(1)] = reader.GetInt32(0);
+                            }
+                        }
+                    }
+
+                    // Insert into selected presets
+                    foreach (var presetName in presetNames)
+                    {
+                        if (presetIdMap.TryGetValue(presetName, out int presetId))
+                        {
+                            const string addToPresetQuery = @"
                             INSERT INTO AM_PresetAssets (PresetId, AssetId)
                             VALUES (@presetId, @assetId)";
 
-                        using (var cmd = new SQLiteCommand(addToPresetQuery, conn))
+                            using (var cmd = new SQLiteCommand(addToPresetQuery, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@presetId", presetId);
+                                cmd.Parameters.AddWithValue("@assetId", newId);
+                                cmd.ExecuteNonQuery();
+                                Debug.WriteLine($"Added asset to preset {presetName} (ID: {presetId})");
+                            }
+                        }
+                        else
                         {
-                            cmd.Parameters.AddWithValue("@presetId", presetId);
-                            cmd.Parameters.AddWithValue("@assetId", newId);
-                            cmd.ExecuteNonQuery();
-                            Debug.WriteLine($"Added asset to preset {presetName} (ID: {presetId})");
+                            Debug.WriteLine($"Preset {presetName} not found");
                         }
                     }
-                    else
-                    {
-                        Debug.WriteLine($"Preset {presetName} not found");
-                    }
                 }
+
+                // Refresh the local collections
+                LoadAssetsAndPresetsFromDatabase();
+
+                return true;
             }
-
-            // Refresh the local collections
-            LoadAssetsAndPresetsFromDatabase();
-
-            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error creating asset: {ex.Message}");
+            return false;
         }
     }
-    catch (Exception ex)
-    {
-        Debug.WriteLine($"Error creating asset: {ex.Message}");
-        return false;
-    }
-}
 
-// Keep the old method for backward compatibility
-public bool CreateNewAsset(string name, string imagePath, double maxHeat, double maxElectricity,
-                         double productionCost, double emissions, double gasConsumption,
-                         double oilConsumption, string? presetName = null)
-{
-    var presetNames = string.IsNullOrEmpty(presetName) 
-        ? new List<string>() 
-        : new List<string> { presetName };
-    
-    return CreateNewAsset(name, imagePath, maxHeat, maxElectricity, productionCost, 
-                        emissions, gasConsumption, oilConsumption, presetNames);
-}
+    // Keep the old method for backward compatibility
+    public bool CreateNewAsset(string name, string imagePath, double maxHeat, double maxElectricity,
+                             double productionCost, double emissions, double gasConsumption,
+                             double oilConsumption, string? presetName = null)
+    {
+        var presetNames = string.IsNullOrEmpty(presetName)
+            ? new List<string>()
+            : new List<string> { presetName };
+
+        return CreateNewAsset(name, imagePath, maxHeat, maxElectricity, productionCost,
+                            emissions, gasConsumption, oilConsumption, presetNames);
+    }
 
     // In AssetManager.cs
     public void RefreshAssets()
@@ -424,14 +424,14 @@ public bool CreateNewAsset(string name, string imagePath, double maxHeat, double
 
     public bool UpdateAsset(
         int id,
-    string name,
-    double maxHeat,
-    double maxElectricity,
-    double productionCosts,
-    double emissions,
-    double gasConsumption,
-    double oilConsumption,
-    string imageSource)
+        string name,
+        string imageSource,
+        double maxHeat,
+        double maxElectricity,
+        double productionCosts,
+        double emissions,
+        double gasConsumption,
+        double oilConsumption)
     {
         try
         {
@@ -440,30 +440,48 @@ public bool CreateNewAsset(string name, string imagePath, double maxHeat, double
                 conn.Open();
 
                 const string query = @"
-                UPDATE AM_Assets SET
-                    Name = @name,
-                    MaxHeat = @maxHeat,
-                    MaxElectricity = @maxElectricity,
-                    ProductionCosts = @productionCosts,
-                    Emissions = @emissions,
-                    GasConsumption = @gasConsumption,
-                    OilConsumption = @oilConsumption,
-                    ImageSource = @imageSource
-                WHERE Id = @id";
+            UPDATE AM_Assets SET
+                Name = @name,
+                ImageSource = @imageSource,
+                MaxHeat = @maxHeat,
+                MaxElectricity = @maxElectricity,
+                ProductionCosts = @productionCosts,
+                Emissions = @emissions,
+                GasConsumption = @gasConsumption,
+                OilConsumption = @oilConsumption
+            WHERE Id = @id";
 
                 using (var cmd = new SQLiteCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
                     cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@imageSource", imageSource ?? string.Empty);
                     cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
                     cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
                     cmd.Parameters.AddWithValue("@productionCosts", productionCosts);
                     cmd.Parameters.AddWithValue("@emissions", emissions);
                     cmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
                     cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
-                    cmd.Parameters.AddWithValue("@imageSource", imageSource);
 
-                    return cmd.ExecuteNonQuery() > 0;
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        // Update the in-memory model
+                        var asset = AllAssets.FirstOrDefault(a => a.Id == id);
+                        if (asset != null)
+                        {
+                            asset.Name = name;
+                            asset.ImageSource = imageSource;
+                            asset.MaxHeat = maxHeat;
+                            asset.MaxElectricity = maxElectricity;
+                            asset.ProductionCosts = productionCosts;
+                            asset.Emissions = emissions;
+                            asset.GasConsumption = gasConsumption;
+                            asset.OilConsumption = oilConsumption;
+                        }
+                        return true;
+                    }
+                    return false;
                 }
             }
         }
