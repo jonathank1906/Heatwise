@@ -356,14 +356,16 @@ public partial class AssetManagerViewModel : ObservableObject
                   .Select(CreateAssetModel)
                   ?? Enumerable.Empty<AssetModel>()
       );
-      AvailablePresets = new ObservableCollection<Preset>(
-            _assetManager.Presets.Select(p => new Preset
-            {
-                Name = p.Name,
-                Machines = p.Machines,
-                NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name))
-            })
-        );
+     AvailablePresets = new ObservableCollection<Preset>(
+    _assetManager.Presets.Select(p => new Preset
+    {
+        Id = p.Id,
+        Name = p.Name,
+        Machines = new List<string>(p.Machines),
+        NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)),
+        DeletePresetCommand = new RelayCommand(() => DeletePreset(p)) // Initialize DeletePresetCommand
+    })
+);
   };
 
         RefreshPresets();
@@ -529,6 +531,26 @@ public partial class AssetManagerViewModel : ObservableObject
                 }
             }
 
+               Debug.WriteLine("Saving preset name changes...");
+        foreach (var preset in AvailablePresets)
+        {
+            var originalPreset = _assetManager.Presets.FirstOrDefault(p => p.Id == preset.Id);
+            if (originalPreset != null && originalPreset.Name != preset.Name)
+            {
+                Debug.WriteLine($"Updating preset name: {originalPreset.Name} -> {preset.Name}");
+                bool success = _assetManager.UpdatePresetName(preset.Id, preset.Name);
+                if (success)
+                {
+                    originalPreset.Name = preset.Name; // Update in-memory model
+                }
+                else
+                {
+                    Debug.WriteLine($"Failed to update preset name for ID {preset.Id}");
+                    Events.Notification.Invoke($"Failed to update preset name for '{originalPreset.Name}'.", NotificationType.Error);
+                }
+            }
+        }
+
             // 2. Update preset assignments
             Debug.WriteLine("\nUpdating preset assignments...");
             bool presetsUpdated = UpdatePresetAssignments();
@@ -577,15 +599,16 @@ public partial class AssetManagerViewModel : ObservableObject
         _assetManager.RefreshAssets();
 
         // Then update our local collection
-        AvailablePresets = new ObservableCollection<Preset>(
-            _assetManager.Presets.Select(p => new Preset
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Machines = new List<string>(p.Machines),
-                NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name))
-            })
-        );
+   AvailablePresets = new ObservableCollection<Preset>(
+    _assetManager.Presets.Select(p => new Preset
+    {
+        Id = p.Id,
+        Name = p.Name,
+        Machines = new List<string>(p.Machines),
+        NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)),
+        DeletePresetCommand = new RelayCommand(() => DeletePreset(p)) // Initialize DeletePresetCommand
+    })
+);
 
         Debug.WriteLine($"Refreshed presets. Now have {AvailablePresets.Count} presets.");
     }
@@ -808,6 +831,7 @@ public partial class AssetManagerViewModel : ObservableObject
             Debug.WriteLine("Failed to create new preset");
             Events.Notification.Invoke("Failed to create new preset.", Enums.NotificationType.Error);
         }
+        CurrentViewState = ViewState.PresetNavigation;
     }
 
     private void RefreshPresetList()
@@ -816,16 +840,17 @@ public partial class AssetManagerViewModel : ObservableObject
         _assetManager.RefreshAssets();
 
         // Update local AvailablePresets
-        AvailablePresets = new ObservableCollection<Preset>(
-            _assetManager.Presets.Select(p => new Preset
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Machines = new List<string>(p.Machines),
-                NavigateToPresetCommand = null,
-                IsSelected = false
-            })
-        );
+     AvailablePresets = new ObservableCollection<Preset>(
+    _assetManager.Presets.Select(p => new Preset
+    {
+        Id = p.Id,
+        Name = p.Name,
+        Machines = new List<string>(p.Machines),
+        IsSelected = false,
+        NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)),
+        DeletePresetCommand = new RelayCommand(() => DeletePreset(p)) // Initialize DeletePresetCommand
+    })
+);
 
         // Reset selection
         if (AvailablePresets.Count > 0)
@@ -836,21 +861,23 @@ public partial class AssetManagerViewModel : ObservableObject
         Debug.WriteLine($"Refreshed presets list. Now contains: {string.Join(", ", AvailablePresets.Select(p => p.Name))}");
     }
 
-    [RelayCommand]
-    private void RenamePreset(Preset preset)
+
+   [RelayCommand]
+private void DeletePreset(Preset preset)
+{
+    if (preset == null) return;
+
+    bool success = _assetManager.DeletePreset(preset.Id);
+    if (success)
     {
-        if (preset == null) return;
-
-
+        AvailablePresets.Remove(preset);
+        Events.Notification.Invoke($"Preset '{preset.Name}' deleted successfully.", NotificationType.Confirmation);
     }
-
-    [RelayCommand]
-    private void DeletePreset(Preset preset)
+    else
     {
-        if (preset == null) return;
-
-
+        Events.Notification.Invoke($"Failed to delete preset '{preset.Name}'.", NotificationType.Error);
     }
+}
 
 }
 

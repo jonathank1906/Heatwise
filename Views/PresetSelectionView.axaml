@@ -20,7 +20,7 @@
                         Width="200"
                         Height="60"
                         Background="#0078d7"
-                     Command="{Binding NavigateToPresetCommand}"
+                        Command="{Binding NavigateToPresetCommand}"
                         CommandParameter="{Binding Name}"
                         CornerRadius="10">
                         <TextBlock
