@@ -8,6 +8,7 @@ using System;
 using Sem2Proj.Models;
 using Avalonia;
 using ScottPlot.Avalonia;
+using System.Diagnostics;
 
 namespace Sem2Proj.Views;
 
@@ -488,9 +489,11 @@ public partial class OptimizerView : UserControl
     {
         if (DataContext is OptimizerViewModel viewModel)
         {
+            Debug.WriteLine("Export button clicked.outer");
             var parentWindow = TopLevel.GetTopLevel(this) as Window;
             if (parentWindow != null)
             {
+                Debug.WriteLine("Export button clicked.inner");
                 await viewModel.ExportToCsv(parentWindow);
             }
         }

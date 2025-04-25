@@ -1,17 +1,19 @@
 using System;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Sem2Proj.Interfaces;
 using System.Diagnostics;
 using Sem2Proj.Models;
 using System.Linq;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Avalonia.Controls;
+using System.IO;
+using Avalonia.Platform.Storage;
 
 namespace Sem2Proj.ViewModels;
 
-public partial class CreateViewModel : ViewModelBase, IPopupViewModel
+public partial class CreateViewModel : ViewModelBase
 {
     [ObservableProperty]
     private ObservableCollection<Preset> _availablePresets = new();
@@ -24,14 +26,16 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
 
     public event Action? AssetCreatedSuccessfully;
     private readonly AssetManager _assetManager;
-    private readonly IPopupService _popupService;
 
-    // Close command
-    public ICommand CloseCommand { get; private set; }
+    private readonly IStorageProvider _storageProvider;
+
 
     // Form properties
     [ObservableProperty]
     private string _machineName = string.Empty;
+
+    [ObservableProperty]
+    private string? _imagePath;
 
     [ObservableProperty]
     private string _maxHeatOutput = "0";
@@ -51,30 +55,70 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
     [ObservableProperty]
     private string _oilConsumption = "0";
 
-    [ObservableProperty]
-    private string? _imagePath;
 
-    public CreateViewModel(AssetManager assetManager, IPopupService popupService)
+
+    public CreateViewModel(AssetManager assetManager)
     {
         _assetManager = assetManager;
-        _popupService = popupService;
-        CloseCommand = new RelayCommand(() => _popupService.ClosePopup());
+
         RefreshPresetList();
     }
 
-    public void SetCloseAction(Action closeCallback)
+
+    [RelayCommand]
+    public async Task BrowseImage(Control view)
     {
-        CloseCommand = new RelayCommand(() => closeCallback());
+        // Get the top level from the current control
+        var topLevel = TopLevel.GetTopLevel(view);
+        if (topLevel == null)
+        {
+            Debug.WriteLine("Unable to get TopLevel");
+            return;
+        }
+
+        try
+        {
+            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Select Machine Image",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                new FilePickerFileType("Image Files")
+                {
+                    Patterns = new[] { "*.jpg", "*.jpeg", "*.png", "*.bmp" },
+                    MimeTypes = new[] { "image/jpeg", "image/png" }
+                }
+            }
+            });
+
+            if (files.Count > 0 && files[0] is IStorageFile file)
+            {
+                var filePath = file.Path.LocalPath;
+
+                // Use the project-level Assets folder
+                var projectDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..");
+                var assetsDir = Path.Combine(projectDir, "Assets");
+                Directory.CreateDirectory(assetsDir);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(filePath)}";
+                var destinationPath = Path.Combine(assetsDir, fileName);
+
+                File.Copy(filePath, destinationPath, true);
+                ImagePath = Path.Combine("Assets", fileName);
+
+                Debug.WriteLine($"Image saved to: {destinationPath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Image selection error: {ex.Message}");
+            Events.Notification.Invoke("Failed to select image", Enums.NotificationType.Error);
+        }
     }
 
     [RelayCommand]
-    private void BrowseImage()
-    {
-        // Implement file browsing logic
-    }
-
-    [RelayCommand]
-    private void CreateMachine()
+    public async Task CreateMachine(Control view)
     {
         // Validate numeric inputs
         if (!double.TryParse(MaxHeatOutput, out double maxHeat) ||
@@ -88,11 +132,7 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(MachineName))
-        {
-            Debug.WriteLine("Machine name cannot be empty");
-            return;
-        }
+   
 
         var selectedPresetNames = AvailablePresets
           .Where(p => p.IsSelected)
@@ -116,7 +156,7 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
             Debug.WriteLine($"Successfully created new asset '{MachineName}'");
             _assetManager.RefreshAssets();
             AssetCreatedSuccessfully?.Invoke();
-            CloseCommand.Execute(null);
+
         }
         else
         {
@@ -141,7 +181,7 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
             Events.Notification.Invoke($"Preset '{PresetName}' created successfully.", Enums.NotificationType.Confirmation);
             RefreshPresetList();
             AssetCreatedSuccessfully?.Invoke();
-            CloseCommand.Execute(null);
+
         }
         else
         {

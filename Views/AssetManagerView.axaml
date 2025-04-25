@@ -472,18 +472,25 @@
         </ScrollViewer>
 
 
-  <ScrollViewer
-    Grid.Row="2"
-    Padding="20"
-    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
-    <views:PresetSelectionView DataContext="{Binding}" />
-</ScrollViewer>
+        <ScrollViewer
+            Grid.Row="2"
+            Padding="20"
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
+            <views:PresetSelectionView DataContext="{Binding}" />
+        </ScrollViewer>
 
         <ScrollViewer
             Grid.Row="2"
             Padding="20"
             IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
             <views:ConfigureView DataContext="{Binding}" />
+        </ScrollViewer>
+
+        <ScrollViewer
+            Grid.Row="2"
+            Padding="20"
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Create}">
+            <views:CreateView DataContext="{Binding CreateViewModel}" />
         </ScrollViewer>
     </Grid>
 </UserControl>

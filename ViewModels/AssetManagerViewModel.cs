@@ -64,6 +64,13 @@ public partial class AssetManagerViewModel : ObservableObject
 
     public HeatingGrid? GridInfo => _assetManager.GridInfo;
 
+    private CreateViewModel _createViewModel;
+public CreateViewModel CreateViewModel
+{
+    get => _createViewModel;
+    set => SetProperty(ref _createViewModel, value);
+}
+
     public AssetManagerViewModel(AssetManager assetManager, IPopupService popupService)
 {
     _assetManager = assetManager;
@@ -281,8 +288,11 @@ public partial class AssetManagerViewModel : ObservableObject
     [RelayCommand]
     public void ShowSettings()
     {
-        var settingsViewModel = new CreateViewModel(_assetManager, _popupService);
+         CurrentViewState = ViewState.Create;
+         
+        var settingsViewModel = new CreateViewModel(_assetManager);
 _assetManager.RefreshAssets();
+
         settingsViewModel.AssetCreatedSuccessfully += () =>
   {
       // This is the key fix - completely rebuild the collection
@@ -310,7 +320,7 @@ _assetManager.RefreshAssets();
 
   RefreshPresets();
 
-        _popupService.ShowPopup(settingsViewModel);
+        CurrentViewState = ViewState.Create;
     }
 
     private AssetModel CreateAssetModel(AssetModel source)
@@ -614,5 +624,6 @@ public enum ViewState
     ScenarioSelection,
     AssetDetails,
     Configure,
-    PresetNavigation
+    PresetNavigation, 
+    Create
 }
