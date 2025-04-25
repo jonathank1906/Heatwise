@@ -6,34 +6,32 @@ using Sem2Proj.Interfaces;
 using System.Diagnostics;
 using Sem2Proj.Models;
 using System.Linq;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Sem2Proj.ViewModels;
-
 
 public partial class CreateViewModel : ViewModelBase, IPopupViewModel
 {
     [ObservableProperty]
-    private string[] _availablePresets = Array.Empty<string>();
+    private ObservableCollection<Preset> _availablePresets = new();
 
     [ObservableProperty]
-    private string? _selectedPreset;
+    private Preset? _selectedPreset;
+
     [ObservableProperty]
     private string _presetName = string.Empty;
+
     public event Action? AssetCreatedSuccessfully;
     private readonly AssetManager _assetManager;
     private readonly IPopupService _popupService;
+
     // Close command
     public ICommand CloseCommand { get; private set; }
 
     // Form properties
     [ObservableProperty]
     private string _machineName = string.Empty;
-
-    [ObservableProperty]
-    private string[] _machineTypes = ["Boiler", "CHP", "Heat Pump", "Electric Heater"];
-
-    [ObservableProperty]
-    private string? _selectedMachineType;
 
     [ObservableProperty]
     private string _maxHeatOutput = "0";
@@ -61,13 +59,7 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
         _assetManager = assetManager;
         _popupService = popupService;
         CloseCommand = new RelayCommand(() => _popupService.ClosePopup());
-
-        // Initialize available presets
-        AvailablePresets = assetManager.Presets.Select(p => p.Name).ToArray();
-        if (AvailablePresets.Length > 0)
-        {
-            SelectedPreset = AvailablePresets[0];
-        }
+        RefreshPresetList();
     }
 
     public void SetCloseAction(Action closeCallback)
@@ -102,7 +94,10 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
             return;
         }
 
-
+        var selectedPresetNames = AvailablePresets
+          .Where(p => p.IsSelected)
+          .Select(p => p.Name)
+          .ToList();
 
         bool success = _assetManager.CreateNewAsset(
             MachineName,
@@ -113,7 +108,7 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
             emissions,
             gasConsumption,
             oilConsumption,
-            SelectedPreset
+            selectedPresetNames
         );
 
         if (success)
@@ -132,7 +127,6 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
     [RelayCommand]
     private void CreatePreset()
     {
-
         if (string.IsNullOrWhiteSpace(PresetName))
         {
             Debug.WriteLine("Preset name cannot be empty.");
@@ -146,7 +140,6 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
             Debug.WriteLine($"Successfully created new preset '{PresetName}'");
             Events.Notification.Invoke($"Preset '{PresetName}' created successfully.", Enums.NotificationType.Confirmation);
             RefreshPresetList();
-            AvailablePresets = _assetManager.Presets.Select(p => p.Name).ToArray();
             AssetCreatedSuccessfully?.Invoke();
             CloseCommand.Execute(null);
         }
@@ -155,9 +148,6 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
             Debug.WriteLine("Failed to create new preset");
             Events.Notification.Invoke("Failed to create new preset.", Enums.NotificationType.Error);
         }
-
-
-
     }
 
     private void RefreshPresetList()
@@ -166,13 +156,23 @@ public partial class CreateViewModel : ViewModelBase, IPopupViewModel
         _assetManager.RefreshAssets();
 
         // Update local AvailablePresets
-        AvailablePresets = _assetManager.Presets.Select(p => p.Name).ToArray();
+        AvailablePresets = new ObservableCollection<Preset>(
+            _assetManager.Presets.Select(p => new Preset
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Machines = new List<string>(p.Machines),
+                NavigateToPresetCommand = null,
+                IsSelected = false
+            })
+        );
 
         // Reset selection
-        if (AvailablePresets.Length > 0)
+        if (AvailablePresets.Count > 0)
         {
             SelectedPreset = AvailablePresets[0];
         }
-        Debug.WriteLine($"Refreshed presets list. Now contains: {string.Join(", ", AvailablePresets)}");
+
+        Debug.WriteLine($"Refreshed presets list. Now contains: {string.Join(", ", AvailablePresets.Select(p => p.Name))}");
     }
 }
