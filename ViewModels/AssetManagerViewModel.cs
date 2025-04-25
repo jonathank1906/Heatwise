@@ -527,11 +527,11 @@ private bool SaveAssetChanges(AssetModel asset)
 {
     try
     {
-        // Update the asset in database
+        // Update the asset in database without modifying the image source
         return _assetManager.UpdateAsset(
             asset.Id, 
             asset.Name,
-            asset.ImageSource,
+            string.Empty, // We're not updating the image source
             asset.MaxHeat,
             asset.MaxElectricity,
             asset.ProductionCosts,

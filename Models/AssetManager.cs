@@ -422,27 +422,40 @@ public class AssetManager
         }
     }
 
-    public bool UpdateAsset(
-        int id,
-        string name,
-        string imageSource,
-        double maxHeat,
-        double maxElectricity,
-        double productionCosts,
-        double emissions,
-        double gasConsumption,
-        double oilConsumption)
+ public bool UpdateAsset(
+    int id,
+    string name,
+    string imageSource,
+    double maxHeat,
+    double maxElectricity,
+    double productionCosts,
+    double emissions,
+    double gasConsumption,
+    double oilConsumption)
+{
+    try
     {
-        try
+        using (var conn = new SQLiteConnection(_dbPath))
         {
-            using (var conn = new SQLiteConnection(_dbPath))
-            {
-                conn.Open();
+            conn.Open();
 
-                const string query = @"
+            // First, get the current image source
+            string currentImageSource = string.Empty;
+            const string getImageQuery = "SELECT ImageSource FROM AM_Assets WHERE Id = @id";
+            using (var cmd = new SQLiteCommand(getImageQuery, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", id);
+                var result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    currentImageSource = result.ToString();
+                }
+            }
+
+            // Update all fields except ImageSource
+            const string query = @"
             UPDATE AM_Assets SET
                 Name = @name,
-                ImageSource = @imageSource,
                 MaxHeat = @maxHeat,
                 MaxElectricity = @maxElectricity,
                 ProductionCosts = @productionCosts,
@@ -451,46 +464,45 @@ public class AssetManager
                 OilConsumption = @oilConsumption
             WHERE Id = @id";
 
-                using (var cmd = new SQLiteCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@id", id);
-                    cmd.Parameters.AddWithValue("@name", name);
-                    cmd.Parameters.AddWithValue("@imageSource", imageSource ?? string.Empty);
-                    cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
-                    cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
-                    cmd.Parameters.AddWithValue("@productionCosts", productionCosts);
-                    cmd.Parameters.AddWithValue("@emissions", emissions);
-                    cmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
-                    cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
+            using (var cmd = new SQLiteCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
+                cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
+                cmd.Parameters.AddWithValue("@productionCosts", productionCosts);
+                cmd.Parameters.AddWithValue("@emissions", emissions);
+                cmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
+                cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
 
-                    int rowsAffected = cmd.ExecuteNonQuery();
-                    if (rowsAffected > 0)
+                int rowsAffected = cmd.ExecuteNonQuery();
+                if (rowsAffected > 0)
+                {
+                    // Update the in-memory model
+                    var asset = AllAssets.FirstOrDefault(a => a.Id == id);
+                    if (asset != null)
                     {
-                        // Update the in-memory model
-                        var asset = AllAssets.FirstOrDefault(a => a.Id == id);
-                        if (asset != null)
-                        {
-                            asset.Name = name;
-                            asset.ImageSource = imageSource;
-                            asset.MaxHeat = maxHeat;
-                            asset.MaxElectricity = maxElectricity;
-                            asset.ProductionCosts = productionCosts;
-                            asset.Emissions = emissions;
-                            asset.GasConsumption = gasConsumption;
-                            asset.OilConsumption = oilConsumption;
-                        }
-                        return true;
+                        asset.Name = name;
+                        // Keep the original image source
+                        asset.MaxHeat = maxHeat;
+                        asset.MaxElectricity = maxElectricity;
+                        asset.ProductionCosts = productionCosts;
+                        asset.Emissions = emissions;
+                        asset.GasConsumption = gasConsumption;
+                        asset.OilConsumption = oilConsumption;
                     }
-                    return false;
+                    return true;
                 }
+                return false;
             }
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error updating asset ID {id}: {ex.Message}");
-            return false;
-        }
     }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Error updating asset ID {id}: {ex.Message}");
+        return false;
+    }
+}
 
     public bool AddMachineToPreset(int presetId, int assetId)
     {
