@@ -24,7 +24,7 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<Preset> _availablePresets = new();
     [ObservableProperty]
-    private bool isConfiguring;
+    private bool isConfiguring = false;
     [ObservableProperty]
     private ObservableCollection<AssetModel> _allAssets;
     [ObservableProperty]
@@ -187,16 +187,19 @@ public partial class AssetManagerViewModel : ObservableObject
         }
         else if (_availablePresets.Any(p => p.Name == destination))
         {
+
             CurrentViewState = ViewState.AssetDetails;
             SelectedScenario = destination;
         }
         else if (destination == "PresetNavigation")
         {
+
             CurrentViewState = ViewState.PresetNavigation;
             SelectedScenario = null;
         }
         else if (destination == "Presets")
         {
+
             CurrentViewState = ViewState.PresetNavigation;
             SelectedScenario = null;
         }
@@ -462,15 +465,21 @@ public partial class AssetManagerViewModel : ObservableObject
             asset.InitializePresetSelections(AvailablePresets);
         }
         Debug.WriteLine("Refreshing presets for configuration view.");
-        IsConfiguring = true;
+
     }
 
 
     [RelayCommand]
     private void CancelConfiguration()
     {
-        IsConfiguring = false;
+
         CurrentViewState = ViewState.PresetNavigation;
+    }
+
+    partial void OnCurrentViewStateChanged(ViewState value)
+    {
+        // Set IsConfiguring to false only for PresetNavigation and AssetDetails
+        IsConfiguring = !(value == ViewState.PresetNavigation || value == ViewState.AssetDetails);
     }
 
     [RelayCommand]
@@ -544,7 +553,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 Events.Notification.Invoke("Some changes failed to save.", NotificationType.Warning);
                 Debug.WriteLine("\n=== Partial save completed with some failures ===");
             }
-             CurrentViewState = ViewState.PresetNavigation;
+            CurrentViewState = ViewState.PresetNavigation;
         }
         catch (Exception ex)
         {
@@ -552,10 +561,7 @@ public partial class AssetManagerViewModel : ObservableObject
             Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
             Events.Notification.Invoke("Failed to save configuration!", NotificationType.Error);
         }
-        finally
-        {
-            IsConfiguring = false;
-        }
+
     }
 
     partial void OnAvailablePresetsChanged(ObservableCollection<Preset> value)
@@ -768,7 +774,7 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             Debug.WriteLine($"Successfully created new asset '{MachineName}'");
             _assetManager.RefreshAssets();
-           
+
 
             CurrentViewState = ViewState.PresetNavigation;
         }

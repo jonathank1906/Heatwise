@@ -121,26 +121,26 @@
 
                 <!--  Configuration Mode Top Bar (visible when configuring)  -->
                 <TextBlock
-                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    FontSize="18"
+                    FontSize="20"
                     FontWeight="Bold"
                     Foreground="White"
-                    IsVisible="{Binding IsConfiguring}"
+                   IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}"
                     Text="Configure Assets" />
 
                 <!--  Default Buttons  -->
                 <Button
                     Grid.Column="1"
                     Width="150"
-                    Height="40"
+                    Height="50"
                     Margin="5,0,8,0"
                     HorizontalAlignment="Center"
                     Background="#0078d7"
                     Command="{Binding ShowConfigurationCommand}"
-                    CornerRadius="5"
-                    IsVisible="{Binding !IsConfiguring}">
+                    CornerRadius="10"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <Path
@@ -162,16 +162,60 @@
                 </Button>
 
                 <!--  Configuration Mode Buttons  -->
+
+
                 <Button
                     Grid.Column="1"
-                    Width="100"
-                    Height="40"
+                    Width="85"
+                    Height="50"
                     Margin="5,0,8,0"
                     HorizontalAlignment="Center"
-                    Background="#FF5555"
-                    Command="{Binding CancelConfigurationCommand}"
-                    CornerRadius="5"
-                    IsVisible="{Binding IsConfiguring}">
+                    Background="#00B300"
+                    Command="{Binding SaveConfigurationCommand}"
+                    CornerRadius="10"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Save" />
+                </Button>
+
+                <!--  Cancel Button for Configure View  -->
+                <Button
+                    Grid.Column="2"
+                    Width="85"
+                    Height="50"
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                   
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="PresetNavigation"
+                    CornerRadius="10"
+                    FontSize="22"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Cancel" />
+                </Button>
+
+                <!--  Cancel Button for Create View  -->
+                <Button
+                    Grid.Column="2"
+                    Width="85"
+                    Height="50"
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+              
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="PresetNavigation"
+                    CornerRadius="10"
+                    FontSize="22"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Create}">
                     <TextBlock
                         FontSize="18"
                         FontWeight="Bold"
@@ -181,31 +225,14 @@
 
                 <Button
                     Grid.Column="2"
-                    Width="100"
-                    Height="40"
-                    Margin="5,0,8,0"
-                    HorizontalAlignment="Center"
-                    Background="#55AA55"
-                    Command="{Binding SaveConfigurationCommand}"
-                    CornerRadius="5"
-                    IsVisible="{Binding IsConfiguring}">
-                    <TextBlock
-                        FontSize="18"
-                        FontWeight="Bold"
-                        Foreground="White"
-                        Text="Save" />
-                </Button>
-
-                <Button
-                    Grid.Column="2"
                     Width="110"
-                    Height="40"
-                    Margin="5,0,8,0"
+                    Height="50"
+                    Margin="5,0,0,0"
                     HorizontalAlignment="Center"
                     Background="#0078d7"
                     Command="{Binding ShowSettingsCommand}"
-                    CornerRadius="5"
-                    IsVisible="{Binding !IsConfiguring}">
+                    CornerRadius="10"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <Path
