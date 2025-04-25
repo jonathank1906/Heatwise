@@ -17,7 +17,6 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="Transparent">
-            <!--  Close Button  -->
             <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Button
                     Canvas.Right="0"
@@ -36,7 +35,7 @@
             </Canvas>
         </Grid>
 
-       <!--  Middle Content  -->
+   
         <StackPanel
             Grid.Row="1"
             HorizontalAlignment="Center"
@@ -48,7 +47,7 @@
                 Foreground="White"
                 Text="(Settings)" />
 
-            <!-- Developer Mode -->
+        
             <StackPanel Orientation="Horizontal" Spacing="10">
                 <TextBlock
                     FontSize="16"
@@ -57,7 +56,7 @@
                 <ToggleSwitch />
             </StackPanel>
 
-            <!-- Dark/Light Mode -->
+         
             <StackPanel Orientation="Horizontal" Spacing="10">
                 <TextBlock
                     FontSize="16"
@@ -66,7 +65,15 @@
                 <ToggleSwitch />
             </StackPanel>
 
-            <!-- Restore Defaults -->
+               
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock
+                    FontSize="16"
+                    Foreground="White"
+                    Text="Show Home Screen on Startup:" />
+                <ToggleSwitch />
+            </StackPanel>
+
             <Button
                 Width="150"
                 Height="40"
