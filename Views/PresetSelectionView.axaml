@@ -54,9 +54,15 @@
         </ItemsControl>
 
         <!-- Fixed Position ToggleSwitch (left-aligned with buttons) -->
+         <Image
+         Grid.Row="2"
+            Width="38"
+            Height="38"
+            Margin="170,0,0,75"
+            HorizontalAlignment="Left"
+            Source="{SvgImage /Assets/District Heating.svg}" />
         <ToggleSwitch
             Grid.Row="2"
-           
             Margin="10,0,0,20"
             HorizontalAlignment="Left"
             IsChecked="{Binding IsHeatingGridVisible, Mode=TwoWay}">
