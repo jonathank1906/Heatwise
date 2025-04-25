@@ -127,8 +127,28 @@
                     FontSize="20"
                     FontWeight="Bold"
                     Foreground="White"
-                   IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}"
-                    Text="Configure Assets" />
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}"
+                    Text="Configure Assets &amp; Presets" />
+
+                <TextBlock
+                    Grid.ColumnSpan="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Create}"
+                    Text="Create" />
+
+                    <TextBlock
+                    Grid.ColumnSpan="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    IsVisible="{Binding !IsConfiguring}"
+                    Text="Preset Explorer" />
 
                 <!--  Default Buttons  -->
                 <Button
@@ -189,7 +209,6 @@
                     Margin="5,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                   
                     Command="{Binding NavigateToCommand}"
                     CommandParameter="PresetNavigation"
                     CornerRadius="10"
@@ -210,7 +229,6 @@
                     Margin="5,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-              
                     Command="{Binding NavigateToCommand}"
                     CommandParameter="PresetNavigation"
                     CornerRadius="10"

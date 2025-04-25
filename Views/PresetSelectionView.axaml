@@ -13,13 +13,6 @@
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
         Spacing="20">
-        <TextBlock
-            Margin="0,0,0,30"
-            HorizontalAlignment="Center"
-            FontSize="24"
-            Foreground="White"
-            Text="Select a Preset" />
-
         <ItemsControl ItemsSource="{Binding AvailablePresets}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

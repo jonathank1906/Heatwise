@@ -8,7 +8,7 @@
     x:DataType="vm:AssetManagerViewModel"
     mc:Ignorable="d">
 
-
+<StackPanel Spacing="20">
     <ItemsControl ItemsSource="{Binding AllAssets}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
@@ -258,4 +258,52 @@
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>
+
+    <!-- New ItemsControl -->
+    <ItemsControl ItemsSource="{Binding AvailablePresets}">
+    <ItemsControl.ItemTemplate>
+        <DataTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <!-- Preset Name Button -->
+                <Button
+                    Width="200"
+                    Height="60"
+                    Background="#0078d7"
+                    Command="{Binding NavigateToPresetCommand}"
+                    CommandParameter="{Binding Name}"
+                    CornerRadius="10">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="White"
+                        Text="{Binding Name}" />
+                </Button>
+
+                <!-- Rename Button -->
+                <Button
+                    Width="100"
+                    Height="60"
+                    Background="#FFA500"
+                   >
+                    <TextBlock
+                        FontSize="16"
+                        Foreground="White"
+                        Text="Rename" />
+                </Button>
+
+                <!-- Delete Button -->
+                <Button
+                    Width="100"
+                    Height="60"
+                    Background="#FF0000"
+                >
+                    <TextBlock
+                        FontSize="16"
+                        Foreground="White"
+                        Text="Delete" />
+                </Button>
+            </StackPanel>
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+</ItemsControl>
+</StackPanel>
 </UserControl>

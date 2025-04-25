@@ -835,6 +835,23 @@ public partial class AssetManagerViewModel : ObservableObject
 
         Debug.WriteLine($"Refreshed presets list. Now contains: {string.Join(", ", AvailablePresets.Select(p => p.Name))}");
     }
+
+    [RelayCommand]
+    private void RenamePreset(Preset preset)
+    {
+        if (preset == null) return;
+
+
+    }
+
+    [RelayCommand]
+    private void DeletePreset(Preset preset)
+    {
+        if (preset == null) return;
+
+
+    }
+
 }
 
 
