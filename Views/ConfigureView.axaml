@@ -9,6 +9,12 @@
     mc:Ignorable="d">
 
     <StackPanel Spacing="20">
+        <TextBlock
+            Margin="0,0,0,10"
+            FontSize="24"
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Production Units" />
         <ItemsControl ItemsSource="{Binding AllAssets}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -259,6 +265,12 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
+        <TextBlock
+            Margin="0,0,0,10"
+            FontSize="24"
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Presets" />
         <ItemsControl ItemsSource="{Binding AvailablePresets}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
