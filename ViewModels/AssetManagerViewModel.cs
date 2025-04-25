@@ -544,6 +544,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 Events.Notification.Invoke("Some changes failed to save.", NotificationType.Warning);
                 Debug.WriteLine("\n=== Partial save completed with some failures ===");
             }
+             CurrentViewState = ViewState.PresetNavigation;
         }
         catch (Exception ex)
         {
