@@ -216,7 +216,7 @@ public class AssetManager
                 {
                     cmd.Parameters.AddWithValue("@id", newId);
                     cmd.Parameters.AddWithValue("@name", name);
-                    cmd.Parameters.AddWithValue("@imageSource", imagePath ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@imageSource", imagePath);
                     cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
                     cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
                     cmd.Parameters.AddWithValue("@productionCosts", productionCost);
@@ -733,8 +733,7 @@ public class Preset
 
 public partial class AssetModel : ObservableObject
 {
-    [ObservableProperty]
-    private int _id;  // Add this
+    [ObservableProperty] private int _id; 
     [ObservableProperty] private string name = string.Empty;
     [ObservableProperty] private string imageSource = string.Empty;
     [ObservableProperty] private Bitmap? _imageFromBinding;

@@ -271,9 +271,16 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             if (string.IsNullOrEmpty(imageSource)) return null;
 
-            var normalizedPath = imageSource.TrimStart('/', '\\');
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string fullPath = Path.Combine(basePath, normalizedPath);
+            // Remove leading slash if present
+            var cleanPath = imageSource.TrimStart('/');
+
+            // Get the project root directory
+            var projectDir = Path.GetFullPath(Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "..", "..", ".."));
+
+            // Combine with the image path
+            var fullPath = Path.Combine(projectDir, cleanPath.Replace("/", "\\"));
 
             if (File.Exists(fullPath))
             {
@@ -286,7 +293,7 @@ public partial class AssetManagerViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error loading image: {ex.Message}");
+            Debug.WriteLine($"Error loading image from {imageSource}: {ex.Message}");
         }
         return null;
     }
@@ -363,20 +370,27 @@ public partial class AssetManagerViewModel : ObservableObject
 
     private AssetModel CreateAssetModel(AssetModel source)
     {
-        return new AssetModel
+        var model = new AssetModel
         {
             Id = source.Id,
             Name = source.Name,
+            ImageSource = source.ImageSource, // Ensure this is set
             MaxHeat = source.MaxHeat,
             ProductionCosts = source.ProductionCosts,
             Emissions = source.Emissions,
             GasConsumption = source.GasConsumption,
             OilConsumption = source.OilConsumption,
             MaxElectricity = source.MaxElectricity,
-            ImageFromBinding = LoadImageFromSource(source.ImageSource),
             RemoveFromPresetCommand = RemoveFromPresetCommand,
             DeleteCommand = DeleteCommand
         };
+
+        // Load the image after all properties are set
+        model.ImageFromBinding = LoadImageFromSource(model.ImageSource);
+
+        model.InitializePresetSelections(AvailablePresets);
+        return model;
+
     }
     [RelayCommand]
     private void RemoveFromPreset(string machineName)
@@ -657,7 +671,6 @@ public partial class AssetManagerViewModel : ObservableObject
     [RelayCommand]
     public async Task BrowseImage(Control view)
     {
-        // Get the top level from the current control
         var topLevel = TopLevel.GetTopLevel(view);
         if (topLevel == null)
         {
@@ -685,8 +698,10 @@ public partial class AssetManagerViewModel : ObservableObject
             {
                 var filePath = file.Path.LocalPath;
 
-                // Use the project-level Assets folder
-                var projectDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..");
+                // Get the project's Assets folder (source directory)
+                var projectDir = Path.GetFullPath(Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "..", "..", "..")); // Go up from bin/Debug/net9.0
                 var assetsDir = Path.Combine(projectDir, "Assets");
                 Directory.CreateDirectory(assetsDir);
 
@@ -695,10 +710,11 @@ public partial class AssetManagerViewModel : ObservableObject
 
                 File.Copy(filePath, destinationPath, true);
 
-                // Normalize the path to use forward slashes
-                ImagePath = "/" + Path.Combine("Assets", fileName).Replace("\\", "/");
+                // Store the path relative to project root
+                ImagePath = "/Assets/" + fileName;
 
-                Debug.WriteLine($"Image saved to: {destinationPath}");
+                Debug.WriteLine($"Image saved to project folder: {destinationPath}");
+                Debug.WriteLine($"ImagePath set to: {ImagePath}");
             }
         }
         catch (Exception ex)
@@ -751,10 +767,9 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             Debug.WriteLine($"Successfully created new asset '{MachineName}'");
             _assetManager.RefreshAssets();
-            AssetCreatedSuccessfully?.Invoke();
-            // Refresh the displayed assets
-            
+           
 
+            CurrentViewState = ViewState.PresetNavigation;
         }
         else
         {
