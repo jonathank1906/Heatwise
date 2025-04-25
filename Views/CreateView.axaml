@@ -156,7 +156,7 @@
                                 HorizontalAlignment="Left"
                                 Background="#3E3E42"
                             
-                              Click="OnBrowseButtonClick"
+                              Command="{Binding BrowseImageCommand}"
                                 Content="Browse Image"
                                 Foreground="White" />
                             <TextBlock
@@ -168,7 +168,7 @@
                             Width="200"
                             Height="60"
                             Background="#0078d7"
-                            Click="OnCreateMachineClick"
+                           Command="{Binding CreateMachineCommand}"
                             CornerRadius="10">
                             <TextBlock
                                 FontSize="18"

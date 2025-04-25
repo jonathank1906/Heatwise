@@ -490,7 +490,7 @@
             Grid.Row="2"
             Padding="20"
             IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Create}">
-            <views:CreateView DataContext="{Binding CreateViewModel}" />
+            <views:CreateView DataContext="{Binding}" />
         </ScrollViewer>
     </Grid>
 </UserControl>
