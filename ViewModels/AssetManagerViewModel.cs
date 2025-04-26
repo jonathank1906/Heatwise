@@ -20,6 +20,8 @@ namespace Sem2Proj.ViewModels;
 
 public partial class AssetManagerViewModel : ObservableObject
 {
+    [ObservableProperty]
+    private ObservableCollection<AssetModel> _machineModels = new();
 
     [ObservableProperty]
     private ObservableCollection<Preset> _availablePresets = new();
@@ -171,6 +173,23 @@ public partial class AssetManagerViewModel : ObservableObject
             })
         );
 
+        MachineModels = new ObservableCollection<AssetModel>(
+       _assetManager.AllAssets.Select(a => new AssetModel
+       {
+           Id = a.Id,
+           Name = a.Name,
+           MaxHeat = a.MaxHeat,
+           ProductionCosts = a.ProductionCosts,
+           Emissions = a.Emissions,
+           GasConsumption = a.GasConsumption,
+           OilConsumption = a.OilConsumption,
+           MaxElectricity = a.MaxElectricity,
+           ImageFromBinding = LoadImageFromSource(a.ImageSource),
+           RemoveFromPresetCommand = RemoveFromPresetCommand,
+           DeleteCommand = DeleteCommand
+       })
+   );
+
         // Set the available presets
         AvailablePresets = presetTemplates;
     }
@@ -243,6 +262,22 @@ public partial class AssetManagerViewModel : ObservableObject
                     DeleteCommand = DeleteCommand
                 })
             );
+            MachineModels = new ObservableCollection<AssetModel>(
+            _assetManager.AllAssets.Select(a => new AssetModel
+            {
+                Id = a.Id,
+                Name = a.Name,
+                MaxHeat = a.MaxHeat,
+                ProductionCosts = a.ProductionCosts,
+                Emissions = a.Emissions,
+                GasConsumption = a.GasConsumption,
+                OilConsumption = a.OilConsumption,
+                MaxElectricity = a.MaxElectricity,
+                ImageFromBinding = LoadImageFromSource(a.ImageSource),
+                RemoveFromPresetCommand = RemoveFromPresetCommand,
+                DeleteCommand = DeleteCommand
+            })
+        );
         }
         else
         {
@@ -265,6 +300,11 @@ public partial class AssetManagerViewModel : ObservableObject
                             RemoveFromPresetCommand = RemoveFromPresetCommand,
                             DeleteCommand = DeleteCommand
                         }))
+                : new ObservableCollection<AssetModel>();
+
+
+            MachineModels = preset != null
+                ? new ObservableCollection<AssetModel>(preset.MachineModels)
                 : new ObservableCollection<AssetModel>();
         }
 
@@ -465,10 +505,28 @@ public partial class AssetManagerViewModel : ObservableObject
         })
     );
 
+        foreach (var preset in AvailablePresets)
+        {
+            preset.MachineModels = new ObservableCollection<AssetModel>(
+                preset.Machines.Select(machineName =>
+                    AllAssets.FirstOrDefault(a => a.Name == machineName))
+                .Where(a => a != null)
+                .Cast<AssetModel>()
+            );
+        }
         // Also refresh individual assets' preset selections
         foreach (var asset in AllAssets)
         {
             asset.InitializePresetSelections(AvailablePresets);
+        }
+
+        foreach (var preset in AvailablePresets)
+        {
+            Debug.WriteLine($"Preset: {preset.Name}, Machines: {preset.MachineModels.Count}");
+            foreach (var machine in preset.MachineModels)
+            {
+                Debug.WriteLine($"  - Machine: {machine.Name}");
+            }
         }
         Debug.WriteLine("Refreshing presets for configuration view.");
 
@@ -609,8 +667,14 @@ public partial class AssetManagerViewModel : ObservableObject
              Id = p.Id,
              Name = p.Name,
              Machines = new List<string>(p.Machines),
+             MachineModels = new ObservableCollection<AssetModel>(
+                 p.Machines
+                     .Select(machineName => _assetManager.AllAssets.FirstOrDefault(a => a.Name == machineName))
+                     .Where(a => a != null)
+                     .Cast<AssetModel>()
+             ),
              NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)),
-             DeletePresetCommand = new RelayCommand(() => DeletePreset(p)) // Initialize DeletePresetCommand
+             DeletePresetCommand = new RelayCommand(() => DeletePreset(p))
          })
      );
 

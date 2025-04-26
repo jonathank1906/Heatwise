@@ -86,48 +86,56 @@ public class AssetManager
         Debug.WriteLine($"Loaded {AllAssets.Count} assets from database");
     }
 
-    private void LoadAllPresets(SQLiteConnection conn)
+ private void LoadAllPresets(SQLiteConnection conn)
+{
+    // Load preset definitions
+    const string presetQuery = "SELECT * FROM AM_Presets";
+    using (var presetCmd = new SQLiteCommand(presetQuery, conn))
+    using (var presetReader = presetCmd.ExecuteReader())
     {
-        // First load preset definitions
-        const string presetQuery = "SELECT * FROM AM_Presets";
-        using (var presetCmd = new SQLiteCommand(presetQuery, conn))
-        using (var presetReader = presetCmd.ExecuteReader())
+        while (presetReader.Read())
         {
-            while (presetReader.Read())
+            var preset = new Preset
             {
-                var preset = new Preset
-                {
-                    Id = Convert.ToInt32(presetReader["Id"]),
-                    Name = presetReader["Name"].ToString() ?? string.Empty
-                };
-                Presets.Add(preset);
-            }
+                Id = Convert.ToInt32(presetReader["Id"]),
+                Name = presetReader["Name"].ToString() ?? string.Empty
+            };
+            Presets.Add(preset);
         }
+    }
 
-        // Then load asset associations for each preset
-        foreach (var preset in Presets)
+    // Load machines for each preset
+    foreach (var preset in Presets)
+    {
+        const string assetQuery = @"
+            SELECT a.Name 
+            FROM AM_Assets a
+            JOIN AM_PresetAssets pa ON a.Id = pa.AssetId
+            WHERE pa.PresetId = @presetId";
+
+        using (var assetCmd = new SQLiteCommand(assetQuery, conn))
         {
-            const string assetQuery = @"
-                    SELECT a.* 
-                    FROM AM_Assets a
-                    JOIN AM_PresetAssets pa ON a.Id = pa.AssetId
-                    WHERE pa.PresetId = @presetId";
-
-            using (var assetCmd = new SQLiteCommand(assetQuery, conn))
+            assetCmd.Parameters.AddWithValue("@presetId", preset.Id);
+            using (var assetReader = assetCmd.ExecuteReader())
             {
-                assetCmd.Parameters.AddWithValue("@presetId", preset.Id);
-                using (var assetReader = assetCmd.ExecuteReader())
+                while (assetReader.Read())
                 {
-                    while (assetReader.Read())
+                    var machineName = assetReader["Name"].ToString();
+                    if (!string.IsNullOrEmpty(machineName))
                     {
-                        var assetName = assetReader["Name"].ToString() ?? string.Empty;
-                        preset.Machines.Add(assetName);
+                        preset.Machines.Add(machineName);
                     }
                 }
             }
         }
-        Debug.WriteLine($"Loaded {Presets.Count} presets from database");
     }
+
+    Debug.WriteLine($"Loaded {Presets.Count} presets from database.");
+    foreach (var preset in Presets)
+    {
+        Debug.WriteLine($"Preset: {preset.Name}, Machines: {string.Join(", ", preset.Machines)}");
+    }
+}
 
     private void LoadHeatingGridInfo(SQLiteConnection conn)
     {
@@ -149,23 +157,23 @@ public class AssetManager
         }
     }
 
-    public bool SetScenario(int scenarioIndex)
+ public bool SetScenario(int scenarioIndex)
+{
+    if (scenarioIndex < 0 || scenarioIndex >= Presets.Count)
     {
-        if (scenarioIndex < 0 || scenarioIndex >= Presets.Count)
-        {
-            Debug.WriteLine($"Invalid scenario index: {scenarioIndex}");
-            return false;
-        }
-
-        var preset = Presets[scenarioIndex];
-        CurrentAssets = AllAssets
-            .Where(a => preset.Machines.Contains(a.Name))
-            .ToList();
-
-        SelectedScenarioIndex = scenarioIndex;
-        Debug.WriteLine($"Set scenario '{preset.Name}' with {CurrentAssets.Count} assets");
-        return true;
+        Debug.WriteLine($"Invalid scenario index: {scenarioIndex}");
+        return false;
     }
+
+    var preset = Presets[scenarioIndex];
+
+    // Convert ObservableCollection to List
+    CurrentAssets = preset.MachineModels.ToList();
+
+    SelectedScenarioIndex = scenarioIndex;
+    Debug.WriteLine($"Set scenario '{preset.Name}' with {CurrentAssets.Count} assets");
+    return true;
+}
 
     public bool SetScenario(string scenarioName)
     {
@@ -786,6 +794,7 @@ public class Preset
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public List<string> Machines { get; set; } = new();
+     public ObservableCollection<AssetModel> MachineModels { get; set; } = new();
     public ICommand? NavigateToPresetCommand { get; set; }
     public ICommand? DeletePresetCommand { get; set; }
     public string PresetName => Name;  // Read-only property that returns Name
@@ -828,6 +837,13 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<PresetSelectionItem> _presetSelections = new();
 
+    // New properties
+    [ObservableProperty]
+    private bool isActive; // Represents whether the machine is active in a preset
+
+    [ObservableProperty]
+    private double heatProduction; // Represents the current heat production of the machine
+
     public void InitializePresetSelections(IEnumerable<Preset> allPresets)
     {
         Debug.WriteLine($"[InitializePresetSelections] Start for machine: {Name}");
@@ -869,7 +885,6 @@ public partial class AssetModel : ObservableObject
             Debug.WriteLine($"- {p.Name}: {p.IsSelected}");
         }
     }
-
 }
 
 public class PresetSelectionItem : ObservableObject
