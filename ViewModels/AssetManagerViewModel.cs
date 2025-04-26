@@ -168,7 +168,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 };
 
                 // Initialize with preset templates - this will set IsSelected correctly
-                assetModel.InitializePresetSelections(presetTemplates);
+                assetModel.InitializePresetSelections(_assetManager.Presets);
                 return assetModel;
             })
         );
@@ -389,6 +389,10 @@ public partial class AssetManagerViewModel : ObservableObject
          DeletePresetCommand = new RelayCommand(() => DeletePreset(p)) // Initialize DeletePresetCommand
      })
  );
+ foreach (var preset in AvailablePresets)
+{
+    Debug.WriteLine($"[AvailablePresets] Preset: {preset.Name}, Machines: {string.Join(", ", preset.Machines)}");
+}
   };
 
         RefreshPresets();
@@ -415,7 +419,7 @@ public partial class AssetManagerViewModel : ObservableObject
 
         // Load the image after all properties are set
         model.ImageFromBinding = LoadImageFromSource(model.ImageSource);
-
+        Debug.WriteLine($"[CreateAssetModel] Initializing preset selections for Machine: {model.Name}");
         model.InitializePresetSelections(AvailablePresets);
         return model;
 

@@ -86,63 +86,69 @@ public class AssetManager
         Debug.WriteLine($"Loaded {AllAssets.Count} assets from database");
     }
 
-    private void LoadAllPresets(SQLiteConnection conn)
+   private void LoadAllPresets(SQLiteConnection conn)
+{
+    // Load preset definitions
+    const string presetQuery = "SELECT * FROM AM_Presets";
+    using (var presetCmd = new SQLiteCommand(presetQuery, conn))
+    using (var presetReader = presetCmd.ExecuteReader())
     {
-        // Load preset definitions
-        const string presetQuery = "SELECT * FROM AM_Presets";
-        using (var presetCmd = new SQLiteCommand(presetQuery, conn))
-        using (var presetReader = presetCmd.ExecuteReader())
+        while (presetReader.Read())
         {
-            while (presetReader.Read())
+            var preset = new Preset
             {
-                var preset = new Preset
-                {
-                    Id = Convert.ToInt32(presetReader["Id"]),
-                    Name = presetReader["Name"].ToString() ?? string.Empty
-                };
-                Presets.Add(preset);
-            }
+                Id = Convert.ToInt32(presetReader["Id"]),
+                Name = presetReader["Name"].ToString() ?? string.Empty
+            };
+            Presets.Add(preset);
         }
+    }
 
-        // Load machines for each preset from the PresetMachines table
-        foreach (var preset in Presets)
+    // Load machines for each preset
+    foreach (var preset in Presets)
+    {
+        const string machineQuery = @"
+        SELECT * 
+        FROM PresetMachines
+        WHERE PresetId = @presetId";
+
+        using (var machineCmd = new SQLiteCommand(machineQuery, conn))
         {
-            const string machineQuery = @"
-            SELECT * 
-            FROM PresetMachines
-            WHERE PresetId = @presetId";
-
-            using (var machineCmd = new SQLiteCommand(machineQuery, conn))
+            machineCmd.Parameters.AddWithValue("@presetId", preset.Id);
+            using (var machineReader = machineCmd.ExecuteReader())
             {
-                machineCmd.Parameters.AddWithValue("@presetId", preset.Id);
-                using (var machineReader = machineCmd.ExecuteReader())
+                while (machineReader.Read())
                 {
-                    while (machineReader.Read())
+                    // Load detailed machine data
+                    var machine = new AssetModel
                     {
-                        var machine = new AssetModel
-                        {
-                            Id = Convert.ToInt32(machineReader["PresetId"]),
-                            Name = machineReader["Name"].ToString() ?? string.Empty,
-                            ImageSource = machineReader["ImageSource"].ToString() ?? string.Empty,
-                            MaxHeat = Convert.ToDouble(machineReader["MaxHeat"]),
-                            ProductionCosts = Convert.ToDouble(machineReader["ProductionCosts"]),
-                            Emissions = Convert.ToDouble(machineReader["Emissions"]),
-                            GasConsumption = Convert.ToDouble(machineReader["GasConsumption"]),
-                            OilConsumption = Convert.ToDouble(machineReader["OilConsumption"]),
-                            MaxElectricity = Convert.ToDouble(machineReader["MaxElectricity"])
-                        };
-                        preset.MachineModels.Add(machine);
+                        Id = Convert.ToInt32(machineReader["PresetId"]),
+                        Name = machineReader["Name"].ToString() ?? string.Empty,
+                        ImageSource = machineReader["ImageSource"].ToString() ?? string.Empty,
+                        MaxHeat = Convert.ToDouble(machineReader["MaxHeat"]),
+                        ProductionCosts = Convert.ToDouble(machineReader["ProductionCosts"]),
+                        Emissions = Convert.ToDouble(machineReader["Emissions"]),
+                        GasConsumption = Convert.ToDouble(machineReader["GasConsumption"]),
+                        OilConsumption = Convert.ToDouble(machineReader["OilConsumption"]),
+                        MaxElectricity = Convert.ToDouble(machineReader["MaxElectricity"])
+                    };
+                    preset.MachineModels.Add(machine);
+
+                    // Also add the machine name to the Machines list
+                    if (!string.IsNullOrEmpty(machine.Name))
+                    {
+                        preset.Machines.Add(machine.Name);
                     }
                 }
             }
         }
 
-        Debug.WriteLine($"Loaded {Presets.Count} presets from database.");
-        foreach (var preset in Presets)
-        {
-            Debug.WriteLine($"Preset: {preset.Name}, Machines: {preset.MachineModels.Count}");
-        }
+        Debug.WriteLine($"Preset: {preset.Name}, Machines: {string.Join(", ", preset.Machines)}");
+        Debug.WriteLine($"Preset: {preset.Name}, MachineModels Count: {preset.MachineModels.Count}");
     }
+
+    Debug.WriteLine($"Loaded {Presets.Count} presets from database.");
+}
 
     private void LoadHeatingGridInfo(SQLiteConnection conn)
     {
@@ -817,22 +823,22 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty]
     private double heatProduction; // Represents the current heat production of the machine
 
-    public void InitializePresetSelections(IEnumerable<Preset> allPresets)
+public void InitializePresetSelections(IEnumerable<Preset> allPresets)
+{
+    PresetSelections.Clear();
+
+    foreach (var preset in allPresets)
     {
-        AvailablePresets.Clear();
+        Debug.WriteLine($"[InitializePresetSelections] Checking Machine: {Name} against Preset: {preset.Name}");
+        Debug.WriteLine($"[InitializePresetSelections] Machines in Preset: {string.Join(", ", preset.Machines)}");
 
-        foreach (var preset in allPresets)
-        {
-            bool isSelected = preset.MachineModels.Any(m => m.Id == Id);
+        bool isSelected = preset.Machines.Any(machineName => 
+            string.Equals(machineName.Trim(), Name.Trim(), StringComparison.OrdinalIgnoreCase)); // Case-insensitive comparison
 
-            AvailablePresets.Add(new Preset
-            {
-                Id = preset.Id,
-                Name = preset.Name,
-                IsSelected = isSelected
-            });
-        }
+        Debug.WriteLine($"[InitializePresetSelections] Machine: {Name}, Preset: {preset.Name}, IsSelected: {isSelected}");
+        PresetSelections.Add(new PresetSelectionItem(preset.Name, isSelected));
     }
+}
 }
 
 public class PresetSelectionItem : ObservableObject

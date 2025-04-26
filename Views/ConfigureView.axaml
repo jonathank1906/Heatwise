@@ -241,7 +241,7 @@
                                                             Foreground="White"
                                                             Text="Assign to Presets:" />
 
-                                                        <ItemsControl ItemsSource="{Binding AvailablePresets}">
+                                                        <ItemsControl ItemsSource="{Binding PresetSelections}">
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <CheckBox
