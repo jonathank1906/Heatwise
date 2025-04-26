@@ -704,7 +704,17 @@ public class AssetManager
         return false;
     }
 
- public bool UpdateMachineInPreset(int presetId, string name, double maxHeat, double maxElectricity, double productionCosts, double emissions, double gasConsumption, double oilConsumption)
+public bool UpdateMachineInPreset(
+    int presetId,
+    string name,
+    double maxHeat,
+    double maxElectricity,
+    double productionCosts,
+    double emissions,
+    double gasConsumption,
+    double oilConsumption,
+    bool isActive,
+    double heatProduction)
 {
     try
     {
@@ -712,36 +722,6 @@ public class AssetManager
         {
             conn.Open();
 
-            // Check if the row exists
-            const string checkQuery = "SELECT COUNT(*) FROM PresetMachines WHERE PresetId = @presetId AND Name = @name";
-            using (var checkCmd = new SQLiteCommand(checkQuery, conn))
-            {
-                checkCmd.Parameters.AddWithValue("@presetId", presetId);
-                checkCmd.Parameters.AddWithValue("@name", name);
-                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
-
-                if (count == 0)
-                {
-                    // Insert the row if it does not exist
-                    const string insertQuery = @"
-                        INSERT INTO PresetMachines (PresetId, Name, MaxHeat, MaxElectricity, ProductionCosts, Emissions, GasConsumption, OilConsumption)
-                        VALUES (@presetId, @name, @maxHeat, @maxElectricity, @productionCosts, @emissions, @gasConsumption, @oilConsumption)";
-                    using (var insertCmd = new SQLiteCommand(insertQuery, conn))
-                    {
-                        insertCmd.Parameters.AddWithValue("@presetId", presetId);
-                        insertCmd.Parameters.AddWithValue("@name", name);
-                        insertCmd.Parameters.AddWithValue("@maxHeat", maxHeat);
-                        insertCmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
-                        insertCmd.Parameters.AddWithValue("@productionCosts", productionCosts);
-                        insertCmd.Parameters.AddWithValue("@emissions", emissions);
-                        insertCmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
-                        insertCmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
-                        insertCmd.ExecuteNonQuery();
-                    }
-                }
-            }
-
-            // Update the row
             const string updateQuery = @"
                 UPDATE PresetMachines
                 SET MaxHeat = @maxHeat,
@@ -749,7 +729,9 @@ public class AssetManager
                     ProductionCosts = @productionCosts,
                     Emissions = @emissions,
                     GasConsumption = @gasConsumption,
-                    OilConsumption = @oilConsumption
+                    OilConsumption = @oilConsumption,
+                    IsActive = @isActive,
+                    HeatProduction = @heatProduction
                 WHERE PresetId = @presetId AND Name = @name";
 
             using (var updateCmd = new SQLiteCommand(updateQuery, conn))
@@ -762,6 +744,9 @@ public class AssetManager
                 updateCmd.Parameters.AddWithValue("@emissions", emissions);
                 updateCmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
                 updateCmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
+                updateCmd.Parameters.AddWithValue("@isActive", isActive);
+                updateCmd.Parameters.AddWithValue("@heatProduction", heatProduction);
+
                 int rowsAffected = updateCmd.ExecuteNonQuery();
                 return rowsAffected > 0;
             }

@@ -298,7 +298,7 @@
                                         <ToggleSwitch
                                             Grid.Column="0"
                                             Margin="5"
-                                            IsChecked="{Binding IsActive}"
+                                            IsChecked="{Binding IsActive, Mode=TwoWay}"
                                             OffContent="Off"
                                             OnContent="On"
                                             ToolTip.Tip="Enable or disable this machine in the preset" />
@@ -325,7 +325,7 @@
                                                     Minimum="1.0"
                                                     TickFrequency="0.1"
                                                     TickPlacement="BottomRight"
-                                                    Value="{Binding HeatProduction}" />
+                                                    Value="{Binding HeatProduction, Mode=TwoWay}" />
                                                 <TextBlock Text="{Binding #Slider0.Maximum}" />
                                             </StackPanel>
                                         </StackPanel>
