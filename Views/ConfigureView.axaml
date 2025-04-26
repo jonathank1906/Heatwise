@@ -272,7 +272,6 @@
             Foreground="White"
             Text="Presets" />
 
-        <!--  filepath: c:\Users\jonat\Desktop\Sem2Proj\Views\ConfigureView.axaml  -->
         <ItemsControl ItemsSource="{Binding AvailablePresets}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -312,7 +311,7 @@
                                             Foreground="White"
                                             Text="{Binding Name}" />
 
-                                        <!--  Progress Bar for Heat Production  -->
+                                    
                                         <StackPanel Margin="20" IsVisible="{Binding IsActive}">
                                             <TextBlock HorizontalAlignment="Center" Text="{Binding #Slider0.Value, StringFormat={}{0:F1}}" />
                                             <StackPanel Orientation="Horizontal">
