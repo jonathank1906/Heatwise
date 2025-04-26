@@ -219,6 +219,7 @@ public partial class AssetManagerViewModel : ObservableObject
 
             CurrentViewState = ViewState.PresetNavigation;
             SelectedScenario = null;
+            RefreshPresetList();
         }
         else if (destination == "Presets")
         {
