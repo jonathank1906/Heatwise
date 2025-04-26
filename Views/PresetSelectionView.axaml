@@ -56,8 +56,8 @@
         <!-- Fixed Position ToggleSwitch (left-aligned with buttons) -->
          <Image
          Grid.Row="2"
-            Width="38"
-            Height="38"
+            Width="50"
+            Height="50"
             Margin="170,0,0,75"
             HorizontalAlignment="Left"
             Source="{SvgImage /Assets/District Heating.svg}" />

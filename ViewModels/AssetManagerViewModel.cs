@@ -383,7 +383,7 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             Id = source.Id,
             Name = source.Name,
-            ImageSource = source.ImageSource, // Ensure this is set
+            ImageSource = source.ImageSource,
             MaxHeat = source.MaxHeat,
             ProductionCosts = source.ProductionCosts,
             Emissions = source.Emissions,
@@ -802,6 +802,15 @@ public partial class AssetManagerViewModel : ObservableObject
             Debug.WriteLine($"Successfully created new asset '{MachineName}'");
             _assetManager.RefreshAssets();
 
+            // Reset form fields
+            MachineName = string.Empty;
+            ImagePath = null;
+            MaxHeatOutput = "0";
+            MaxElectricityOutput = "0";
+            ProductionCost = "0";
+            Co2Emissions = "0";
+            GasConsumption = "0";
+            OilConsumption = "0";
 
             CurrentViewState = ViewState.PresetNavigation;
         }
@@ -829,6 +838,8 @@ public partial class AssetManagerViewModel : ObservableObject
             RefreshPresetList();
             AssetCreatedSuccessfully?.Invoke();
 
+            // Reset form field
+            PresetName = string.Empty;
         }
         else
         {
