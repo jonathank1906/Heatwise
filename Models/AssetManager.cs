@@ -104,27 +104,34 @@ public class AssetManager
         }
     }
 
-    // Load machines for each preset
+    // Load machines for each preset from the PresetMachines table
     foreach (var preset in Presets)
     {
-        const string assetQuery = @"
-            SELECT a.Name 
-            FROM AM_Assets a
-            JOIN AM_PresetAssets pa ON a.Id = pa.AssetId
-            WHERE pa.PresetId = @presetId";
+        const string machineQuery = @"
+            SELECT * 
+            FROM PresetMachines
+            WHERE PresetId = @presetId";
 
-        using (var assetCmd = new SQLiteCommand(assetQuery, conn))
+        using (var machineCmd = new SQLiteCommand(machineQuery, conn))
         {
-            assetCmd.Parameters.AddWithValue("@presetId", preset.Id);
-            using (var assetReader = assetCmd.ExecuteReader())
+            machineCmd.Parameters.AddWithValue("@presetId", preset.Id);
+            using (var machineReader = machineCmd.ExecuteReader())
             {
-                while (assetReader.Read())
+                while (machineReader.Read())
                 {
-                    var machineName = assetReader["Name"].ToString();
-                    if (!string.IsNullOrEmpty(machineName))
+                    var machine = new AssetModel
                     {
-                        preset.Machines.Add(machineName);
-                    }
+                        Id = Convert.ToInt32(machineReader["PresetId"]),
+                        Name = machineReader["Name"].ToString() ?? string.Empty,
+                        ImageSource = machineReader["ImageSource"].ToString() ?? string.Empty,
+                        MaxHeat = Convert.ToDouble(machineReader["MaxHeat"]),
+                        ProductionCosts = Convert.ToDouble(machineReader["ProductionCosts"]),
+                        Emissions = Convert.ToDouble(machineReader["Emissions"]),
+                        GasConsumption = Convert.ToDouble(machineReader["GasConsumption"]),
+                        OilConsumption = Convert.ToDouble(machineReader["OilConsumption"]),
+                        MaxElectricity = Convert.ToDouble(machineReader["MaxElectricity"])
+                    };
+                    preset.MachineModels.Add(machine);
                 }
             }
         }
@@ -133,7 +140,7 @@ public class AssetManager
     Debug.WriteLine($"Loaded {Presets.Count} presets from database.");
     foreach (var preset in Presets)
     {
-        Debug.WriteLine($"Preset: {preset.Name}, Machines: {string.Join(", ", preset.Machines)}");
+        Debug.WriteLine($"Preset: {preset.Name}, Machines: {preset.MachineModels.Count}");
     }
 }
 
@@ -334,58 +341,44 @@ public class AssetManager
         }
     }
 
-    public bool RemoveMachineFromPreset(string presetName, string machineName)
+ public bool RemoveMachineFromPreset(int presetId, int machineId)
+{
+    try
     {
-        try
+        using (var conn = new SQLiteConnection(_dbPath))
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            conn.Open();
+            const string query = @"
+                DELETE FROM PresetMachines 
+                WHERE PresetId = @presetId AND Id = @machineId";
+
+            using (var cmd = new SQLiteCommand(query, conn))
             {
-                conn.Open();
+                cmd.Parameters.AddWithValue("@presetId", presetId);
+                cmd.Parameters.AddWithValue("@machineId", machineId);
+                int rowsAffected = cmd.ExecuteNonQuery();
 
-                // Get the preset ID
-                var preset = Presets.FirstOrDefault(p => p.Name == presetName);
-                if (preset == null) return false;
-
-                // Get the asset ID
-                var asset = AllAssets.FirstOrDefault(a => a.Name == machineName);
-                if (asset == null) return false;
-
-                // Find the asset ID in the database (since our in-memory model might not have IDs)
-                int assetId;
-                const string getAssetIdQuery = "SELECT Id FROM AM_Assets WHERE Name = @name";
-                using (var cmd = new SQLiteCommand(getAssetIdQuery, conn))
+                if (rowsAffected > 0)
                 {
-                    cmd.Parameters.AddWithValue("@name", machineName);
-                    var result = cmd.ExecuteScalar();
-                    if (result == null || result == DBNull.Value) return false;
-                    assetId = Convert.ToInt32(result);
-                }
-
-                // Remove from the preset
-                const string deleteQuery = "DELETE FROM AM_PresetAssets WHERE PresetId = @presetId AND AssetId = @assetId";
-                using (var cmd = new SQLiteCommand(deleteQuery, conn))
-                {
-                    cmd.Parameters.AddWithValue("@presetId", preset.Id);
-                    cmd.Parameters.AddWithValue("@assetId", assetId);
-                    int rowsAffected = cmd.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
+                    // Update in-memory model
+                    var preset = Presets.FirstOrDefault(p => p.Id == presetId);
+                    var machine = preset?.MachineModels.FirstOrDefault(m => m.Id == machineId);
+                    if (preset != null && machine != null)
                     {
-                        // Update the in-memory model
-                        preset.Machines.Remove(machineName);
-                        RefreshAssets();
-                        return true;
+                        preset.MachineModels.Remove(machine);
                     }
+                    return true;
                 }
                 return false;
             }
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error removing machine from preset: {ex.Message}");
-            return false;
-        }
     }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Error removing machine from preset: {ex.Message}");
+        return false;
+    }
+}
 
     public bool CreateNewPreset(string presetName)
     {
@@ -512,87 +505,50 @@ public class AssetManager
         }
     }
 
-    public bool AddMachineToPreset(int presetId, int assetId)
+    public bool AddMachineToPreset(int presetId, AssetModel machine)
+{
+    try
     {
-        try
+        using (var conn = new SQLiteConnection(_dbPath))
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            conn.Open();
+            const string query = @"
+                INSERT INTO PresetMachines (PresetId, Name, ImageSource, MaxHeat, ProductionCosts, Emissions, GasConsumption, OilConsumption, MaxElectricity)
+                VALUES (@presetId, @name, @imageSource, @maxHeat, @productionCosts, @emissions, @gasConsumption, @oilConsumption, @maxElectricity)";
+
+            using (var cmd = new SQLiteCommand(query, conn))
             {
-                conn.Open();
+                cmd.Parameters.AddWithValue("@presetId", presetId);
+                cmd.Parameters.AddWithValue("@name", machine.Name);
+                cmd.Parameters.AddWithValue("@imageSource", machine.ImageSource);
+                cmd.Parameters.AddWithValue("@maxHeat", machine.MaxHeat);
+                cmd.Parameters.AddWithValue("@productionCosts", machine.ProductionCosts);
+                cmd.Parameters.AddWithValue("@emissions", machine.Emissions);
+                cmd.Parameters.AddWithValue("@gasConsumption", machine.GasConsumption);
+                cmd.Parameters.AddWithValue("@oilConsumption", machine.OilConsumption);
+                cmd.Parameters.AddWithValue("@maxElectricity", machine.MaxElectricity);
 
-                // Verify preset exists
-                const string checkPresetQuery = "SELECT COUNT(*) FROM AM_Presets WHERE Id = @presetId";
-                using (var cmd = new SQLiteCommand(checkPresetQuery, conn))
+                int rowsAffected = cmd.ExecuteNonQuery();
+                if (rowsAffected > 0)
                 {
-                    cmd.Parameters.AddWithValue("@presetId", presetId);
-                    if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                    // Update in-memory model
+                    var preset = Presets.FirstOrDefault(p => p.Id == presetId);
+                    if (preset != null)
                     {
-                        Debug.WriteLine($"Preset ID {presetId} not found");
-                        return false;
+                        preset.MachineModels.Add(machine);
                     }
+                    return true;
                 }
-
-                // Verify asset exists
-                const string checkAssetQuery = "SELECT COUNT(*) FROM AM_Assets WHERE Id = @assetId";
-                using (var cmd = new SQLiteCommand(checkAssetQuery, conn))
-                {
-                    cmd.Parameters.AddWithValue("@assetId", assetId);
-                    if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
-                    {
-                        Debug.WriteLine($"Asset ID {assetId} not found");
-                        return false;
-                    }
-                }
-
-                // Check if association already exists
-                const string checkExistsQuery =
-                    "SELECT COUNT(*) FROM AM_PresetAssets WHERE PresetId = @presetId AND AssetId = @assetId";
-                using (var cmd = new SQLiteCommand(checkExistsQuery, conn))
-                {
-                    cmd.Parameters.AddWithValue("@presetId", presetId);
-                    cmd.Parameters.AddWithValue("@assetId", assetId);
-                    if (Convert.ToInt32(cmd.ExecuteScalar()) > 0)
-                    {
-                        Debug.WriteLine($"Asset {assetId} already in preset {presetId}");
-                        return true;
-                    }
-                }
-
-                // Add to the preset
-                const string insertQuery =
-                    "INSERT INTO AM_PresetAssets (PresetId, AssetId) VALUES (@presetId, @assetId)";
-                using (var cmd = new SQLiteCommand(insertQuery, conn))
-                {
-                    cmd.Parameters.AddWithValue("@presetId", presetId);
-                    cmd.Parameters.AddWithValue("@assetId", assetId);
-                    int rowsAffected = cmd.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
-                    {
-                        // Update in-memory model
-                        var preset = Presets.FirstOrDefault(p => p.Id == presetId);
-                        var asset = AllAssets.FirstOrDefault(a => a.Id == assetId);
-
-                        if (preset != null && asset != null && !preset.Machines.Contains(asset.Name))
-                        {
-                            preset.Machines.Add(asset.Name);
-                        }
-
-                        Debug.WriteLine($"Successfully added asset {assetId} to preset {presetId}");
-                        return true;
-                    }
-                }
-
-                Debug.WriteLine($"Failed to add asset {assetId} to preset {presetId}");
                 return false;
             }
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error adding asset {assetId} to preset {presetId}: {ex.Message}");
-            return false;
-        }
     }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Error adding machine to preset: {ex.Message}");
+        return false;
+    }
+}
     public bool IsMachineInPreset(int presetId, int assetId)
     {
         try
@@ -620,44 +576,6 @@ public class AssetManager
         }
     }
 
-    public bool RemoveMachineFromPreset(int presetId, int assetId)
-    {
-        try
-        {
-            using (var conn = new SQLiteConnection(_dbPath))
-            {
-                conn.Open();
-                const string query = @"
-                DELETE FROM AM_PresetAssets 
-                WHERE PresetId = @presetId AND AssetId = @assetId";
-
-                using (var cmd = new SQLiteCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@presetId", presetId);
-                    cmd.Parameters.AddWithValue("@assetId", assetId);
-                    int rowsAffected = cmd.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
-                    {
-                        // Update in-memory model
-                        var preset = Presets.FirstOrDefault(p => p.Id == presetId);
-                        var asset = AllAssets.FirstOrDefault(a => a.Id == assetId);
-                        if (preset != null && asset != null)
-                        {
-                            preset.Machines.Remove(asset.Name);
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error removing machine from preset: {ex.Message}");
-            return false;
-        }
-    }
 
     public bool DeletePreset(int presetId)
     {
@@ -844,47 +762,22 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty]
     private double heatProduction; // Represents the current heat production of the machine
 
-    public void InitializePresetSelections(IEnumerable<Preset> allPresets)
+   public void InitializePresetSelections(IEnumerable<Preset> allPresets)
+{
+    AvailablePresets.Clear();
+
+    foreach (var preset in allPresets)
     {
-        Debug.WriteLine($"[InitializePresetSelections] Start for machine: {Name}");
-        AvailablePresets.Clear();
+        bool isSelected = preset.MachineModels.Any(m => m.Id == Id);
 
-        foreach (var presetTemplate in allPresets)
+        AvailablePresets.Add(new Preset
         {
-            bool isSelected = presetTemplate.Machines.Contains(Name);
-
-            var preset = new Preset
-            {
-                Id = presetTemplate.Id,
-                Name = presetTemplate.Name,
-                Machines = new List<string>(presetTemplate.Machines),
-                NavigateToPresetCommand = presetTemplate.NavigateToPresetCommand,
-                IsSelected = isSelected // Directly set from the Machines list
-            };
-
-            // Double verification
-            Debug.WriteLine($"- Preset '{preset.Name}' (ID: {preset.Id})");
-            Debug.WriteLine($"  Machines in preset: {string.Join(", ", preset.Machines)}");
-            Debug.WriteLine($"  Current machine '{Name}' in preset: {isSelected}");
-            Debug.WriteLine($"  IsSelected set to: {preset.IsSelected}");
-
-            // Verify the UpdateSelectionForMachine matches our direct setting
-            preset.UpdateSelectionForMachine(Name);
-            if (preset.IsSelected != isSelected)
-            {
-                Debug.WriteLine($"  WARNING: UpdateSelectionForMachine gave different result! {preset.IsSelected}");
-            }
-
-            AvailablePresets.Add(preset);
-        }
-
-        Debug.WriteLine($"[InitializePresetSelections] Completed for machine: {Name}");
-        Debug.WriteLine($"Final preset states:");
-        foreach (var p in AvailablePresets)
-        {
-            Debug.WriteLine($"- {p.Name}: {p.IsSelected}");
-        }
+            Id = preset.Id,
+            Name = preset.Name,
+            IsSelected = isSelected
+        });
     }
+}
 }
 
 public class PresetSelectionItem : ObservableObject

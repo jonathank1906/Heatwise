@@ -262,54 +262,32 @@ public partial class AssetManagerViewModel : ObservableObject
                     DeleteCommand = DeleteCommand
                 })
             );
-            MachineModels = new ObservableCollection<AssetModel>(
-            _assetManager.AllAssets.Select(a => new AssetModel
-            {
-                Id = a.Id,
-                Name = a.Name,
-                MaxHeat = a.MaxHeat,
-                ProductionCosts = a.ProductionCosts,
-                Emissions = a.Emissions,
-                GasConsumption = a.GasConsumption,
-                OilConsumption = a.OilConsumption,
-                MaxElectricity = a.MaxElectricity,
-                ImageFromBinding = LoadImageFromSource(a.ImageSource),
-                RemoveFromPresetCommand = RemoveFromPresetCommand,
-                DeleteCommand = DeleteCommand
-            })
-        );
         }
         else
         {
             var preset = _assetManager.Presets.FirstOrDefault(p => p.Name == value);
             CurrentScenarioAssets = preset != null
                 ? new ObservableCollection<AssetModel>(
-                    _assetManager.AllAssets
-                        .Where(a => preset.Machines.Contains(a.Name))
-                        .Select(a => new AssetModel
-                        {
-                            Id = a.Id,
-                            Name = a.Name,
-                            MaxHeat = a.MaxHeat,
-                            ProductionCosts = a.ProductionCosts,
-                            Emissions = a.Emissions,
-                            GasConsumption = a.GasConsumption,
-                            OilConsumption = a.OilConsumption,
-                            MaxElectricity = a.MaxElectricity,
-                            ImageFromBinding = LoadImageFromSource(a.ImageSource),
-                            RemoveFromPresetCommand = RemoveFromPresetCommand,
-                            DeleteCommand = DeleteCommand
-                        }))
-                : new ObservableCollection<AssetModel>();
-
-
-            MachineModels = preset != null
-                ? new ObservableCollection<AssetModel>(preset.MachineModels)
+                    preset.MachineModels.Select(m => new AssetModel
+                    {
+                        Id = m.Id,
+                        Name = m.Name,
+                        MaxHeat = m.MaxHeat,
+                        ProductionCosts = m.ProductionCosts,
+                        Emissions = m.Emissions,
+                        GasConsumption = m.GasConsumption,
+                        OilConsumption = m.OilConsumption,
+                        MaxElectricity = m.MaxElectricity,
+                        ImageFromBinding = LoadImageFromSource(m.ImageSource),
+                        RemoveFromPresetCommand = RemoveFromPresetCommand,
+                        DeleteCommand = DeleteCommand
+                    })
+                )
                 : new ObservableCollection<AssetModel>();
         }
 
-        ShowScenarioSelection = false;
-        ShowAssetDetails = true;
+        Debug.WriteLine($"Selected Scenario: {value}");
+        Debug.WriteLine($"CurrentScenarioAssets Count: {CurrentScenarioAssets.Count}");
     }
 
     private Bitmap? LoadImageFromSource(string imageSource)
@@ -446,7 +424,8 @@ public partial class AssetManagerViewModel : ObservableObject
     {
         if (SelectedScenario == null || SelectedScenario == "All Assets") return;
 
-        bool success = _assetManager.RemoveMachineFromPreset(SelectedScenario, machineName);
+        bool success = _assetManager.RemoveMachineFromPreset(_assetManager.Presets.First(p => p.Name == SelectedScenario).Id,
+                                                     _assetManager.AllAssets.First(a => a.Name == machineName).Id);
 
         if (success)
         {
@@ -487,48 +466,6 @@ public partial class AssetManagerViewModel : ObservableObject
         CurrentViewState = ViewState.Configure;
         // Refresh the presets to ensure the latest data is shown
         RefreshPresets();
-
-        AllAssets = new ObservableCollection<AssetModel>(
-        _assetManager.AllAssets.Select(a => new AssetModel
-        {
-            Id = a.Id,
-            Name = a.Name,
-            MaxHeat = a.MaxHeat,
-            ProductionCosts = a.ProductionCosts,
-            Emissions = a.Emissions,
-            GasConsumption = a.GasConsumption,
-            OilConsumption = a.OilConsumption,
-            MaxElectricity = a.MaxElectricity,
-            ImageFromBinding = LoadImageFromSource(a.ImageSource),
-            RemoveFromPresetCommand = RemoveFromPresetCommand,
-            DeleteCommand = DeleteCommand
-        })
-    );
-
-        foreach (var preset in AvailablePresets)
-        {
-            preset.MachineModels = new ObservableCollection<AssetModel>(
-                preset.Machines.Select(machineName =>
-                    AllAssets.FirstOrDefault(a => a.Name == machineName))
-                .Where(a => a != null)
-                .Cast<AssetModel>()
-            );
-        }
-        // Also refresh individual assets' preset selections
-        foreach (var asset in AllAssets)
-        {
-            asset.InitializePresetSelections(AvailablePresets);
-        }
-
-        foreach (var preset in AvailablePresets)
-        {
-            Debug.WriteLine($"Preset: {preset.Name}, Machines: {preset.MachineModels.Count}");
-            foreach (var machine in preset.MachineModels)
-            {
-                Debug.WriteLine($"  - Machine: {machine.Name}");
-            }
-        }
-        Debug.WriteLine("Refreshing presets for configuration view.");
 
     }
 
@@ -657,31 +594,29 @@ public partial class AssetManagerViewModel : ObservableObject
     // Refresh the presets list dynamically
     public void RefreshPresets()
     {
-        // First refresh the underlying data
+        Debug.WriteLine("=== RefreshPresets called ===");
+
         _assetManager.RefreshAssets();
 
-        // Then update our local collection
         AvailablePresets = new ObservableCollection<Preset>(
-         _assetManager.Presets.Select(p => new Preset
-         {
-             Id = p.Id,
-             Name = p.Name,
-             Machines = new List<string>(p.Machines),
-             MachineModels = new ObservableCollection<AssetModel>(
-                 p.Machines
-                     .Select(machineName => _assetManager.AllAssets.FirstOrDefault(a => a.Name == machineName))
-                     .Where(a => a != null)
-                     .Cast<AssetModel>()
-             ),
-             NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)),
-             DeletePresetCommand = new RelayCommand(() => DeletePreset(p))
-         })
-     );
+            _assetManager.Presets.Select(p => new Preset
+            {
+                Id = p.Id,
+                Name = p.Name,
+                MachineModels = new ObservableCollection<AssetModel>(p.MachineModels)
+            })
+        );
 
         Debug.WriteLine($"Refreshed presets. Now have {AvailablePresets.Count} presets.");
+        foreach (var preset in AvailablePresets)
+        {
+            Debug.WriteLine($"Preset: {preset.Name}, Machines: {preset.MachineModels.Count}");
+            foreach (var machine in preset.MachineModels)
+            {
+                Debug.WriteLine($"  - Machine: {machine.Name}");
+            }
+        }
     }
-
-
 
     private bool SaveAssetChanges(AssetModel asset)
     {
@@ -709,61 +644,37 @@ public partial class AssetManagerViewModel : ObservableObject
 
     private bool UpdatePresetAssignments()
     {
-        try
+        bool allUpdatesSuccessful = true;
+
+        foreach (var asset in AllAssets)
         {
-            Debug.WriteLine("Starting preset assignments update...");
-            bool allUpdatesSuccessful = true;
-
-            foreach (var asset in AllAssets)
+            foreach (var preset in asset.AvailablePresets)
             {
-                Debug.WriteLine($"Updating presets for asset ID {asset.Id} ({asset.Name})");
+                bool shouldBeInPreset = preset.IsSelected;
+                bool isInPreset = _assetManager.IsMachineInPreset(preset.Id, asset.Id);
 
-                foreach (var preset in asset.AvailablePresets)
+                if (shouldBeInPreset && !isInPreset)
                 {
-                    bool shouldBeInPreset = preset.IsSelected;
-                    bool isInPreset = _assetManager.IsMachineInPreset(preset.Id, asset.Id);
-
-                    Debug.WriteLine($"- Preset ID {preset.Id} ({preset.Name}): " +
-                                  $"Current={isInPreset}, Desired={shouldBeInPreset}");
-
-                    if (shouldBeInPreset && !isInPreset)
+                    Debug.WriteLine($"Adding machine '{asset.Name}' to preset ID {preset.Id}");
+                    if (!_assetManager.AddMachineToPreset(preset.Id, asset))
                     {
-                        Debug.WriteLine($"  Adding to preset ID {preset.Id}");
-                        if (!_assetManager.AddMachineToPreset(preset.Id, asset.Id))
-                        {
-                            Debug.WriteLine($"  !! Failed to add to preset ID {preset.Id}");
-                            allUpdatesSuccessful = false;
-                        }
+                        Debug.WriteLine($"Failed to add machine '{asset.Name}' to preset ID {preset.Id}");
+                        allUpdatesSuccessful = false;
                     }
-                    else if (!shouldBeInPreset && isInPreset)
+                }
+                else if (!shouldBeInPreset && isInPreset)
+                {
+                    Debug.WriteLine($"Removing machine '{asset.Name}' from preset ID {preset.Id}");
+                    if (!_assetManager.RemoveMachineFromPreset(preset.Id, asset.Id))
                     {
-                        Debug.WriteLine($"  Removing from preset ID {preset.Id}");
-                        if (!_assetManager.RemoveMachineFromPreset(preset.Id, asset.Id))
-                        {
-                            Debug.WriteLine($"  !! Failed to remove from preset ID {preset.Id}");
-                            allUpdatesSuccessful = false;
-                        }
+                        Debug.WriteLine($"Failed to remove machine '{asset.Name}' from preset ID {preset.Id}");
+                        allUpdatesSuccessful = false;
                     }
                 }
             }
-
-            if (allUpdatesSuccessful)
-            {
-                Debug.WriteLine("All preset assignments updated successfully");
-            }
-            else
-            {
-                Debug.WriteLine("Some preset assignments failed to update");
-            }
-
-            return allUpdatesSuccessful;
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"!! Failed to update presets: {ex.Message}");
-            Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
-            return false;
-        }
+
+        return allUpdatesSuccessful;
     }
     //------------------------------------------------------------------------------------------------------------------------
     [RelayCommand]
