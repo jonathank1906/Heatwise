@@ -1,27 +1,30 @@
 <Window
+    x:Class="Sem2Proj.Views.LoginView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Sem2Proj.ViewModels"
-    x:Class="Sem2Proj.Views.LoginView"
-    x:DataType="vm:LoginViewModel"
     Width="800"
     Height="500"
-    WindowStartupLocation="CenterScreen"
-    CanResize="False"
+    x:DataType="vm:LoginViewModel"
+    RequestedThemeVariant="Light"
     Background="#1E1E1E"
+    CanResize="False"
+    ExtendClientAreaToDecorationsHint="True"
+    Icon="/Assets/heat-logo.ico"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
-    <Window.Styles>
+<Window.Styles>
     <Style Selector="Button">
-        <Setter Property="Background" Value="#D32F2F"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="BorderBrush" Value="Black"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="FontSize" Value="16"/>
-        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Background" Value="#D32F2F" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
     <Style Selector="Button:pointerover">
@@ -29,20 +32,25 @@
     </Style>
 
     <Style Selector="TextBox">
-        <Setter Property="Background" Value="#D9D9D9"/>
-        <Setter Property="Foreground" Value="Black"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="Padding" Value="10"/>
-        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Background" Value="#AAAAAA" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="FontSize" Value="14" />
     </Style>
 
     <Style Selector="TextBox:pointerover">
-        <Setter Property="Background" Value="#D9D9D9"/>
+        <Setter Property="Background" Value="#C4C4C4" /> 
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+
+    <Style Selector="TextBox:focus">
+        <Setter Property="Background" Value="#D9D9D9" /> 
+        <Setter Property="Foreground" Value="Black" />
     </Style>
 </Window.Styles>
-
 
 
     <Grid>
@@ -51,99 +59,82 @@
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Left Panel -->
-        <Border Grid.Column="0" Background="#F4F4F4" BorderBrush="#D32F2F"
-        BorderThickness="0, 0, 10, 0" CornerRadius="1" >
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="15">
-                <Image Source="{SvgImage /Assets/Danfoss-Logo.svg}" Width="180"/>
-
-                <TextBlock 
-                    FontSize="14"
-                    Foreground="Black"
-                    HorizontalAlignment="Center">
-                    Engineering <Run Text="Tomorrow" FontWeight="Bold"/>
-                </TextBlock>
-
-                <!-- Username -->
-                <TextBox
-                    Watermark="Username"
-                    Text="{Binding Username}"
-                    Width="200"
-                    Background="#D9D9D9"
-                    BorderThickness="0"
-                    CornerRadius="5"
-                    Padding="10"
-                    FontSize="14"
-                    HorizontalAlignment="Center" />
-
-                <!-- Password -->
-                <TextBox
-                    Watermark="Password"
-                    Text="{Binding Password}"
-                    Width="200"
-                    Background="#D9D9D9"
-                    BorderThickness="0"
-                    CornerRadius="5"
-                    Padding="10"
-                    FontSize="14"
-                    HorizontalAlignment="Center"
-                    PasswordChar="*" />
+        <!--  Left Panel  -->
+        <Border
+            Grid.Column="0"
+            Background="#F4F4F4"
+            BorderBrush="#D32F2F"
+            BorderThickness="0,0,10,0"
+            CornerRadius="1">
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="15">
+                <Image Width="180" Source="{SvgImage /Assets/Danfoss-Logo-Red.svg}" />
 
                 <TextBlock
-                    Text="{Binding ErrorMessage}"
-                    Foreground="Red"
-                    FontSize="12"
                     HorizontalAlignment="Center"
-                    Margin="0,5,0,0" />
- 
+                    FontSize="14"
+                    Foreground="Black">
+                    Engineering<Run FontWeight="Bold" Text="Tomorrow" />
+                </TextBlock>
 
-                <!-- Login Button -->
+                <!--  Username  -->
+                <TextBox
+                    Width="200"
+                    Padding="10"
+                    HorizontalAlignment="Center"
+                    Background="#D9D9D9"
+                    BorderThickness="0"
+                    CornerRadius="5"
+                    FontSize="14"
+                    Text="{Binding Username}"
+                    Watermark="Username" />
+
+                <!--  Password  -->
+                <TextBox
+                    Width="200"
+                    Padding="10"
+                    HorizontalAlignment="Center"
+                    Background="#D9D9D9"
+                    BorderThickness="0"
+                    CornerRadius="5"
+                    FontSize="14"
+                    PasswordChar="*"
+                    Text="{Binding Password}"
+                    Watermark="Password" />
+
+                <TextBlock
+                    Margin="0,5,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="12"
+                    Foreground="Red"
+                    Text="{Binding ErrorMessage}" />
+
+
+                <!--  Login Button  -->
                 <Button
-                    Content="Login"
-                    Command="{Binding AttemptLoginCommand}"
                     Width="200"
                     Height="40"
+                    HorizontalAlignment="Center"
                     Background="#D32F2F"
-                    Foreground="White"
                     BorderBrush="Black"
                     BorderThickness="2"
+                    Command="{Binding AttemptLoginCommand}"
+                    Content="Login"
                     CornerRadius="5"
                     FontSize="16"
                     FontWeight="Bold"
-                    HorizontalAlignment="Center"/>
+                    Foreground="White" />
             </StackPanel>
         </Border>
 
-        <!-- Right Panel -->
+        <!--  Right Panel  -->
         <Grid Grid.Column="1">
-            <Image Source="/Assets/Danfoss.jpeg"
-                   Stretch="UniformToFill"
-                   Opacity="0.95" />
-
-            <Border
-                Background="#99000000"
-                Margin="30"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Padding="20"
-                CornerRadius="10">
-                <StackPanel>
-                    <TextBlock
-                        Text="In the heart of every warm home is the silent strength of your focus to build this overwhelming project."
-                        Foreground="White"
-                        FontSize="18"
-                        FontWeight="Bold"
-                        TextWrapping="Wrap"
-                        Width="300"/>
-
-                    <TextBlock
-                        Text="-Random guy to Group 21"
-                        Foreground="LightGray"
-                        FontSize="12"
-                        Margin="0,10,0,0"
-                        HorizontalAlignment="Right"/>
-                </StackPanel>
-            </Border>
+            <Image
+                Opacity="0.95"
+                Source="/Assets/Danfoss.jpeg"
+                Stretch="UniformToFill" />
         </Grid>
     </Grid>
 </Window>
