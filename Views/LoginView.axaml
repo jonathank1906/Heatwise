@@ -14,7 +14,8 @@
     ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/heat-logo.ico"
     WindowStartupLocation="CenterScreen"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    KeyDown="OnKeyDown">
 
 <Window.Styles>
     <Style Selector="Button">
