@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Avalonia.Media.Imaging;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Input;
 
 
 namespace Sem2Proj.Models;
@@ -551,11 +552,44 @@ public class AssetManager
             return false;
         }
     }
+
+     public bool UpdatePresetName(int presetId, string newName)
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(_dbPath))
+            {
+                conn.Open();
+                const string query = "UPDATE AM_Presets SET Name = @newName WHERE Id = @presetId";
+                using (var cmd = new SQLiteCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@newName", newName);
+                    cmd.Parameters.AddWithValue("@presetId", presetId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        // Update in-memory model
+                        var preset = Presets.FirstOrDefault(p => p.Id == presetId);
+                        if (preset != null)
+                        {
+                            preset.Name = newName;
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error updating preset name: {ex.Message}");
+        }
+        return false;
+    }
 }
 
 
 
-public class Preset
+public partial class Preset : ObservableObject
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -564,8 +598,26 @@ public class Preset
     public ICommand? NavigateToPresetCommand { get; set; }
     public ICommand? DeletePresetCommand { get; set; }
     public string PresetName => Name;  // Read-only property that returns Name
+    
     public bool IsSelected { get; set; } = false;
+    [ObservableProperty]
+    private bool _isRenaming;
+    // Command to start renaming
+    public ICommand StartRenamingCommand => new RelayCommand(StartRenaming);
 
+    private void StartRenaming()
+    {
+        IsRenaming = true;
+    }
+
+    // Command to finish renaming
+    public ICommand FinishRenamingCommand => new RelayCommand(FinishRenaming);
+
+    private void FinishRenaming()
+    {
+        IsRenaming = false;
+        // Additional logic to save the new name can be added here
+    }
     // Constructor to properly initialize
     public Preset()
     {

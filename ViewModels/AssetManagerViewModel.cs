@@ -435,109 +435,109 @@ public partial class AssetManagerViewModel : ObservableObject
         IsConfiguring = !(value == ViewState.PresetNavigation || value == ViewState.AssetDetails);
     }
 
-   [RelayCommand]
-private void SaveConfiguration()
-{
-    try
+    [RelayCommand]
+    private void SaveConfiguration()
     {
-        Debug.WriteLine("=== Starting configuration save ===");
-
-        if (SelectedPresetForConfiguration == null)
+        try
         {
-            Debug.WriteLine("Error: No preset selected for configuration.");
-            Events.Notification.Invoke("No preset selected for configuration.", NotificationType.Error);
-            return;
-        }
+            Debug.WriteLine("=== Starting configuration save ===");
 
-        // Save or update machines in the database
-        foreach (var machine in AssetsForSelectedPreset)
-        {
-            Debug.WriteLine($"Saving machine: {machine.Name} (OriginalName: {machine.OriginalName}) in preset: {SelectedPresetForConfiguration.Name}");
-
-            bool success = _assetManager.UpdateMachineInPreset(
-                SelectedPresetForConfiguration.Id,
-                machine.OriginalName,
-                machine.Name,
-                machine.MaxHeat,
-                machine.MaxElectricity,
-                machine.ProductionCosts,
-                machine.Emissions,
-                machine.GasConsumption,
-                machine.OilConsumption,
-                machine.IsActive,
-                machine.HeatProduction
-            );
-            if (!success)
+            if (SelectedPresetForConfiguration == null)
             {
-                Debug.WriteLine($"Failed to save machine: {machine.Name}");
-                Events.Notification.Invoke($"Failed to save machine: {machine.Name}", NotificationType.Error);
+                Debug.WriteLine("Error: No preset selected for configuration.");
+                Events.Notification.Invoke("No preset selected for configuration.", NotificationType.Error);
+                return;
             }
-            else
+
+            // Save or update machines in the database
+            foreach (var machine in AssetsForSelectedPreset)
             {
-                Debug.WriteLine($"Machine '{machine.Name}' saved successfully.");
-                machine.OriginalName = machine.Name; // Update OriginalName after successful save
-            }
-        }
+                Debug.WriteLine($"Saving machine: {machine.Name} (OriginalName: {machine.OriginalName}) in preset: {SelectedPresetForConfiguration.Name}");
 
-        // Remove machines marked for deletion
-        var machinesToRemove = SelectedPresetForConfiguration.MachineModels
-            .Where(m => !AssetsForSelectedPreset.Any(am => am.Name == m.Name))
-            .ToList();
-
-        foreach (var machine in machinesToRemove)
-        {
-            Debug.WriteLine($"Removing machine: {machine.Name} from preset: {SelectedPresetForConfiguration.Name}");
-
-            bool success = _assetManager.RemoveMachineFromPreset(SelectedPresetForConfiguration.Id, machine.Name);
-            if (success)
-            {
-                Debug.WriteLine($"Machine '{machine.Name}' removed from preset: {SelectedPresetForConfiguration.Name}");
-                SelectedPresetForConfiguration.MachineModels.Remove(machine);
-            }
-            else
-            {
-                Debug.WriteLine($"Failed to remove machine '{machine.Name}' from preset: {SelectedPresetForConfiguration.Name}");
-                Events.Notification.Invoke($"Failed to remove machine: {machine.Name}", NotificationType.Error);
-            }
-        }
-
-        // Refresh the preset data from the database
-        _assetManager.RefreshAssets();
-        var updatedPreset = _assetManager.Presets.FirstOrDefault(p => p.Id == SelectedPresetForConfiguration.Id);
-        if (updatedPreset != null)
-        {
-            SelectedPresetForConfiguration = updatedPreset;
-            AssetsForSelectedPreset = new ObservableCollection<AssetModel>(
-                updatedPreset.MachineModels.Select(m => new AssetModel
+                bool success = _assetManager.UpdateMachineInPreset(
+                    SelectedPresetForConfiguration.Id,
+                    machine.OriginalName,
+                    machine.Name,
+                    machine.MaxHeat,
+                    machine.MaxElectricity,
+                    machine.ProductionCosts,
+                    machine.Emissions,
+                    machine.GasConsumption,
+                    machine.OilConsumption,
+                    machine.IsActive,
+                    machine.HeatProduction
+                );
+                if (!success)
                 {
-                    Id = m.Id,
-                    Name = m.Name,
-                    OriginalName = m.Name,
-                    MaxHeat = m.MaxHeat,
-                    ProductionCosts = m.ProductionCosts,
-                    Emissions = m.Emissions,
-                    GasConsumption = m.GasConsumption,
-                    OilConsumption = m.OilConsumption,
-                    MaxElectricity = m.MaxElectricity,
-                    ImageFromBinding = LoadImageFromSource(m.ImageSource),
-                    IsActive = m.IsActive,
-                    HeatProduction = m.HeatProduction,
-                    RemoveFromPresetCommand = RemoveFromPresetCommand,
-                    DeleteCommand = DeleteCommand
-                })
-            );
-        }
+                    Debug.WriteLine($"Failed to save machine: {machine.Name}");
+                    Events.Notification.Invoke($"Failed to save machine: {machine.Name}", NotificationType.Error);
+                }
+                else
+                {
+                    Debug.WriteLine($"Machine '{machine.Name}' saved successfully.");
+                    machine.OriginalName = machine.Name; // Update OriginalName after successful save
+                }
+            }
 
-        CurrentViewState = ViewState.PresetNavigation;
-        Debug.WriteLine("=== Configuration save completed successfully ===");
-        Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
+            // Remove machines marked for deletion
+            var machinesToRemove = SelectedPresetForConfiguration.MachineModels
+                .Where(m => !AssetsForSelectedPreset.Any(am => am.Name == m.Name))
+                .ToList();
+
+            foreach (var machine in machinesToRemove)
+            {
+                Debug.WriteLine($"Removing machine: {machine.Name} from preset: {SelectedPresetForConfiguration.Name}");
+
+                bool success = _assetManager.RemoveMachineFromPreset(SelectedPresetForConfiguration.Id, machine.Name);
+                if (success)
+                {
+                    Debug.WriteLine($"Machine '{machine.Name}' removed from preset: {SelectedPresetForConfiguration.Name}");
+                    SelectedPresetForConfiguration.MachineModels.Remove(machine);
+                }
+                else
+                {
+                    Debug.WriteLine($"Failed to remove machine '{machine.Name}' from preset: {SelectedPresetForConfiguration.Name}");
+                    Events.Notification.Invoke($"Failed to remove machine: {machine.Name}", NotificationType.Error);
+                }
+            }
+
+            // Refresh the preset data from the database
+            _assetManager.RefreshAssets();
+            var updatedPreset = _assetManager.Presets.FirstOrDefault(p => p.Id == SelectedPresetForConfiguration.Id);
+            if (updatedPreset != null)
+            {
+                SelectedPresetForConfiguration = updatedPreset;
+                AssetsForSelectedPreset = new ObservableCollection<AssetModel>(
+                    updatedPreset.MachineModels.Select(m => new AssetModel
+                    {
+                        Id = m.Id,
+                        Name = m.Name,
+                        OriginalName = m.Name,
+                        MaxHeat = m.MaxHeat,
+                        ProductionCosts = m.ProductionCosts,
+                        Emissions = m.Emissions,
+                        GasConsumption = m.GasConsumption,
+                        OilConsumption = m.OilConsumption,
+                        MaxElectricity = m.MaxElectricity,
+                        ImageFromBinding = LoadImageFromSource(m.ImageSource),
+                        IsActive = m.IsActive,
+                        HeatProduction = m.HeatProduction,
+                        RemoveFromPresetCommand = RemoveFromPresetCommand,
+                        DeleteCommand = DeleteCommand
+                    })
+                );
+            }
+
+            CurrentViewState = ViewState.PresetNavigation;
+            Debug.WriteLine("=== Configuration save completed successfully ===");
+            Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error saving configuration: {ex.Message}");
+            Events.Notification.Invoke("Failed to save configuration!", NotificationType.Error);
+        }
     }
-    catch (Exception ex)
-    {
-        Debug.WriteLine($"Error saving configuration: {ex.Message}");
-        Events.Notification.Invoke("Failed to save configuration!", NotificationType.Error);
-    }
-}
 
     partial void OnAvailablePresetsChanged(ObservableCollection<Preset> value)
     {
@@ -797,6 +797,42 @@ private void SaveConfiguration()
     private void ToggleHeatingGridView()
     {
         IsHeatingGridVisible = !IsHeatingGridVisible;
+    }
+
+    [RelayCommand]
+    private void StartRenaming(Preset preset)
+    {
+        if (preset == null) return;
+
+        // Set all other presets' IsRenaming to false
+        foreach (var p in AvailablePresets)
+        {
+            p.IsRenaming = false;
+        }
+
+        // Enable renaming for the selected preset
+        preset.IsRenaming = true;
+    }
+
+    [RelayCommand]
+    private void FinishRenaming(Preset preset)
+    {
+        if (preset == null) return;
+
+        // Disable renaming mode
+        preset.IsRenaming = false;
+
+        // Save the new name to the database
+
+        var tempList = new ObservableCollection<Preset>(AvailablePresets);
+        AvailablePresets.Clear();
+        foreach (var item in tempList)
+        {
+            AvailablePresets.Add(item); // Re-add items to force UI update
+        }
+        _assetManager.UpdatePresetName(preset.Id, preset.Name);
+
+        Events.Notification.Invoke($"Preset renamed to '{preset.Name}' successfully.", NotificationType.Confirmation);
     }
 }
 
