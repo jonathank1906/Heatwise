@@ -636,29 +636,31 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<PresetSelectionItem> _presetSelections = new();
 
-    // New properties
     [ObservableProperty]
     private bool isActive; // Represents whether the machine is active in a preset
 
     [ObservableProperty]
     private double heatProduction; // Represents the current heat production of the machine
 
-public void InitializePresetSelections(IEnumerable<Preset> allPresets)
-{
-    PresetSelections.Clear();
+    [ObservableProperty]
+    private ObservableCollection<AssetModel> machineModels = new(); // Represents the collection of machines in the preset
 
-    foreach (var preset in allPresets)
+    public void InitializePresetSelections(IEnumerable<Preset> allPresets)
     {
-        Debug.WriteLine($"[InitializePresetSelections] Checking Machine: {Name} against Preset: {preset.Name}");
-        Debug.WriteLine($"[InitializePresetSelections] Machines in Preset: {string.Join(", ", preset.Machines)}");
+        PresetSelections.Clear();
 
-        bool isSelected = preset.Machines.Any(machineName => 
-            string.Equals(machineName.Trim(), Name.Trim(), StringComparison.OrdinalIgnoreCase)); // Case-insensitive comparison
+        foreach (var preset in allPresets)
+        {
+            Debug.WriteLine($"[InitializePresetSelections] Checking Machine: {Name} against Preset: {preset.Name}");
+            Debug.WriteLine($"[InitializePresetSelections] Machines in Preset: {string.Join(", ", preset.Machines)}");
 
-        Debug.WriteLine($"[InitializePresetSelections] Machine: {Name}, Preset: {preset.Name}, IsSelected: {isSelected}");
-        PresetSelections.Add(new PresetSelectionItem(preset.Name, isSelected));
+            bool isSelected = preset.Machines.Any(machineName => 
+                string.Equals(machineName.Trim(), Name.Trim(), StringComparison.OrdinalIgnoreCase)); // Case-insensitive comparison
+
+            Debug.WriteLine($"[InitializePresetSelections] Machine: {Name}, Preset: {preset.Name}, IsSelected: {isSelected}");
+            PresetSelections.Add(new PresetSelectionItem(preset.Name, isSelected));
+        }
     }
-}
 }
 
 public class PresetSelectionItem : ObservableObject

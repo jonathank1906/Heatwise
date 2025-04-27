@@ -172,6 +172,7 @@ public partial class AssetManagerViewModel : ObservableObject
                OilConsumption = m.OilConsumption,
                MaxElectricity = m.MaxElectricity,
                ImageFromBinding = LoadImageFromSource(m.ImageSource),
+                IsActive = m.IsActive, 
                RemoveFromPresetCommand = RemoveFromPresetCommand,
                DeleteCommand = DeleteCommand
            })
@@ -248,6 +249,7 @@ public partial class AssetManagerViewModel : ObservableObject
                     OilConsumption = m.OilConsumption,
                     MaxElectricity = m.MaxElectricity,
                     ImageFromBinding = LoadImageFromSource(m.ImageSource),
+                    IsActive = m.IsActive,
                     RemoveFromPresetCommand = RemoveFromPresetCommand,
                     DeleteCommand = DeleteCommand
                 })
@@ -432,6 +434,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 OilConsumption = m.OilConsumption,
                 MaxElectricity = m.MaxElectricity,
                 ImageFromBinding = LoadImageFromSource(m.ImageSource),
+                IsActive = m.IsActive,
                 RemoveFromPresetCommand = RemoveFromPresetCommand,
                 DeleteCommand = DeleteCommand
             })
