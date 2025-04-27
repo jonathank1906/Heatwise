@@ -172,7 +172,8 @@ public partial class AssetManagerViewModel : ObservableObject
                OilConsumption = m.OilConsumption,
                MaxElectricity = m.MaxElectricity,
                ImageFromBinding = LoadImageFromSource(m.ImageSource),
-                IsActive = m.IsActive, 
+               IsActive = m.IsActive,
+               HeatProduction = m.HeatProduction,
                RemoveFromPresetCommand = RemoveFromPresetCommand,
                DeleteCommand = DeleteCommand
            })
@@ -250,6 +251,7 @@ public partial class AssetManagerViewModel : ObservableObject
                     MaxElectricity = m.MaxElectricity,
                     ImageFromBinding = LoadImageFromSource(m.ImageSource),
                     IsActive = m.IsActive,
+                    HeatProduction = m.HeatProduction,
                     RemoveFromPresetCommand = RemoveFromPresetCommand,
                     DeleteCommand = DeleteCommand
                 })
@@ -335,30 +337,6 @@ public partial class AssetManagerViewModel : ObservableObject
         RefreshPresets();
     }
 
-    private AssetModel CreateAssetModel(AssetModel source)
-    {
-        var model = new AssetModel
-        {
-            Id = source.Id,
-            Name = source.Name,
-            ImageSource = source.ImageSource,
-            MaxHeat = source.MaxHeat,
-            ProductionCosts = source.ProductionCosts,
-            Emissions = source.Emissions,
-            GasConsumption = source.GasConsumption,
-            OilConsumption = source.OilConsumption,
-            MaxElectricity = source.MaxElectricity,
-            RemoveFromPresetCommand = RemoveFromPresetCommand,
-            DeleteCommand = DeleteCommand
-        };
-
-        // Load the image after all properties are set
-        model.ImageFromBinding = LoadImageFromSource(model.ImageSource);
-        Debug.WriteLine($"[CreateAssetModel] Initializing preset selections for Machine: {model.Name}");
-        model.InitializePresetSelections(AvailablePresets);
-        return model;
-
-    }
     [RelayCommand]
     private void RemoveFromPreset(string machineName)
     {
@@ -400,6 +378,7 @@ public partial class AssetManagerViewModel : ObservableObject
             Events.Notification.Invoke("Failed to delete machine", NotificationType.Error);
         }
     }
+
     public List<int> GetSelectedPresetIds()
     {
         return AvailablePresets
@@ -426,7 +405,7 @@ public partial class AssetManagerViewModel : ObservableObject
             {
                 Id = m.Id,
                 Name = m.Name,
-                OriginalName = m.Name, // Set OriginalName to the current name
+                OriginalName = m.Name,
                 MaxHeat = m.MaxHeat,
                 ProductionCosts = m.ProductionCosts,
                 Emissions = m.Emissions,
@@ -447,7 +426,6 @@ public partial class AssetManagerViewModel : ObservableObject
     [RelayCommand]
     private void CancelConfiguration()
     {
-
         CurrentViewState = ViewState.PresetNavigation;
     }
 
@@ -457,7 +435,7 @@ public partial class AssetManagerViewModel : ObservableObject
         IsConfiguring = !(value == ViewState.PresetNavigation || value == ViewState.AssetDetails);
     }
 
-  [RelayCommand]
+   [RelayCommand]
 private void SaveConfiguration()
 {
     try
@@ -478,8 +456,8 @@ private void SaveConfiguration()
 
             bool success = _assetManager.UpdateMachineInPreset(
                 SelectedPresetForConfiguration.Id,
-                machine.OriginalName, // Use OriginalName to locate the row
-                machine.Name,         // Update to the new name
+                machine.OriginalName,
+                machine.Name,
                 machine.MaxHeat,
                 machine.MaxElectricity,
                 machine.ProductionCosts,
@@ -489,7 +467,6 @@ private void SaveConfiguration()
                 machine.IsActive,
                 machine.HeatProduction
             );
-
             if (!success)
             {
                 Debug.WriteLine($"Failed to save machine: {machine.Name}");
@@ -524,8 +501,33 @@ private void SaveConfiguration()
             }
         }
 
-        // Refresh the configuration page
-       // ShowConfiguration();
+        // Refresh the preset data from the database
+        _assetManager.RefreshAssets();
+        var updatedPreset = _assetManager.Presets.FirstOrDefault(p => p.Id == SelectedPresetForConfiguration.Id);
+        if (updatedPreset != null)
+        {
+            SelectedPresetForConfiguration = updatedPreset;
+            AssetsForSelectedPreset = new ObservableCollection<AssetModel>(
+                updatedPreset.MachineModels.Select(m => new AssetModel
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    OriginalName = m.Name,
+                    MaxHeat = m.MaxHeat,
+                    ProductionCosts = m.ProductionCosts,
+                    Emissions = m.Emissions,
+                    GasConsumption = m.GasConsumption,
+                    OilConsumption = m.OilConsumption,
+                    MaxElectricity = m.MaxElectricity,
+                    ImageFromBinding = LoadImageFromSource(m.ImageSource),
+                    IsActive = m.IsActive,
+                    HeatProduction = m.HeatProduction,
+                    RemoveFromPresetCommand = RemoveFromPresetCommand,
+                    DeleteCommand = DeleteCommand
+                })
+            );
+        }
+
         CurrentViewState = ViewState.PresetNavigation;
         Debug.WriteLine("=== Configuration save completed successfully ===");
         Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
@@ -587,7 +589,7 @@ private void SaveConfiguration()
         }
     }
 
-  
+
     //------------------------------------------------------------------------------------------------------------------------
     [RelayCommand]
     public async Task BrowseImage(Control view)
