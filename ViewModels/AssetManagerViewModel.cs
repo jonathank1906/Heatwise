@@ -435,6 +435,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 MaxElectricity = m.MaxElectricity,
                 ImageFromBinding = LoadImageFromSource(m.ImageSource),
                 IsActive = m.IsActive,
+                HeatProduction = m.HeatProduction,
                 RemoveFromPresetCommand = RemoveFromPresetCommand,
                 DeleteCommand = DeleteCommand
             })
@@ -524,8 +525,8 @@ private void SaveConfiguration()
         }
 
         // Refresh the configuration page
-        ShowConfiguration();
-
+       // ShowConfiguration();
+        CurrentViewState = ViewState.PresetNavigation;
         Debug.WriteLine("=== Configuration save completed successfully ===");
         Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
     }
