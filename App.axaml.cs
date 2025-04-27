@@ -21,15 +21,11 @@ public partial class App : Application
         {
             DisableAvaloniaDataAnnotationValidation();
 
-            var loadingViewModel = new LoadingWindowViewModel();
-            var loadingWindow = new LoadingWindow(loadingViewModel);
-            
+            var loadingWindow = new LoadingWindow(new LoadingWindowViewModel());
             desktop.MainWindow = loadingWindow;
-
-            loadingWindow.Topmost = true; // Switching 'Topmost' to true, to make the loading screen popup on top
             loadingWindow.Show();
-            loadingWindow.Activate();  // This does not seem to work on macOS, but it's here just to be safe
-            loadingWindow.Topmost = false; // Switching 'Topmost' to false, so it's not on top when the main window appears
+
+
         }
 
         base.OnFrameworkInitializationCompleted();
