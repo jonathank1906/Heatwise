@@ -21,9 +21,10 @@ public partial class App : Application
         {
             DisableAvaloniaDataAnnotationValidation();
 
-            var loginWindow = new LoginView(); // Login screen
-            desktop.MainWindow = loginWindow;
-            loginWindow.Show();
+            var loadingWindow = new LoadingWindow(new LoadingWindowViewModel());
+            desktop.MainWindow = loadingWindow;
+            loadingWindow.Show();
+
 
         }
 

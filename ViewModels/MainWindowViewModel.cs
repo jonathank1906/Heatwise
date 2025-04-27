@@ -58,4 +58,6 @@ public partial class MainWindowViewModel : ObservableObject
     {
         Notifications.Remove(vm);
     }
+
+    
 }

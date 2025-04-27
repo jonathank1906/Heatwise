@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Media.Imaging;
+using Avalonia.Visuals;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ using Avalonia.Controls;
 using Avalonia;
 using Avalonia.Media;
 using Sem2Proj.Interfaces;
+using Sem2Proj.Views;
+
 using Sem2Proj.Services;
 
 namespace Sem2Proj.ViewModels;
@@ -51,7 +54,7 @@ public partial class LoadingWindowViewModel : ViewModelBase
     }
 
 
-    public async Task LoadApplicationAsync(Action<MainWindowViewModel> onMainWindowReady)
+    public async Task LoadApplicationAsync()
     {
         await Task.Yield();
 
@@ -65,25 +68,23 @@ public partial class LoadingWindowViewModel : ViewModelBase
         var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager, new ResultDataManager()));
         var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());
 
-        foreach (var (message, steps, delay) in messages)
+        for (int i = 0; i < messages.Count; i++)
+    {
+        var (message, steps, delay) = messages[i];
+        LoadingText = message;
+        for (int j = 0; j < steps; j++)
         {
-            LoadingText = message;
-            for (int i = 0; i < steps; i++)
-            {
-                Progress++;
-                await Task.Delay(delay);
-            }
+            Progress++;
+            await Task.Delay(delay);
         }
+    }
 
         await Task.Delay(50);
 
         // Pass the popupService to MainWindowViewModel
-        var mainVM = new MainWindowViewModel(
-            assetManagerViewModel,
-            optimizerViewModel,
-            sourceDataManagerViewModel,
-            popupService);
-
-        onMainWindowReady?.Invoke(mainVM);
+       var loginWindow = new LoginView(assetManagerViewModel, optimizerViewModel, sourceDataManagerViewModel, popupService);
+    loginWindow.Show();
     }
+    
+    
 }
