@@ -160,7 +160,7 @@
                     Background="#0078d7"
                     Command="{Binding ShowConfigurationCommand}"
                     CornerRadius="10"
-                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=AssetDetails}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <Path

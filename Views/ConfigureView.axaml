@@ -14,8 +14,8 @@
             FontSize="24"
             FontWeight="Bold"
             Foreground="White"
-            Text="Production Units" />
-        <ItemsControl ItemsSource="{Binding AllAssets}">
+            Text="Production Units (Selected Preset)" />
+        <ItemsControl ItemsSource="{Binding AssetsForSelectedPreset}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
@@ -270,77 +270,72 @@
             FontSize="24"
             FontWeight="Bold"
             Foreground="White"
-            Text="Presets" />
+            Text="Settings" />
 
-        <ItemsControl ItemsSource="{Binding AvailablePresets}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Border
-                        Margin="0,0,0,30"
-                        Padding="20"
-                        Background="#252526"
-                        CornerRadius="15">
-                        <StackPanel>
-                            <!--  Preset Name  -->
-                            <TextBlock
-                                FontSize="20"
-                                FontWeight="Bold"
-                                Foreground="White"
-                                Text="{Binding Name}" />
+        <!--  Details for the Selected Preset  -->
+        <Border
+            Margin="0,0,0,30"
+            Padding="20"
+            Background="#252526"
+            CornerRadius="15"
+            DataContext="{Binding SelectedPresetForConfiguration}">
+            <StackPanel>
+                <!--  Preset Name  -->
+                <TextBlock
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="{Binding Name}" />
 
-                            <!--  Machines in the preset  -->
-                            <ItemsControl ItemsSource="{Binding MachineModels}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="0,5">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
+                <!--  Machines in the preset  -->
+                <ItemsControl ItemsSource="{Binding MachineModels}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                                            <!--  Toggle Switch for enabling/disabling the machine  -->
-                                            <ToggleSwitch
-                                                Grid.Column="0"
-                                                Margin="5"
-                                                IsChecked="{Binding IsActive, Mode=TwoWay}"
-                                                OffContent="Off"
-                                                OnContent="On"
-                                                ToolTip.Tip="Enable or disable this machine in the preset" />
+                                <!--  Toggle Switch for enabling/disabling the machine  -->
+                                <ToggleSwitch
+                                    Grid.Column="0"
+                                    Margin="5"
+                                    IsChecked="{Binding IsActive, Mode=TwoWay}"
+                                    OffContent="Off"
+                                    OnContent="On"
+                                    ToolTip.Tip="Enable or disable this machine in the preset" />
 
-                                            <!--  Machine Name  -->
-                                            <TextBlock
-                                                Grid.Column="1"
-                                                VerticalAlignment="Center"
-                                                FontSize="16"
-                                                Foreground="White"
-                                                Text="{Binding Name}" />
+                                <!--  Machine Name  -->
+                                <TextBlock
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    Foreground="White"
+                                    Text="{Binding Name}" />
 
-                                            <StackPanel Margin="20" IsVisible="{Binding IsActive}">
-                                                <TextBlock HorizontalAlignment="Center" Text="{Binding #Slider0.Value, StringFormat={}{0:F1}}" />
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding #Slider0.Minimum}" />
-                                                    <Slider
-                                                        x:Name="Slider0"
-                                                        Width="200"
-                                                        Margin="100,0"
-                                                        IsSnapToTickEnabled="True"
-                                                        Maximum="{Binding MaxHeat}"
-                                                        Minimum="1.0"
-                                                        TickFrequency="0.1"
-                                                        TickPlacement="BottomRight"
-                                                        Value="{Binding HeatProduction, Mode=TwoWay}" />
-                                                    <TextBlock Text="{Binding #Slider0.Maximum}" />
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-                    </Border>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                                <StackPanel Margin="20" IsVisible="{Binding IsActive}">
+                                    <TextBlock HorizontalAlignment="Center" Text="{Binding HeatProduction, StringFormat={}{0:F1}}" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding HeatProduction, StringFormat={}{0:F1}}" />
+                                        <Slider
+                                            Width="200"
+                                            Margin="100,0"
+                                            IsSnapToTickEnabled="True"
+                                            Maximum="{Binding MaxHeat}"
+                                            Minimum="1.0"
+                                            TickFrequency="0.1"
+                                            TickPlacement="BottomRight"
+                                            Value="{Binding HeatProduction, Mode=TwoWay}" />
+                                        <TextBlock Text="{Binding MaxHeat}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
     </StackPanel>
 </UserControl>
