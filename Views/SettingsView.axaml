@@ -7,6 +7,32 @@
     Height="700"
     x:DataType="vm:SettingsViewModel">
 
+    <!--  Styling  -->
+    <UserControl.Styles>
+        <Style Selector="Button.close">
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Template">
+                <!--  Ignore the Theme Template  -->
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border>
+                            <Border.Background>
+                                <!--  Adding a transparent background seems to make the 'hitbox' larger  -->
+                                <SolidColorBrush Opacity="0" Color="White" />
+                            </Border.Background>
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  Button on hover  -->
+        <Style Selector="Button.close:pointerover">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+    </UserControl.Styles>
+
     <!--  Main Content  -->
     <Grid>
         <Grid.RowDefinitions>
@@ -30,16 +56,20 @@
             <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Button
                     Canvas.Right="0"
-                    Width="46"
-                    Height="30"
-                    Padding="10,0,10,0"
-                    Background="Transparent"
+                    Width="25"
+                    Height="25"
                     BorderThickness="0"
+                    Classes="close"
                     Command="{Binding CloseCommand}">
+                    <Button.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                        </Transitions>
+                    </Button.Transitions>
                     <PathIcon
                         Width="15"
                         Height="15"
-                        Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                        Data="{StaticResource Close}"
                         Foreground="White" />
                 </Button>
             </Canvas>
@@ -56,7 +86,10 @@
                     FontWeight="Bold"
                     Foreground="White"
                     Text="Dark/Light Mode" />
-                <ToggleSwitch Margin="0,0,0,1" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                <ToggleSwitch
+                    Margin="0,0,0,1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center" />
             </DockPanel>
             <Border
                 Margin="0,20,0,20"
@@ -72,7 +105,10 @@
                     FontWeight="Bold"
                     Foreground="White"
                     Text="Show Home Screen on Startup" />
-                <ToggleSwitch Margin="0,0,0,1" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                <ToggleSwitch
+                    Margin="0,0,0,1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center" />
             </DockPanel>
             <Border
                 Margin="0,20,0,20"
@@ -88,7 +124,10 @@
                     FontWeight="Bold"
                     Foreground="White"
                     Text="Developer Mode" />
-                <ToggleSwitch Margin="0,0,0,1" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                <ToggleSwitch
+                    Margin="0,0,0,1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center" />
             </DockPanel>
             <TextBlock
                 Margin="0,0,0,0"
