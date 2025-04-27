@@ -280,8 +280,8 @@
             </Grid>
 
             <!--  Popup Overlay  -->
-            <!--  In MainWindow.xaml - keep your existing PopupOverlay section  -->
-            <!--  Popup Overlay section - corrected  -->
+            <!--  In MainWindow.xaml - keep your existing PopupOverlay section   ????? -->
+            <!--  Popup Overlay section - corrected  ??? -->
             <Grid
                 Name="PopupOverlay"
                 Background="#D0000000"
@@ -311,7 +311,8 @@
                                 <Border
                                     Background="Transparent"
                                     ClipToBounds="True"
-                                    CornerRadius="8">
+                                    CornerRadius="8"
+                                    Padding="20,20,20,20">
                                     <ContentPresenter
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
