@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ScottPlot;
-using ScottPlot.Avalonia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +7,7 @@ using System.Threading.Tasks;
 using Sem2Proj.Models;
 using System.Diagnostics;
 using Avalonia.Controls;
+using System.Collections.ObjectModel;
 
 
 namespace Sem2Proj.ViewModels;
@@ -74,14 +73,10 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isOpening;
 
+    [ObservableProperty]
+    private ObservableCollection<Preset> _availablePresets;
+
     // Scenario radio buttons -------------------------------
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsScenario2Selected))]
-    private bool _isScenario1Selected = true;
-
-    [ObservableProperty]
-    private bool _isScenario2Selected;
-
     [ObservableProperty]
     private bool _isSummerSelected;
 
@@ -132,9 +127,41 @@ public partial class OptimizerViewModel : ViewModelBase
         _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
         _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
         _optimizer = new Optimizer(_assetManager, _sourceDataManager);
+        AvailablePresets = new ObservableCollection<Preset>(_assetManager.Presets);
 
-        _assetManager.SetScenario(0);
-        _isScenario1Selected = true;
+        // Set up the selection callback for each preset
+        foreach (var preset in AvailablePresets)
+        {
+            preset.SetSelectPresetAction(SelectPreset);
+        }
+
+        // Select first preset by default if available
+        if (AvailablePresets.Count > 0)
+        {
+            AvailablePresets[0].IsPresetSelected = true;
+            _assetManager.SetScenario(0);
+        }
+
+    }
+
+    [RelayCommand]
+    private void SelectPreset(Preset preset)
+    {
+        if (preset == null) return;
+
+        // Find the index of the selected preset
+        var presetIndex = AvailablePresets.IndexOf(preset);
+        if (presetIndex >= 0)
+        {
+            _assetManager.SetScenario(presetIndex);
+
+            // Update selection states
+            foreach (var p in AvailablePresets)
+            {
+                p.IsPresetSelected = false;
+            }
+            preset.IsPresetSelected = true;
+        }
     }
 
     [RelayCommand]
@@ -397,23 +424,23 @@ public partial class OptimizerViewModel : ViewModelBase
         }
     }
 
-    partial void OnIsScenario1SelectedChanged(bool value)
-    {
-        if (value)
-        {
-            _assetManager.SetScenario(0); // Scenario 1
-            Debug.WriteLine("Scenario 1 selected");
-        }
-    }
+    // partial void OnIsScenario1SelectedChanged(bool value)
+    // {
+    //     if (value)
+    //     {
+    //         _assetManager.SetScenario(0); // Scenario 1
+    //         Debug.WriteLine("Scenario 1 selected");
+    //     }
+    // }
 
-    partial void OnIsScenario2SelectedChanged(bool value)
-    {
-        if (value)
-        {
-            _assetManager.SetScenario(1); // Scenario 2
-            Debug.WriteLine("Scenario 2 selected");
-        }
-    }
+    // partial void OnIsScenario2SelectedChanged(bool value)
+    // {
+    //     if (value)
+    //     {
+    //         _assetManager.SetScenario(1); // Scenario 2
+    //         Debug.WriteLine("Scenario 2 selected");
+    //     }
+    // }
 
     [RelayCommand]
     public async Task ExportToCsv(Window parentWindow)

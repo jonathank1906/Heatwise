@@ -487,8 +487,8 @@ public class AssetManager
 
     public bool UpdateMachineInPreset(
         int presetId,
-        string originalName, 
-        string newName,      
+        string originalName,
+        string newName,
         double maxHeat,
         double maxElectricity,
         double productionCosts,
@@ -553,7 +553,7 @@ public class AssetManager
         }
     }
 
-     public bool UpdatePresetName(int presetId, string newName)
+    public bool UpdatePresetName(int presetId, string newName)
     {
         try
         {
@@ -596,13 +596,30 @@ public partial class Preset : ObservableObject
     public List<string> Machines { get; set; } = new();
     public ObservableCollection<AssetModel> MachineModels { get; set; } = new();
     public ICommand? NavigateToPresetCommand { get; set; }
-   
-    public string PresetName => Name;  // Read-only property that returns Name
+
+    public ICommand? DeletePresetCommand { get; set; }
+
     
+
+    public string PresetName => Name;
+
     public bool IsSelected { get; set; } = false;
-    [ObservableProperty]
-    private bool _isRenaming;
-    // Command to start renaming
+
+    [ObservableProperty] private bool _isPresetSelected;
+    private Action<Preset>? _selectPresetAction;
+
+     public void SetSelectPresetAction(Action<Preset> action)
+    {
+        _selectPresetAction = action;
+    }
+
+    // Command that will be called when radio button is clicked
+    public ICommand SelectPresetCommand => new RelayCommand(() =>
+    {
+        _selectPresetAction?.Invoke(this);
+    });
+    [ObservableProperty] private bool _isRenaming;
+
     public ICommand StartRenamingCommand => new RelayCommand(StartRenaming);
 
     private void StartRenaming()
@@ -610,29 +627,17 @@ public partial class Preset : ObservableObject
         IsRenaming = true;
     }
 
-    // Command to finish renaming
     public ICommand FinishRenamingCommand => new RelayCommand(FinishRenaming);
 
     private void FinishRenaming()
     {
         IsRenaming = false;
-        // Additional logic to save the new name can be added here
     }
 
-
-     // Command to delete the preset
-   public ICommand? DeletePresetCommand { get; set; }
-
-    private void DeletePreset()
-    {
-        // This will be handled by the ViewModel through binding
-    }
-    // Constructor to properly initialize
     public Preset()
     {
     }
 
-    // Helper method to update selection state
     public void UpdateSelectionForMachine(string machineName)
     {
         IsSelected = Machines.Contains(machineName);
@@ -652,8 +657,8 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty] private double oilConsumption;
     [ObservableProperty] private double maxElectricity;
     [ObservableProperty] private ICommand? deleteMachineCommand; // Command to delete the machine (Configure View)
-   
-    [ObservableProperty] private string originalName = string.Empty; 
+
+    [ObservableProperty] private string originalName = string.Empty;
 
     public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
 

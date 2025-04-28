@@ -161,16 +161,20 @@
                         FontWeight="Bold"
                         Text="Optimization Settings" />
                     <TextBlock FontSize="16" Text="Preset" />
-                    <RadioButton
-                        Classes="fancy"
-                        Content="Scenario 1"
-                        GroupName="ScenarioGroup"
-                        IsChecked="{Binding IsScenario1Selected}" />
-                    <RadioButton
-                        Classes="fancy"
-                        Content="Scenario 2"
-                        GroupName="ScenarioGroup"
-                        IsChecked="{Binding IsScenario2Selected}" />
+
+                    <ItemsControl ItemsSource="{Binding AvailablePresets}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <RadioButton
+                                    Classes="fancy"
+                                    Command="{Binding SelectPresetCommand}"
+                                    CommandParameter="{Binding}"
+                                    Content="{Binding Name}"
+                                    GroupName="PresetGroup"
+                                    IsChecked="{Binding IsPresetSelected}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
                     <TextBlock FontSize="16" Text="Optimization Period" />
                     <RadioButton
@@ -236,7 +240,7 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             IsVisible="{Binding HasOptimized}" />
-                        
+
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
