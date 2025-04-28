@@ -162,7 +162,7 @@
                         Text="Optimization Settings" />
                     <TextBlock FontSize="16" Text="Preset" />
 
-                    <ItemsControl ItemsSource="{Binding AssetManager.Presets}">
+                    <ItemsControl ItemsSource="{Binding Presets}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <RadioButton

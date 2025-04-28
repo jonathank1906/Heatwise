@@ -20,7 +20,7 @@ public class AssetManager
     public HeatingGrid? GridInfo { get; private set; }
 
     public List<AssetModel> CurrentAssets { get; private set; } = new();
-    public List<Preset> Presets { get; private set; } = new();
+   public ObservableCollection<Preset> Presets { get; private set; } = new ObservableCollection<Preset>();
 
     public string CurrentScenarioName => Presets.Count > 0 && SelectedScenarioIndex >= 0
         ? Presets[SelectedScenarioIndex].Name
@@ -600,7 +600,7 @@ public partial class Preset : ObservableObject
     public ICommand? DeletePresetCommand { get; set; }
 
 
-
+ private bool _isInternalUpdate;
     public string PresetName => Name;
 
     public bool IsSelected { get; set; } = false;
@@ -636,6 +636,21 @@ public partial class Preset : ObservableObject
 
     public Preset()
     {
+    }
+ public void SetIsSelectedInternal(bool value)
+    {
+        _isInternalUpdate = true;
+        IsPresetSelected = value;
+        _isInternalUpdate = false;
+    }
+
+
+ partial void OnIsPresetSelectedChanged(bool value)
+    {
+        if (!_isInternalUpdate && value) // Only trigger if not an internal update and value is true
+        {
+            _selectPresetAction?.Invoke(this);
+        }
     }
 
     public void UpdateSelectionForMachine(string machineName)

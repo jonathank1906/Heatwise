@@ -74,8 +74,7 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isOpening;
 
-    [ObservableProperty]
-    private ObservableCollection<Preset> _availablePresets;
+   public ObservableCollection<Preset> Presets => _assetManager.Presets;
 
     // Scenario radio buttons -------------------------------
     [ObservableProperty]
@@ -122,49 +121,59 @@ public partial class OptimizerViewModel : ViewModelBase
         SwitchGraph(value);
     }
 
-    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager)
+ public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager)
+{
+    _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
+    _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
+    _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
+    _optimizer = new Optimizer(_assetManager, _sourceDataManager);
+
+    // Set up the selection callback for each preset
+    foreach (var preset in _assetManager.Presets)
     {
-        _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
-        _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
-        _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
-        _optimizer = new Optimizer(_assetManager, _sourceDataManager);
-        AvailablePresets = new ObservableCollection<Preset>(_assetManager.Presets);
-
-        // Set up the selection callback for each preset
-        foreach (var preset in AvailablePresets)
-        {
-            preset.SetSelectPresetAction(SelectPreset);
-        }
-
-        // Select first preset by default if available
-        if (AvailablePresets.Count > 0)
-        {
-            AvailablePresets[0].IsPresetSelected = true;
-            _assetManager.SetScenario(0);
-        }
-
+        preset.SetSelectPresetAction(SelectPreset);
     }
 
-    [RelayCommand]
-    private void SelectPreset(Preset preset)
+    // Select first preset by default if available
+    if (_assetManager.Presets.Count > 0)
     {
-        if (preset == null) return;
+        _assetManager.Presets[0].SetIsSelectedInternal(true);
+        _assetManager.SetScenario(0);
+    }
 
-        // Find the index of the selected preset
-        var presetIndex = AvailablePresets.IndexOf(preset);
-        if (presetIndex >= 0)
+    // Subscribe to preset changes
+    _assetManager.Presets.CollectionChanged += (s, e) => 
+    {
+        OnPropertyChanged(nameof(Presets));
+        if (e.NewItems != null)
         {
-            _assetManager.SetScenario(presetIndex);
-
-            // Update selection states
-            foreach (var p in AvailablePresets)
+            foreach (Preset preset in e.NewItems)
             {
-                p.IsPresetSelected = false;
+                preset.SetSelectPresetAction(SelectPreset);
             }
-            preset.IsPresetSelected = true;
         }
-    }
+    };
+}
 
+[RelayCommand]
+private void SelectPreset(Preset preset)
+{
+    if (preset == null) return;
+
+    // Find the index of the selected preset
+    var presetIndex = _assetManager.Presets.IndexOf(preset);
+    if (presetIndex >= 0)
+    {
+        _assetManager.SetScenario(presetIndex);
+
+        // Update selection states using internal method to prevent loops
+        foreach (var p in _assetManager.Presets)
+        {
+            p.SetIsSelectedInternal(false);
+        }
+        preset.SetIsSelectedInternal(true);
+    }
+}
     [RelayCommand]
     private void TriggerPane()
     {
