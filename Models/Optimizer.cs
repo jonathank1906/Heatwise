@@ -79,12 +79,12 @@ public class Optimizer
         var prioritizedAssets = optimisationMode switch
         {
             OptimisationMode.Cost => assets
-                .Where(a => a.MaxHeat > 0)
+                .Where(a => a.HeatProduction > 0)
                 .OrderBy(a => a.CostPerMW)
                 .ToList(),
             
             OptimisationMode.CO2 => assets
-                .Where(a => a.MaxHeat > 0)
+                .Where(a => a.HeatProduction > 0)
                 .OrderBy(a => a.EmissionsPerMW)
                 .ToList(),
             
@@ -95,7 +95,7 @@ public class Optimizer
         {
             if (remainingDemand <= 0) break;
 
-            double allocation = Math.Min(asset.MaxHeat, remainingDemand);
+            double allocation = Math.Min(asset.HeatProduction, remainingDemand);
             remainingDemand -= allocation;
 
             var result = new HeatProductionResult

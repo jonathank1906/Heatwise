@@ -424,24 +424,6 @@ public partial class OptimizerViewModel : ViewModelBase
         }
     }
 
-    // partial void OnIsScenario1SelectedChanged(bool value)
-    // {
-    //     if (value)
-    //     {
-    //         _assetManager.SetScenario(0); // Scenario 1
-    //         Debug.WriteLine("Scenario 1 selected");
-    //     }
-    // }
-
-    // partial void OnIsScenario2SelectedChanged(bool value)
-    // {
-    //     if (value)
-    //     {
-    //         _assetManager.SetScenario(1); // Scenario 2
-    //         Debug.WriteLine("Scenario 2 selected");
-    //     }
-    // }
-
     [RelayCommand]
     public async Task ExportToCsv(Window parentWindow)
     {
