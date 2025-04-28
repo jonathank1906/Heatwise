@@ -22,6 +22,7 @@
         <conv:EnumToBoolConverter x:Key="EnumToBoolConverter" />
         <conv:StringToColorConverter x:Key="StringToColorConverter" />
         <conv:StringToBrushConverter x:Key="StringToBrushConverter" />
+         <conv:BoolToBrushConverter x:Key="BoolToBrushConverter" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -316,11 +317,13 @@
                 <ItemsControl ItemsSource="{Binding CurrentScenarioAssets}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border
-                                Margin="0,0,0,30"
-                                Padding="20"
-                                Background="#252526"
-                                CornerRadius="15">
+                         <Border
+    Margin="0,0,0,30"
+    Padding="20"
+    Background="#252526"
+    BorderBrush="{Binding IsActive, Converter={StaticResource BoolToBrushConverter}}"
+    BorderThickness="2"
+    CornerRadius="15">
                                 <Grid>
                                     <Border
                                         Width="30"
@@ -375,7 +378,6 @@
                                                     Text="{Binding IsActive}" />
                                             </StackPanel>
 
-                                            <!--  Heat Production Progress  -->
                                             <!--  Heat Production Progress  -->
                                             <Grid Margin="0,6,0,0" ColumnDefinitions="Auto,Auto,Auto">
                                                 <TextBlock
