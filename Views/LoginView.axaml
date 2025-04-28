@@ -65,20 +65,13 @@
             Grid.Column="0"
             Background="#F4F4F4"
             BorderBrush="#D32F2F"
-            BorderThickness="0,0,10,0"
+            BorderThickness="0,0,5,0"
             CornerRadius="1">
             <StackPanel
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Spacing="15">
                 <Image Width="180" Source="{SvgImage /Assets/Danfoss-Logo-Red.svg}" />
-
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    FontSize="14"
-                    Foreground="Black">
-                    Engineering<Run FontWeight="Bold" Text="Tomorrow" />
-                </TextBlock>
 
                 <!--  Username  -->
                 <TextBox
