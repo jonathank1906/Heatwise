@@ -596,7 +596,7 @@ public partial class Preset : ObservableObject
     public List<string> Machines { get; set; } = new();
     public ObservableCollection<AssetModel> MachineModels { get; set; } = new();
     public ICommand? NavigateToPresetCommand { get; set; }
-    public ICommand? DeletePresetCommand { get; set; }
+   
     public string PresetName => Name;  // Read-only property that returns Name
     
     public bool IsSelected { get; set; } = false;
@@ -617,6 +617,15 @@ public partial class Preset : ObservableObject
     {
         IsRenaming = false;
         // Additional logic to save the new name can be added here
+    }
+
+
+     // Command to delete the preset
+   public ICommand? DeletePresetCommand { get; set; }
+
+    private void DeletePreset()
+    {
+        // This will be handled by the ViewModel through binding
     }
     // Constructor to properly initialize
     public Preset()
@@ -642,9 +651,9 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty] private double gasConsumption;
     [ObservableProperty] private double oilConsumption;
     [ObservableProperty] private double maxElectricity;
-    [ObservableProperty] private ICommand? removeFromPresetCommand;
-    [ObservableProperty] private ICommand? deleteCommand;
-    [ObservableProperty] private string originalName = string.Empty; // Tracks the original name of the machine
+    [ObservableProperty] private ICommand? deleteMachineCommand; // Command to delete the machine (Configure View)
+   
+    [ObservableProperty] private string originalName = string.Empty; 
 
     public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
 

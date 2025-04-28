@@ -41,7 +41,7 @@
                                 VerticalAlignment="Top"
                                 Background="Transparent"
                                 BorderThickness="0"
-                                Command="{Binding RemoveFromPresetCommand}"
+                                Command="{Binding DeleteMachineCommand}"
                                 CommandParameter="{Binding Name}"
                                 ToolTip.Tip="Delete this machine">
                                 <Path

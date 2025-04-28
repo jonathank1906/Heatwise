@@ -39,8 +39,8 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private ViewState _currentViewState = ViewState.ScenarioSelection;
     [ObservableProperty]
-    private ICommand? _parentRemoveFromPresetCommand;
-    private ICommand? _parentDeleteCommand;
+    private ICommand? _parentDeleteMachineCommand;
+  
 
     private Flyout? _calendarFlyout;
     private readonly IPopupService _popupService;
@@ -135,6 +135,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 Id = p.Id,
                 Name = p.Name,
                 Machines = new List<string>(p.Machines), // Create a new list
+                 DeletePresetCommand = DeletePresetCommand,
                 NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name))
             })
         );
@@ -174,8 +175,7 @@ public partial class AssetManagerViewModel : ObservableObject
                ImageFromBinding = LoadImageFromSource(m.ImageSource),
                IsActive = m.IsActive,
                HeatProduction = m.HeatProduction,
-               RemoveFromPresetCommand = RemoveFromPresetCommand,
-               DeleteCommand = DeleteCommand
+               DeleteMachineCommand = DeleteMachineCommand
            })
    );
 
@@ -252,8 +252,7 @@ public partial class AssetManagerViewModel : ObservableObject
                     ImageFromBinding = LoadImageFromSource(m.ImageSource),
                     IsActive = m.IsActive,
                     HeatProduction = m.HeatProduction,
-                    RemoveFromPresetCommand = RemoveFromPresetCommand,
-                    DeleteCommand = DeleteCommand
+                    DeleteMachineCommand = DeleteMachineCommand
                 })
             )
             : new ObservableCollection<AssetModel>();
@@ -338,7 +337,7 @@ public partial class AssetManagerViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void RemoveFromPreset(string machineName)
+    private void DeleteMachine(string machineName)
     {
         if (SelectedPresetForConfiguration == null) return;
 
@@ -415,8 +414,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 ImageFromBinding = LoadImageFromSource(m.ImageSource),
                 IsActive = m.IsActive,
                 HeatProduction = m.HeatProduction,
-                RemoveFromPresetCommand = RemoveFromPresetCommand,
-                DeleteCommand = DeleteCommand
+                DeleteMachineCommand = DeleteMachineCommand
             })
         );
 
@@ -522,8 +520,7 @@ public partial class AssetManagerViewModel : ObservableObject
                         ImageFromBinding = LoadImageFromSource(m.ImageSource),
                         IsActive = m.IsActive,
                         HeatProduction = m.HeatProduction,
-                        RemoveFromPresetCommand = RemoveFromPresetCommand,
-                        DeleteCommand = DeleteCommand
+                        DeleteMachineCommand = DeleteMachineCommand
                     })
                 );
             }
@@ -569,10 +566,9 @@ public partial class AssetManagerViewModel : ObservableObject
                        OilConsumption = m.OilConsumption,
                        MaxElectricity = m.MaxElectricity,
                        ImageFromBinding = LoadImageFromSource(m.ImageSource),
-                       IsActive = true, // Set IsActive to true by default
-                       HeatProduction = m.MaxHeat, // Default value for heat production
-                       RemoveFromPresetCommand = RemoveFromPresetCommand,
-                       DeleteCommand = DeleteCommand
+                       IsActive = true, 
+                       HeatProduction = m.MaxHeat, 
+                       DeleteMachineCommand = DeleteMachineCommand
                    })
                )
            })
@@ -761,8 +757,9 @@ public partial class AssetManagerViewModel : ObservableObject
            Name = p.Name,
            Machines = new List<string>(p.Machines),
            IsSelected = false,
+            DeletePresetCommand = DeletePresetCommand,
            NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)),
-           DeletePresetCommand = new RelayCommand(() => DeletePreset(p)) // Initialize DeletePresetCommand
+           
        })
    );
 
