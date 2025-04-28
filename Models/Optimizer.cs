@@ -64,10 +64,10 @@ public class Optimizer
     }
 
     private List<HeatProductionResult> ProcessTimeInterval(
-      DateTime timestamp,
-      double heatDemand,
-      List<AssetModel> assets,
-      OptimisationMode optimisationMode)
+       DateTime timestamp,
+       double heatDemand,
+       List<AssetModel> assets,
+       OptimisationMode optimisationMode)
     {
         var results = new List<HeatProductionResult>();
         double remainingDemand = heatDemand;
@@ -77,14 +77,17 @@ public class Optimizer
         Debug.WriteLine($"\nProcessing interval: {timestamp}");
         Debug.WriteLine($"Initial demand: {heatDemand} MW");
 
+        // Filter assets to include only active ones
+        var activeAssets = assets.Where(a => a.IsActive).ToList();
+
         var prioritizedAssets = optimisationMode switch
         {
-            OptimisationMode.Cost => assets
+            OptimisationMode.Cost => activeAssets
                 .Where(a => a.HeatProduction > 0)
                 .OrderBy(a => a.CostPerMW)
                 .ToList(),
 
-            OptimisationMode.CO2 => assets
+            OptimisationMode.CO2 => activeAssets
                 .Where(a => a.HeatProduction > 0)
                 .OrderBy(a => a.EmissionsPerMW)
                 .ToList(),
@@ -114,7 +117,7 @@ public class Optimizer
             results.Add(result);
 
             Debug.WriteLine($"- Allocated {allocation} MW from {asset.Name} " +
-                          $"(Cost: {result.ProductionCost:C}, Emissions: {result.Emissions} kg, PresetId: {result.PresetId})");
+                            $"(Cost: {result.ProductionCost:C}, Emissions: {result.Emissions} kg, PresetId: {result.PresetId})");
         }
 
         if (remainingDemand > 0)
@@ -136,4 +139,3 @@ public class Optimizer
         return results;
     }
 }
-
