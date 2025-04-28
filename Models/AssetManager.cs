@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Data.Sqlite;
+using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace Sem2Proj.Models;
 
 public class AssetManager
 {
-    private readonly string _dbPath = "Data Source=Data/heat_optimization.db;";
+    private readonly string _dbPath = "Data Source=Data/heat_optimization.db;Version=3;";
 
     public HeatingGrid? GridInfo { get; private set; }
 
@@ -42,7 +42,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SqliteConnection(_dbPath))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
                 conn.Open();
 
@@ -59,11 +59,11 @@ public class AssetManager
         }
     }
 
-    private void LoadAllPresets(SqliteConnection conn)
+    private void LoadAllPresets(SQLiteConnection conn)
     {
         // Load preset definitions
         const string presetQuery = "SELECT * FROM AM_Presets";
-        using (var presetCmd = new SqliteCommand(presetQuery, conn))
+        using (var presetCmd = new SQLiteCommand(presetQuery, conn))
         using (var presetReader = presetCmd.ExecuteReader())
         {
             while (presetReader.Read())
@@ -85,7 +85,7 @@ public class AssetManager
         FROM PresetMachines
         WHERE PresetId = @presetId";
 
-            using (var machineCmd = new SqliteCommand(machineQuery, conn))
+            using (var machineCmd = new SQLiteCommand(machineQuery, conn))
             {
                 machineCmd.Parameters.AddWithValue("@presetId", preset.Id);
                 using (var machineReader = machineCmd.ExecuteReader())
@@ -118,10 +118,10 @@ public class AssetManager
         Debug.WriteLine($"Loaded {Presets.Count} presets from database.");
     }
 
-    private void LoadHeatingGridInfo(SqliteConnection conn)
+    private void LoadHeatingGridInfo(SQLiteConnection conn)
     {
         const string query = "SELECT * FROM AM_HeatingGrid LIMIT 1";
-        using (var cmd = new SqliteCommand(query, conn))
+        using (var cmd = new SQLiteCommand(query, conn))
         using (var reader = cmd.ExecuteReader())
         {
             if (reader.Read())
@@ -173,7 +173,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SqliteConnection(_dbPath))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
                 conn.Open();
 
@@ -184,7 +184,7 @@ public class AssetManager
             VALUES
             (@presetId, @name, @imageSource, @maxHeat, @maxElectricity, @productionCosts, @emissions, @gasConsumption, @oilConsumption, @isActive, @heatProduction, @color)";
 
-                using (var cmd = new SqliteCommand(insertQuery, conn))
+                using (var cmd = new SQLiteCommand(insertQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@name", name);
@@ -220,7 +220,7 @@ public class AssetManager
         Presets.Clear();
 
         // Reload from database
-        using (var conn = new SqliteConnection(_dbPath))
+        using (var conn = new SQLiteConnection(_dbPath))
         {
             conn.Open();
             LoadAllPresets(conn);
@@ -237,14 +237,14 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SqliteConnection(_dbPath))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
                 conn.Open();
                 const string query = @"
                 DELETE FROM PresetMachines 
                 WHERE PresetId = @presetId AND Name = @machineName";
 
-                using (var cmd = new SqliteCommand(query, conn))
+                using (var cmd = new SQLiteCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@machineName", machineName);
@@ -276,14 +276,14 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SqliteConnection(_dbPath))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
                 conn.Open();
 
                 // Get the current maximum ID
                 int newId = 1;
                 const string getMaxIdQuery = "SELECT MAX(Id) FROM AM_Presets";
-                using (var cmd = new SqliteCommand(getMaxIdQuery, conn))
+                using (var cmd = new SQLiteCommand(getMaxIdQuery, conn))
                 {
                     var result = cmd.ExecuteScalar();
                     if (result != null && result != DBNull.Value)
@@ -294,7 +294,7 @@ public class AssetManager
 
                 // Insert the new preset
                 const string insertPresetQuery = "INSERT INTO AM_Presets (Id, Name) VALUES (@id, @name)";
-                using (var cmd = new SqliteCommand(insertPresetQuery, conn))
+                using (var cmd = new SQLiteCommand(insertPresetQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", newId);
                     cmd.Parameters.AddWithValue("@name", presetName);
@@ -320,7 +320,7 @@ public class AssetManager
 {
     try
     {
-        using (var conn = new SqliteConnection(_dbPath))
+        using (var conn = new SQLiteConnection(_dbPath))
         {
             conn.Open();
 
@@ -330,7 +330,7 @@ public class AssetManager
             FROM PresetMachines 
             WHERE PresetId = @presetId AND Name = @name";
 
-            using (var checkCmd = new SqliteCommand(checkQuery, conn))
+            using (var checkCmd = new SQLiteCommand(checkQuery, conn))
             {
                 checkCmd.Parameters.AddWithValue("@presetId", presetId);
                 checkCmd.Parameters.AddWithValue("@name", machine.Name);
@@ -348,7 +348,7 @@ public class AssetManager
             INSERT INTO PresetMachines (PresetId, Name, MaxHeat, ProductionCosts, Emissions, GasConsumption, OilConsumption, MaxElectricity, IsActive, HeatProduction, Color)
             VALUES (@presetId, @name, @maxHeat, @productionCosts, @emissions, @gasConsumption, @oilConsumption, @maxElectricity, @isActive, @heatProduction, @color)";
 
-            using (var insertCmd = new SqliteCommand(insertQuery, conn))
+            using (var insertCmd = new SQLiteCommand(insertQuery, conn))
             {
                 insertCmd.Parameters.AddWithValue("@presetId", presetId);
                 insertCmd.Parameters.AddWithValue("@name", machine.Name);
@@ -378,7 +378,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SqliteConnection(_dbPath))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
                 conn.Open();
                 const string query = @"
@@ -386,7 +386,7 @@ public class AssetManager
                 FROM AM_PresetAssets 
                 WHERE PresetId = @presetId AND AssetId = @assetId";
 
-                using (var cmd = new SqliteCommand(query, conn))
+                using (var cmd = new SQLiteCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@assetId", assetId);
@@ -406,13 +406,13 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SqliteConnection(_dbPath))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
                 conn.Open();
 
                 // Delete preset associations first
                 const string deleteAssociationsQuery = "DELETE FROM AM_PresetAssets WHERE PresetId = @presetId";
-                using (var cmd = new SqliteCommand(deleteAssociationsQuery, conn))
+                using (var cmd = new SQLiteCommand(deleteAssociationsQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.ExecuteNonQuery();
@@ -420,7 +420,7 @@ public class AssetManager
 
                 // Delete the preset itself
                 const string deletePresetQuery = "DELETE FROM AM_Presets WHERE Id = @presetId";
-                using (var cmd = new SqliteCommand(deletePresetQuery, conn))
+                using (var cmd = new SQLiteCommand(deletePresetQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     int rowsAffected = cmd.ExecuteNonQuery();
@@ -448,7 +448,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SqliteConnection(_dbPath))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
                 conn.Open();
 
@@ -457,7 +457,7 @@ public class AssetManager
                 DELETE FROM PresetMachines 
                 WHERE PresetId = @presetId AND Name = @machineName";
 
-                using (var cmd = new SqliteCommand(deleteQuery, conn))
+                using (var cmd = new SQLiteCommand(deleteQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@machineName", machineName);
@@ -499,7 +499,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SqliteConnection(_dbPath))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
                 conn.Open();
 
@@ -518,7 +518,7 @@ public class AssetManager
                 Color = @color
             WHERE PresetId = @presetId AND Name = @originalName";
 
-                using (var cmd = new SqliteCommand(updateQuery, conn))
+                using (var cmd = new SQLiteCommand(updateQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@originalName", originalName);
@@ -557,11 +557,11 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SqliteConnection(_dbPath))
+            using (var conn = new SQLiteConnection(_dbPath))
             {
                 conn.Open();
                 const string query = "UPDATE AM_Presets SET Name = @newName WHERE Id = @presetId";
-                using (var cmd = new SqliteCommand(query, conn))
+                using (var cmd = new SQLiteCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@newName", newName);
                     cmd.Parameters.AddWithValue("@presetId", presetId);
@@ -660,7 +660,7 @@ public partial class AssetModel : ObservableObject
 
     [ObservableProperty] private string originalName = string.Empty;
 
-    [ObservableProperty] private string? color;
+    [ObservableProperty] private string color;
     public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
 
     public bool IsElectricBoiler => MaxElectricity < 0;

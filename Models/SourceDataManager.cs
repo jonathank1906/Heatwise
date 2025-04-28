@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Data.Sqlite;
+using System.Data.SQLite;
 using System.Diagnostics;
 
 public class SourceDataManager
@@ -13,7 +13,7 @@ public class SourceDataManager
         SummerElectricityPrice
     }
 
-    private readonly string dbPath = "Data Source=Data/heat_optimization.db;";
+    private readonly string dbPath = "Data Source=Data/heat_optimization.db;Version=3;";
 
     public List<(DateTime timestamp, double value)> GetData(DataType dataType)
     {
@@ -21,7 +21,7 @@ public class SourceDataManager
         
         try
         {
-            using (var conn = new SqliteConnection(dbPath))
+            using (var conn = new SQLiteConnection(dbPath))
             {
                 conn.Open();
                 Debug.WriteLine("Database connection opened successfully");
@@ -59,7 +59,7 @@ public class SourceDataManager
                                       AND {valueColumn} IS NOT NULL
                                       ORDER BY {timeColumn}";
 
-                using (var cmd = new SqliteCommand(selectQuery, conn))
+                using (var cmd = new SQLiteCommand(selectQuery, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
                     Debug.WriteLine($"Executing query for {dataType}...");

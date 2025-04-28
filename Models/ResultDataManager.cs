@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using Microsoft.Data.Sqlite;
+using System.Data.SQLite;
 using System.Diagnostics;
 using System.Globalization;
 
@@ -16,10 +16,10 @@ public class ResultDataManager
     {
         try
         {
-            using (var conn = new SqliteConnection(dbPath))
+            using (var conn = new SQLiteConnection(dbPath))
             {
                 conn.Open();
-                using (var cmd = new SqliteCommand("DELETE FROM RDM", conn))
+                using (var cmd = new SQLiteCommand("DELETE FROM RDM", conn))
                 {
                     cmd.ExecuteNonQuery();
                     Debug.WriteLine("RDM table cleared successfully.");
@@ -37,13 +37,13 @@ public class ResultDataManager
 {
     try
     {
-        using (var conn = new SqliteConnection(dbPath))
+        using (var conn = new SQLiteConnection(dbPath))
         {
             conn.Open();
             using (var transaction = conn.BeginTransaction())
             {
                 // 1. Clear old data
-                new SqliteCommand("DELETE FROM RDM", conn).ExecuteNonQuery();
+                new SQLiteCommand("DELETE FROM RDM", conn).ExecuteNonQuery();
 
                 // 2. Insert new results with PresetId
                 string insertQuery = @"
@@ -52,7 +52,7 @@ public class ResultDataManager
                     VALUES 
                     (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions, @PresetId)";
 
-                using (var cmd = new SqliteCommand(insertQuery, conn))
+                using (var cmd = new SQLiteCommand(insertQuery, conn))
                 {
                     foreach (var result in results)
                     {
@@ -82,7 +82,7 @@ public List<HeatProductionResult> GetLatestResults()
     var results = new List<HeatProductionResult>();
     try
     {
-        using (var conn = new SqliteConnection(dbPath))
+        using (var conn = new SQLiteConnection(dbPath))
         {
             conn.Open();
             string query = @"
@@ -90,7 +90,7 @@ public List<HeatProductionResult> GetLatestResults()
                 FROM RDM
                 ORDER BY Timestamp";
 
-            using (var cmd = new SqliteCommand(query, conn))
+            using (var cmd = new SQLiteCommand(query, conn))
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
