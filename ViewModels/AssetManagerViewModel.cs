@@ -122,7 +122,7 @@ public partial class AssetManagerViewModel : ObservableObject
     private string _oilConsumption = "0";
 
     [ObservableProperty]
-    private string color; 
+    private string color;
 
     //----------------------------------------------------------------------------------------------
 
@@ -355,10 +355,10 @@ public partial class AssetManagerViewModel : ObservableObject
             Debug.WriteLine($"Machine {machineName} not found in the current configuration.");
         }
     }
-partial void OnColorChanged(string value)
-{
-    Debug.WriteLine($"Color property changed to: {value}");
-}
+    partial void OnColorChanged(string value)
+    {
+        Debug.WriteLine($"Color property changed to: {value}");
+    }
     [RelayCommand]
     private void Delete(int machineId)
     {
@@ -533,7 +533,7 @@ partial void OnColorChanged(string value)
                     })
                 );
             }
-
+            OnSelectedScenarioChanged(SelectedScenario);
             CurrentViewState = ViewState.PresetNavigation;
             Debug.WriteLine("=== Configuration save completed successfully ===");
             Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
