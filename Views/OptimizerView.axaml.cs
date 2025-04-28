@@ -27,18 +27,20 @@ public partial class OptimizerView : UserControl
     private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
     private List<HeatProductionResult>? _currentOptimizationResults;
     private List<HeatProductionResult>? _currentFilteredResults;
-    private readonly DataVisualization _dataVisualization = new();
-
+  private DataVisualization _dataVisualization;
+public AssetManager AssetManager { get; }
     public OptimizerView()
     {
         InitializeComponent();
         InitializeFlyoutEvents();
+        
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
 
         DataContextChanged += (sender, e) =>
         {
             if (DataContext is OptimizerViewModel vm)
             {
+                 _dataVisualization = new DataVisualization(vm.AssetManager);
                 vm.UpdateXAxisTicks += (timestamps) =>
     {
         _dataVisualization.SetXAxisTicks(OptimizationPlot.Plot, timestamps);

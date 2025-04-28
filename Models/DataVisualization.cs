@@ -3,23 +3,54 @@ using ScottPlot.Avalonia;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Diagnostics;
 
 namespace Sem2Proj.Models;
 
 public class DataVisualization
 {
-    private readonly Dictionary<string, Color> _machineColors = new()
+    private readonly AssetManager _assetManager;
+    private Dictionary<string, Color> _machineColors;
+    public DataVisualization(AssetManager assetManager)
     {
-        { "Gas Boiler 1", Colors.Orange },
-        { "Gas Boiler 2", Colors.DarkOrange },
-        { "Oil Boiler 1", Colors.Brown },
-        { "Oil Boiler 2", Colors.SaddleBrown },
-        { "Gas Motor 1", Colors.Blue },
-        { "Gas Motor 2", Colors.LightBlue },
-        { "Heat Pump 1", Colors.Green },
-        { "Heat Pump 2", Colors.LightGreen }
-    };
+        _assetManager = assetManager;
+        InitializeMachineColors();
+    }
+    private void InitializeMachineColors()
+    {
+        _machineColors = new Dictionary<string, ScottPlot.Color>();
 
+        // Get all machines from all presets
+        var allMachines = _assetManager.Presets
+            .SelectMany(preset => preset.MachineModels)
+            .DistinctBy(machine => machine.Name) // Ensure each machine only appears once
+            .ToList();
+
+        // Populate the dictionary with machine names and their colors
+        foreach (var machine in allMachines)
+        {
+            try
+            {
+                // Convert the color string from the database to a ScottPlot.Color object
+                var color = System.Drawing.ColorTranslator.FromHtml(machine.Color);
+                _machineColors[machine.Name] = new ScottPlot.Color(color.R, color.G, color.B, color.A);
+            }
+            catch
+            {
+                // Fallback to a default color if parsing fails
+                _machineColors[machine.Name] = ScottPlot.Colors.Gray;
+                Debug.WriteLine($"Failed to parse color for machine {machine.Name}. Using fallback color.");
+            }
+        }
+
+        // Add some default colors if the dictionary is empty (shouldn't happen in normal operation)
+
+    }
+
+    public void RefreshMachineColors()
+    {
+        InitializeMachineColors();
+    }
     public void PlotHeatProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
         var plt = optimizationPlot.Plot;
@@ -188,7 +219,7 @@ public class DataVisualization
     private void InitializePlot(Plot plt, string title, string xLabel, string yLabel)
     {
         plt.Clear();
-        
+
         plt.Legend.ManualItems.Clear();
         var bgColor = new Color("#1e1e1e");
         plt.FigureBackground.Color = bgColor;

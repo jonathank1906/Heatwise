@@ -14,6 +14,7 @@ namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
+     public AssetManager AssetManager => _assetManager;
     [ObservableProperty]
     private bool _hasOptimized = false;
 
