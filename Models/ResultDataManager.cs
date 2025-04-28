@@ -33,86 +33,87 @@ public class ResultDataManager
     }
 
     // Saves new results (after clearing old data)
-    public void SaveResultsToDatabase(List<HeatProductionResult> results)
+ public void SaveResultsToDatabase(List<HeatProductionResult> results)
+{
+    try
     {
-        try
+        using (var conn = new SQLiteConnection(dbPath))
         {
-            using (var conn = new SQLiteConnection(dbPath))
+            conn.Open();
+            using (var transaction = conn.BeginTransaction())
             {
-                conn.Open();
-                using (var transaction = conn.BeginTransaction())
+                // 1. Clear old data
+                new SQLiteCommand("DELETE FROM RDM", conn).ExecuteNonQuery();
+
+                // 2. Insert new results with PresetId
+                string insertQuery = @"
+                    INSERT INTO RDM 
+                    (Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId])
+                    VALUES 
+                    (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions, @PresetId)";
+
+                using (var cmd = new SQLiteCommand(insertQuery, conn))
                 {
-                    // 1. Clear old data
-                    new SQLiteCommand("DELETE FROM RDM", conn).ExecuteNonQuery();
-
-                    // 2. Insert new results
-                    string insertQuery = @"
-                        INSERT INTO RDM 
-                        (Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions])
-                        VALUES 
-                        (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions)";
-
-                    using (var cmd = new SQLiteCommand(insertQuery, conn))
+                    foreach (var result in results)
                     {
-                        foreach (var result in results)
-                        {
-                            cmd.Parameters.Clear();
-                            cmd.Parameters.AddWithValue("@Timestamp", result.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
-                            cmd.Parameters.AddWithValue("@AssetName", result.AssetName);
-                            cmd.Parameters.AddWithValue("@HeatProduced", result.HeatProduced);
-                            cmd.Parameters.AddWithValue("@ProductionCost", result.ProductionCost);
-                            cmd.Parameters.AddWithValue("@Emissions", result.Emissions);
-                            cmd.ExecuteNonQuery();
-                        }
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@Timestamp", result.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
+                        cmd.Parameters.AddWithValue("@AssetName", result.AssetName);
+                        cmd.Parameters.AddWithValue("@HeatProduced", result.HeatProduced);
+                        cmd.Parameters.AddWithValue("@ProductionCost", result.ProductionCost);
+                        cmd.Parameters.AddWithValue("@Emissions", result.Emissions);
+                        cmd.Parameters.AddWithValue("@PresetId", result.PresetId);
+                        cmd.ExecuteNonQuery();
                     }
-                    transaction.Commit();
-                    Debug.WriteLine("New results saved to RDM after clearing old data.");
+                }
+                transaction.Commit();
+                Debug.WriteLine("New results with PresetIds saved to RDM after clearing old data.");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Error saving results to DB: {ex.Message}");
+    }
+}
+
+public List<HeatProductionResult> GetLatestResults()
+{
+    var results = new List<HeatProductionResult>();
+    try
+    {
+        using (var conn = new SQLiteConnection(dbPath))
+        {
+            conn.Open();
+            string query = @"
+                SELECT Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId]
+                FROM RDM
+                ORDER BY Timestamp";
+
+            using (var cmd = new SQLiteCommand(query, conn))
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    results.Add(new HeatProductionResult
+                    {
+                        Timestamp = DateTime.Parse(reader["Timestamp"].ToString()!),
+                        AssetName = reader["Asset Name"].ToString()!,
+                        HeatProduced = Convert.ToDouble(reader["Produced Heat"]),
+                        ProductionCost = Convert.ToDouble(reader["Production Cost"]),
+                        Emissions = Convert.ToDouble(reader["Emissions"]),
+                        PresetId = Convert.ToInt32(reader["PresetId"])
+                    });
                 }
             }
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error saving results to DB: {ex.Message}");
-        }
     }
-
-    // Fetches the ONLY results in the RDM (since we clear it every time)
-    public List<HeatProductionResult> GetLatestResults()
+    catch (Exception ex)
     {
-        var results = new List<HeatProductionResult>();
-        try
-        {
-            using (var conn = new SQLiteConnection(dbPath))
-            {
-                conn.Open();
-                string query = @"
-                    SELECT Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions]
-                    FROM RDM
-                    ORDER BY Timestamp";
-
-                using (var cmd = new SQLiteCommand(query, conn))
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        results.Add(new HeatProductionResult
-                        {
-                            Timestamp = DateTime.Parse(reader["Timestamp"].ToString()!),
-                            AssetName = reader["Asset Name"].ToString()!,
-                            HeatProduced = Convert.ToDouble(reader["Produced Heat"]),
-                            ProductionCost = Convert.ToDouble(reader["Production Cost"]),
-                            Emissions = Convert.ToDouble(reader["Emissions"])
-                        });
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error loading results from RDM: {ex.Message}");
-        }
-        return results;
+        Debug.WriteLine($"Error loading results from RDM: {ex.Message}");
     }
+    return results;
+}
 
       public void ExportToCsv(string filePath)
     {
@@ -163,8 +164,8 @@ public class HeatProductionResult
     public double ProductionCost { get; set; }
     public double Emissions { get; set; }
     public DateTime Timestamp { get; set; }
+    public int PresetId { get; set; } 
 }
-
 public enum OptimisationMode
 {
     CO2,

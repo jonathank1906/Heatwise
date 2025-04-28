@@ -23,28 +23,29 @@ public class DataVisualization
         // Get all machines from all presets
         var allMachines = _assetManager.Presets
             .SelectMany(preset => preset.MachineModels)
-            .DistinctBy(machine => machine.Name) // Ensure each machine only appears once
+            .GroupBy(machine => new { machine.Id, machine.Name }) // Group by both ID and Name for uniqueness
+            .Select(group => group.First()) // Take the first machine in each group
             .ToList();
 
-        // Populate the dictionary with machine names and their colors
+        // Populate the dictionary with machine names (including ID for uniqueness) and their colors
         foreach (var machine in allMachines)
         {
             try
             {
                 // Convert the color string from the database to a ScottPlot.Color object
                 var color = System.Drawing.ColorTranslator.FromHtml(machine.Color);
-                _machineColors[machine.Name] = new ScottPlot.Color(color.R, color.G, color.B, color.A);
+                var uniqueKey = $"{machine.Name} (ID: {machine.Id})";
+                _machineColors[uniqueKey] = new ScottPlot.Color(color.R, color.G, color.B, color.A);
+                Debug.WriteLine($"[InitializeMachineColors] Machine: {uniqueKey}, Color: {machine.Color}");
             }
             catch
             {
                 // Fallback to a default color if parsing fails
-                _machineColors[machine.Name] = ScottPlot.Colors.Gray;
-                Debug.WriteLine($"Failed to parse color for machine {machine.Name}. Using fallback color.");
+                var uniqueKey = $"{machine.Name} (ID: {machine.Id})";
+                _machineColors[uniqueKey] = ScottPlot.Colors.LightCyan;
+                Debug.WriteLine($"[InitializeMachineColors] Failed to parse color for machine {uniqueKey}. Using fallback color.");
             }
         }
-
-        // Add some default colors if the dictionary is empty (shouldn't happen in normal operation)
-
     }
 
     public void RefreshMachineColors()
@@ -70,8 +71,13 @@ public class DataVisualization
             double currentBase = 0;
             foreach (var result in groupedResults[i].OrderBy(r => r.AssetName))
             {
-                if (_machineColors.TryGetValue(result.AssetName, out var color))
+                var possibleKey = $"{result.AssetName} (ID: {result.PresetId})";
+                Debug.WriteLine($"[PlotHeatProduction] Checking for key: {possibleKey}");
+
+                if (_machineColors.TryGetValue(possibleKey, out var color))
                 {
+                    Debug.WriteLine($"[PlotHeatProduction] Found color for key: {possibleKey}, Color: {color}");
+
                     plt.Add.Bar(new Bar
                     {
                         Position = i,
@@ -79,6 +85,8 @@ public class DataVisualization
                         Value = currentBase + result.HeatProduced,
                         FillColor = color
                     });
+                    Debug.WriteLine($"[PlotHeatProduction] Added bar for {result.AssetName} at position {i} with value {result.HeatProduced}");
+
                     currentBase += result.HeatProduced;
 
                     // Add to legend if not already added
@@ -89,7 +97,12 @@ public class DataVisualization
                             LabelText = result.AssetName,
                             FillColor = color
                         });
+                        Debug.WriteLine($"[PlotHeatProduction] Added legend item for {result.AssetName}");
                     }
+                }
+                else
+                {
+                    Debug.WriteLine($"[PlotHeatProduction] No color found for key: {possibleKey}");
                 }
             }
         }

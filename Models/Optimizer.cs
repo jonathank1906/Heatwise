@@ -9,14 +9,14 @@ public class Optimizer
 {
     private readonly AssetManager _assetManager;
     private readonly SourceDataManager _sourceDataManager;
-    
+
     public Optimizer(AssetManager assetManager, SourceDataManager sourceDataManager)
     {
         _assetManager = assetManager;
         _sourceDataManager = sourceDataManager;
 
         Debug.WriteLine($"Optimizer initialized with scenario: {_assetManager.CurrentScenarioName}");
-       
+
     }
 
     private void LogCurrentAssets()
@@ -33,41 +33,41 @@ public class Optimizer
     }
 
     public List<HeatProductionResult> CalculateOptimalHeatProduction(
-        List<(DateTime timestamp, double heatDemand)> heatDemandIntervals, 
+        List<(DateTime timestamp, double heatDemand)> heatDemandIntervals,
         OptimisationMode optimisationMode)
     {
         var results = new List<HeatProductionResult>();
         var currentAssets = _assetManager.CurrentAssets;
         Debug.WriteLine($"Optimizing with {currentAssets.Count} assets in current scenario");
-        
+
         Debug.WriteLine($"\n=== Starting optimization ===");
         Debug.WriteLine($"Mode: {optimisationMode}");
         Debug.WriteLine($"Time intervals: {heatDemandIntervals.Count}");
         Debug.WriteLine($"Available assets: {currentAssets.Count}");
-         LogCurrentAssets();
+        LogCurrentAssets();
 
         foreach (var (timestamp, heatDemand) in heatDemandIntervals)
         {
             var intervalResults = ProcessTimeInterval(
-                timestamp, 
-                heatDemand, 
-                currentAssets, 
+                timestamp,
+                heatDemand,
+                currentAssets,
                 optimisationMode);
-            
+
             results.AddRange(intervalResults);
         }
 
         Debug.WriteLine($"\n=== Optimization completed ===");
         Debug.WriteLine($"Total results: {results.Count}");
-        
+
         return results;
     }
 
     private List<HeatProductionResult> ProcessTimeInterval(
-        DateTime timestamp,
-        double heatDemand,
-        List<AssetModel> assets,
-        OptimisationMode optimisationMode)
+      DateTime timestamp,
+      double heatDemand,
+      List<AssetModel> assets,
+      OptimisationMode optimisationMode)
     {
         var results = new List<HeatProductionResult>();
         double remainingDemand = heatDemand;
@@ -83,12 +83,12 @@ public class Optimizer
                 .Where(a => a.HeatProduction > 0)
                 .OrderBy(a => a.CostPerMW)
                 .ToList(),
-            
+
             OptimisationMode.CO2 => assets
                 .Where(a => a.HeatProduction > 0)
                 .OrderBy(a => a.EmissionsPerMW)
                 .ToList(),
-            
+
             _ => throw new ArgumentOutOfRangeException(nameof(optimisationMode))
         };
 
@@ -105,7 +105,8 @@ public class Optimizer
                 HeatProduced = allocation,
                 ProductionCost = allocation * asset.CostPerMW,
                 Emissions = allocation * asset.EmissionsPerMW,
-                Timestamp = timestamp
+                Timestamp = timestamp,
+                PresetId = asset.Id // Include the PresetId from the AssetModel
             };
 
             totalCost += result.ProductionCost;
@@ -113,7 +114,7 @@ public class Optimizer
             results.Add(result);
 
             Debug.WriteLine($"- Allocated {allocation} MW from {asset.Name} " +
-                          $"(Cost: {result.ProductionCost:C}, Emissions: {result.Emissions} kg)");
+                          $"(Cost: {result.ProductionCost:C}, Emissions: {result.Emissions} kg, PresetId: {result.PresetId})");
         }
 
         if (remainingDemand > 0)
@@ -128,7 +129,8 @@ public class Optimizer
             HeatProduced = heatDemand - remainingDemand,
             ProductionCost = totalCost,
             Emissions = totalEmissions,
-            Timestamp = timestamp
+            Timestamp = timestamp,
+            PresetId = 0 // Use 0 or another value to indicate this is a summary
         });
 
         return results;
