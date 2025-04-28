@@ -16,7 +16,7 @@ public class Optimizer
         _sourceDataManager = sourceDataManager;
 
         Debug.WriteLine($"Optimizer initialized with scenario: {_assetManager.CurrentScenarioName}");
-        LogCurrentAssets();
+       
     }
 
     private void LogCurrentAssets()
@@ -44,6 +44,7 @@ public class Optimizer
         Debug.WriteLine($"Mode: {optimisationMode}");
         Debug.WriteLine($"Time intervals: {heatDemandIntervals.Count}");
         Debug.WriteLine($"Available assets: {currentAssets.Count}");
+         LogCurrentAssets();
 
         foreach (var (timestamp, heatDemand) in heatDemandIntervals)
         {

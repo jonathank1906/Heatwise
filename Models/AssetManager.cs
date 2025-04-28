@@ -105,7 +105,8 @@ public class AssetManager
                             OilConsumption = Convert.ToDouble(machineReader["OilConsumption"]),
                             MaxElectricity = Convert.ToDouble(machineReader["MaxElectricity"]),
                             IsActive = Convert.ToBoolean(machineReader["IsActive"]),
-                            HeatProduction = Convert.ToDouble(machineReader["HeatProduction"])
+                            HeatProduction = Convert.ToDouble(machineReader["HeatProduction"]),
+                            Color = machineReader["Color"].ToString() ?? "#FFFFFF"
                         };
 
                         preset.MachineModels.Add(machine);
@@ -166,10 +167,9 @@ public class AssetManager
         return SetScenario(Presets.IndexOf(preset));
     }
 
-
     public bool CreateNewMachine(string name, string imagePath, double maxHeat, double maxElectricity,
-                               double productionCost, double emissions, double gasConsumption,
-                               double oilConsumption, int presetId)
+                              double productionCost, double emissions, double gasConsumption,
+                              double oilConsumption, int presetId, string color) // Added color parameter
     {
         try
         {
@@ -179,10 +179,10 @@ public class AssetManager
 
                 // Insert the new machine into the PresetMachines table
                 const string insertQuery = @"
-                INSERT INTO PresetMachines 
-                (PresetId, Name, ImageSource, MaxHeat, MaxElectricity, ProductionCosts, Emissions, GasConsumption, OilConsumption, IsActive, HeatProduction)
-                VALUES
-                (@presetId, @name, @imageSource, @maxHeat, @maxElectricity, @productionCosts, @emissions, @gasConsumption, @oilConsumption, @isActive, @heatProduction)";
+            INSERT INTO PresetMachines 
+            (PresetId, Name, ImageSource, MaxHeat, MaxElectricity, ProductionCosts, Emissions, GasConsumption, OilConsumption, IsActive, HeatProduction, Color)
+            VALUES
+            (@presetId, @name, @imageSource, @maxHeat, @maxElectricity, @productionCosts, @emissions, @gasConsumption, @oilConsumption, @isActive, @heatProduction, @color)";
 
                 using (var cmd = new SQLiteCommand(insertQuery, conn))
                 {
@@ -197,6 +197,7 @@ public class AssetManager
                     cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
                     cmd.Parameters.AddWithValue("@isActive", true); // Default to active
                     cmd.Parameters.AddWithValue("@heatProduction", maxHeat); // Default heat production
+                    cmd.Parameters.AddWithValue("@color", color); // Bind color parameter
 
                     cmd.ExecuteNonQuery();
                 }
@@ -211,10 +212,6 @@ public class AssetManager
             return false;
         }
     }
-
-
-
-
 
     public void RefreshAssets()
     {
@@ -319,63 +316,64 @@ public class AssetManager
     }
 
 
-    public bool AddMachineToPreset(int presetId, AssetModel machine)
+  public bool AddMachineToPreset(int presetId, AssetModel machine)
+{
+    try
     {
-        try
+        using (var conn = new SQLiteConnection(_dbPath))
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            conn.Open();
+
+            // Check if the machine already exists in the preset
+            const string checkQuery = @"
+            SELECT COUNT(*) 
+            FROM PresetMachines 
+            WHERE PresetId = @presetId AND Name = @name";
+
+            using (var checkCmd = new SQLiteCommand(checkQuery, conn))
             {
-                conn.Open();
+                checkCmd.Parameters.AddWithValue("@presetId", presetId);
+                checkCmd.Parameters.AddWithValue("@name", machine.Name);
 
-                // Check if the machine already exists in the preset
-                const string checkQuery = @"
-                SELECT COUNT(*) 
-                FROM PresetMachines 
-                WHERE PresetId = @presetId AND Name = @name";
-
-                using (var checkCmd = new SQLiteCommand(checkQuery, conn))
+                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                if (count > 0)
                 {
-                    checkCmd.Parameters.AddWithValue("@presetId", presetId);
-                    checkCmd.Parameters.AddWithValue("@name", machine.Name);
-
-                    int count = Convert.ToInt32(checkCmd.ExecuteScalar());
-                    if (count > 0)
-                    {
-                        Debug.WriteLine($"Machine '{machine.Name}' already exists in PresetId {presetId}. Skipping insertion.");
-                        return true;
-                    }
+                    Debug.WriteLine($"Machine '{machine.Name}' already exists in PresetId {presetId}. Skipping insertion.");
+                    return true;
                 }
-
-                // Insert the machine into the preset
-                const string insertQuery = @"
-                INSERT INTO PresetMachines (PresetId, Name, MaxHeat, ProductionCosts, Emissions, GasConsumption, OilConsumption, MaxElectricity, IsActive, HeatProduction)
-                VALUES (@presetId, @name, @maxHeat, @productionCosts, @emissions, @gasConsumption, @oilConsumption, @maxElectricity, @isActive, @heatProduction)";
-
-                using (var insertCmd = new SQLiteCommand(insertQuery, conn))
-                {
-                    insertCmd.Parameters.AddWithValue("@presetId", presetId);
-                    insertCmd.Parameters.AddWithValue("@name", machine.Name);
-                    insertCmd.Parameters.AddWithValue("@maxHeat", machine.MaxHeat);
-                    insertCmd.Parameters.AddWithValue("@productionCosts", machine.ProductionCosts);
-                    insertCmd.Parameters.AddWithValue("@emissions", machine.Emissions);
-                    insertCmd.Parameters.AddWithValue("@gasConsumption", machine.GasConsumption);
-                    insertCmd.Parameters.AddWithValue("@oilConsumption", machine.OilConsumption);
-                    insertCmd.Parameters.AddWithValue("@maxElectricity", machine.MaxElectricity);
-                    insertCmd.Parameters.AddWithValue("@isActive", machine.IsActive);
-                    insertCmd.Parameters.AddWithValue("@heatProduction", machine.HeatProduction);
-
-                    insertCmd.ExecuteNonQuery();
-                }
-
-                return true;
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error adding machine to preset: {ex.Message}");
-            return false;
+
+            // Insert the machine into the preset
+            const string insertQuery = @"
+            INSERT INTO PresetMachines (PresetId, Name, MaxHeat, ProductionCosts, Emissions, GasConsumption, OilConsumption, MaxElectricity, IsActive, HeatProduction, Color)
+            VALUES (@presetId, @name, @maxHeat, @productionCosts, @emissions, @gasConsumption, @oilConsumption, @maxElectricity, @isActive, @heatProduction, @color)";
+
+            using (var insertCmd = new SQLiteCommand(insertQuery, conn))
+            {
+                insertCmd.Parameters.AddWithValue("@presetId", presetId);
+                insertCmd.Parameters.AddWithValue("@name", machine.Name);
+                insertCmd.Parameters.AddWithValue("@maxHeat", machine.MaxHeat);
+                insertCmd.Parameters.AddWithValue("@productionCosts", machine.ProductionCosts);
+                insertCmd.Parameters.AddWithValue("@emissions", machine.Emissions);
+                insertCmd.Parameters.AddWithValue("@gasConsumption", machine.GasConsumption);
+                insertCmd.Parameters.AddWithValue("@oilConsumption", machine.OilConsumption);
+                insertCmd.Parameters.AddWithValue("@maxElectricity", machine.MaxElectricity);
+                insertCmd.Parameters.AddWithValue("@isActive", machine.IsActive);
+                insertCmd.Parameters.AddWithValue("@heatProduction", machine.HeatProduction);
+                insertCmd.Parameters.AddWithValue("@color", machine.Color); // Bind color parameter
+
+                insertCmd.ExecuteNonQuery();
+            }
+
+            return true;
         }
     }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Error adding machine to preset: {ex.Message}");
+        return false;
+    }
+}
     public bool IsMachineInPreset(int presetId, int assetId)
     {
         try
@@ -496,7 +494,8 @@ public class AssetManager
         double gasConsumption,
         double oilConsumption,
         bool isActive,
-        double heatProduction)
+        double heatProduction,
+        string color) // Added color parameter
     {
         try
         {
@@ -506,17 +505,18 @@ public class AssetManager
 
                 // Update the machine in the PresetMachines table
                 const string updateQuery = @"
-                UPDATE PresetMachines
-                SET Name = @newName,
-                    MaxHeat = @maxHeat,
-                    MaxElectricity = @maxElectricity,
-                    ProductionCosts = @productionCosts,
-                    Emissions = @emissions,
-                    GasConsumption = @gasConsumption,
-                    OilConsumption = @oilConsumption,
-                    IsActive = @isActive,
-                    HeatProduction = @heatProduction
-                WHERE PresetId = @presetId AND Name = @originalName";
+            UPDATE PresetMachines
+            SET Name = @newName,
+                MaxHeat = @maxHeat,
+                MaxElectricity = @maxElectricity,
+                ProductionCosts = @productionCosts,
+                Emissions = @emissions,
+                GasConsumption = @gasConsumption,
+                OilConsumption = @oilConsumption,
+                IsActive = @isActive,
+                HeatProduction = @heatProduction,
+                Color = @color
+            WHERE PresetId = @presetId AND Name = @originalName";
 
                 using (var cmd = new SQLiteCommand(updateQuery, conn))
                 {
@@ -531,6 +531,7 @@ public class AssetManager
                     cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
                     cmd.Parameters.AddWithValue("@isActive", isActive);
                     cmd.Parameters.AddWithValue("@heatProduction", heatProduction);
+                    cmd.Parameters.AddWithValue("@color", color); // Bind color parameter
 
                     int rowsAffected = cmd.ExecuteNonQuery();
                     if (rowsAffected > 0)
@@ -552,7 +553,6 @@ public class AssetManager
             return false;
         }
     }
-
     public bool UpdatePresetName(int presetId, string newName)
     {
         try
@@ -599,7 +599,7 @@ public partial class Preset : ObservableObject
 
     public ICommand? DeletePresetCommand { get; set; }
 
-    
+
 
     public string PresetName => Name;
 
@@ -608,7 +608,7 @@ public partial class Preset : ObservableObject
     [ObservableProperty] private bool _isPresetSelected;
     private Action<Preset>? _selectPresetAction;
 
-     public void SetSelectPresetAction(Action<Preset> action)
+    public void SetSelectPresetAction(Action<Preset> action)
     {
         _selectPresetAction = action;
     }
@@ -660,6 +660,7 @@ public partial class AssetModel : ObservableObject
 
     [ObservableProperty] private string originalName = string.Empty;
 
+    [ObservableProperty] private string color;
     public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
 
     public bool IsElectricBoiler => MaxElectricity < 0;

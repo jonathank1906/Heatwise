@@ -24,18 +24,6 @@ public partial class OptimizerView : UserControl
     private string? _lastTooltipContent;
     private ScottPlot.Plottables.Scatter? _heatDemandPlot;
     private ScottPlot.Plottables.Crosshair? _hoverCrosshair;
-    private readonly Dictionary<string, Color> _machineColors = new()
-    {
-        { "Gas Boiler 1", Colors.Orange },
-        { "Gas Boiler 2", Colors.DarkOrange },
-        { "Oil Boiler 1", Colors.Brown },
-        { "Oil Boiler 2", Colors.SaddleBrown },
-        { "Gas Motor 1", Colors.Blue },
-        { "Gas Motor 2", Colors.LightBlue },
-        { "Heat Pump 1", Colors.Green },
-        { "Heat Pump 2", Colors.LightGreen }
-    };
-
     private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
     private List<HeatProductionResult>? _currentOptimizationResults;
     private List<HeatProductionResult>? _currentFilteredResults;

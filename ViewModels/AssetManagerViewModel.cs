@@ -40,7 +40,7 @@ public partial class AssetManagerViewModel : ObservableObject
     private ViewState _currentViewState = ViewState.ScenarioSelection;
     [ObservableProperty]
     private ICommand? _parentDeleteMachineCommand;
-  
+
 
     private Flyout? _calendarFlyout;
     private readonly IPopupService _popupService;
@@ -121,6 +121,9 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private string _oilConsumption = "0";
 
+    [ObservableProperty]
+    private string color; 
+
     //----------------------------------------------------------------------------------------------
 
     public AssetManagerViewModel(AssetManager assetManager, IPopupService popupService)
@@ -135,7 +138,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 Id = p.Id,
                 Name = p.Name,
                 Machines = new List<string>(p.Machines), // Create a new list
-                 DeletePresetCommand = DeletePresetCommand,
+                DeletePresetCommand = DeletePresetCommand,
                 NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name))
             })
         );
@@ -156,9 +159,6 @@ public partial class AssetManagerViewModel : ObservableObject
             LoadGridImageFromSource(GridInfo.ImageSource);
         }
 
-
-
-
         MachineModels = new ObservableCollection<AssetModel>(
        _assetManager.Presets
            .SelectMany(p => p.MachineModels) // Flatten all machine models from all presets
@@ -175,7 +175,8 @@ public partial class AssetManagerViewModel : ObservableObject
                ImageFromBinding = LoadImageFromSource(m.ImageSource),
                IsActive = m.IsActive,
                HeatProduction = m.HeatProduction,
-               DeleteMachineCommand = DeleteMachineCommand
+               DeleteMachineCommand = DeleteMachineCommand,
+               Color = m.Color
            })
    );
 
@@ -252,7 +253,8 @@ public partial class AssetManagerViewModel : ObservableObject
                     ImageFromBinding = LoadImageFromSource(m.ImageSource),
                     IsActive = m.IsActive,
                     HeatProduction = m.HeatProduction,
-                    DeleteMachineCommand = DeleteMachineCommand
+                    DeleteMachineCommand = DeleteMachineCommand,
+                    Color = m.Color
                 })
             )
             : new ObservableCollection<AssetModel>();
@@ -353,7 +355,10 @@ public partial class AssetManagerViewModel : ObservableObject
             Debug.WriteLine($"Machine {machineName} not found in the current configuration.");
         }
     }
-
+partial void OnColorChanged(string value)
+{
+    Debug.WriteLine($"Color property changed to: {value}");
+}
     [RelayCommand]
     private void Delete(int machineId)
     {
@@ -414,7 +419,9 @@ public partial class AssetManagerViewModel : ObservableObject
                 ImageFromBinding = LoadImageFromSource(m.ImageSource),
                 IsActive = m.IsActive,
                 HeatProduction = m.HeatProduction,
-                DeleteMachineCommand = DeleteMachineCommand
+                DeleteMachineCommand = DeleteMachineCommand,
+                Color = m.Color
+
             })
         );
 
@@ -463,7 +470,8 @@ public partial class AssetManagerViewModel : ObservableObject
                     machine.GasConsumption,
                     machine.OilConsumption,
                     machine.IsActive,
-                    machine.HeatProduction
+                    machine.HeatProduction,
+                    machine.Color // Include the color property
                 );
                 if (!success)
                 {
@@ -520,7 +528,8 @@ public partial class AssetManagerViewModel : ObservableObject
                         ImageFromBinding = LoadImageFromSource(m.ImageSource),
                         IsActive = m.IsActive,
                         HeatProduction = m.HeatProduction,
-                        DeleteMachineCommand = DeleteMachineCommand
+                        DeleteMachineCommand = DeleteMachineCommand,
+                        Color = m.Color // Include the color property in the updated preset
                     })
                 );
             }
@@ -566,9 +575,10 @@ public partial class AssetManagerViewModel : ObservableObject
                        OilConsumption = m.OilConsumption,
                        MaxElectricity = m.MaxElectricity,
                        ImageFromBinding = LoadImageFromSource(m.ImageSource),
-                       IsActive = true, 
-                       HeatProduction = m.MaxHeat, 
-                       DeleteMachineCommand = DeleteMachineCommand
+                       IsActive = true,
+                       HeatProduction = m.MaxHeat,
+                       DeleteMachineCommand = DeleteMachineCommand,
+                       Color = m.Color
                    })
                )
            })
@@ -687,7 +697,8 @@ public partial class AssetManagerViewModel : ObservableObject
                 emissions,
                 gasConsumption,
                 oilConsumption,
-                presetId
+                presetId,
+                Color // Pass the color property
             );
 
             if (success)
@@ -757,9 +768,9 @@ public partial class AssetManagerViewModel : ObservableObject
            Name = p.Name,
            Machines = new List<string>(p.Machines),
            IsSelected = false,
-            DeletePresetCommand = DeletePresetCommand,
+           DeletePresetCommand = DeletePresetCommand,
            NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)),
-           
+
        })
    );
 

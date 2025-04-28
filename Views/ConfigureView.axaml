@@ -1,12 +1,18 @@
 <UserControl
     x:Class="Sem2Proj.Views.ConfigureView"
     xmlns="https://github.com/avaloniaui"
+       xmlns:conv="clr-namespace:Sem2Proj.Converters"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Sem2Proj.ViewModels"
+ 
     x:DataType="vm:AssetManagerViewModel"
     mc:Ignorable="d">
+
+    <UserControl.Resources>
+    <conv:StringToColorConverter x:Key="StringToColorConverter" />
+</UserControl.Resources>
 
     <StackPanel Spacing="20">
         <TextBlock
@@ -15,7 +21,7 @@
             FontWeight="Bold"
             Foreground="White"
             Text="Production Units Configuration" />
-            
+
         <ItemsControl ItemsSource="{Binding AssetsForSelectedPreset}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -31,7 +37,7 @@
                         Background="#252526"
                         CornerRadius="15">
                         <Grid ColumnDefinitions="Auto,20,*">
-                            <!-- Delete Button -->
+                            <!--  Delete Button  -->
                             <Button
                                 Grid.Column="2"
                                 Width="30"
@@ -54,7 +60,7 @@
                                     Stretch="Uniform" />
                             </Button>
 
-                            <!-- Machine Image -->
+                            <!--  Machine Image  -->
                             <Grid Grid.Column="0" HorizontalAlignment="Center">
                                 <Border
                                     Width="300"
@@ -80,19 +86,19 @@
                                 </Border>
                             </Grid>
 
-                            <!-- Machine Details and Controls -->
+                            <!--  Machine Details and Controls  -->
                             <StackPanel Grid.Column="2" Spacing="10">
-                                <!-- Machine Name and Toggle -->
+                                <!--  Machine Name and Toggle  -->
                                 <Grid ColumnDefinitions="Auto,*">
                                     <ToggleSwitch
                                         Grid.Column="0"
                                         Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
                                         IsChecked="{Binding IsActive, Mode=TwoWay}"
                                         OffContent="Off"
                                         OnContent="On"
-                                        VerticalAlignment="Center"
                                         ToolTip.Tip="Enable or disable this machine" />
-                                        
+
                                     <TextBox
                                         Grid.Column="1"
                                         Classes="value-box"
@@ -103,9 +109,16 @@
                                         Watermark="Machine Name" />
                                 </Grid>
 
-                                <!-- Configuration Grid -->
+                                <TextBlock
+                                    Margin="0,6,6,0"
+                                    Foreground="White"
+                                    Text="Machine Color" />
+                              <ColorPicker Color="{Binding Color, Converter={StaticResource StringToColorConverter}}" />
+
+
+                                <!--  Configuration Grid  -->
                                 <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                                    <!-- Max Heat -->
+                                    <!--  Max Heat  -->
                                     <TextBlock
                                         Grid.Row="0"
                                         Grid.Column="0"
@@ -126,7 +139,7 @@
                                         Foreground="White"
                                         Text="MW" />
 
-                                    <!-- Production Costs -->
+                                    <!--  Production Costs  -->
                                     <TextBlock
                                         Grid.Row="1"
                                         Grid.Column="0"
@@ -147,7 +160,7 @@
                                         Classes="unit-text"
                                         Text="DKK / MWh(th)" />
 
-                                    <!-- CO₂ Emissions -->
+                                    <!--  CO₂ Emissions  -->
                                     <TextBlock
                                         Grid.Row="2"
                                         Grid.Column="0"
@@ -168,7 +181,7 @@
                                         Classes="unit-text"
                                         Text="kg / MWh(th)" />
 
-                                    <!-- Gas Consumption -->
+                                    <!--  Gas Consumption  -->
                                     <TextBlock
                                         Grid.Row="3"
                                         Grid.Column="0"
@@ -189,7 +202,7 @@
                                         Classes="unit-text"
                                         Text="MWh(gas) / MWh(th)" />
 
-                                    <!-- Oil Consumption -->
+                                    <!--  Oil Consumption  -->
                                     <TextBlock
                                         Grid.Row="4"
                                         Grid.Column="0"
@@ -210,7 +223,7 @@
                                         Classes="unit-text"
                                         Text="MWh(oil) / MWh(th)" />
 
-                                    <!-- Max Electricity -->
+                                    <!--  Max Electricity  -->
                                     <TextBlock
                                         Grid.Row="5"
                                         Grid.Column="0"
@@ -232,8 +245,8 @@
                                         Text="MW" />
                                 </Grid>
 
-                                <!-- Heat Production Slider (only visible when active) -->
-                                <Border 
+                                <!--  Heat Production Slider (only visible when active)  -->
+                                <Border
                                     Margin="0,10,0,0"
                                     Padding="10"
                                     Background="#1E1E1E"
@@ -244,29 +257,29 @@
                                             FontSize="14"
                                             Foreground="White"
                                             Text="Heat Production Adjustment" />
-                                            
+
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            
+
                                             <TextBlock
                                                 Grid.Column="0"
                                                 VerticalAlignment="Center"
                                                 Foreground="White"
                                                 Text="{Binding HeatProduction, StringFormat={}{0:F1} MW}" />
-                                                
+
                                             <Slider
                                                 Grid.Column="1"
                                                 Margin="10,0"
-                                                Minimum="0"
-                                                Maximum="{Binding MaxHeat}"
-                                                TickFrequency="0.5"
                                                 IsSnapToTickEnabled="True"
+                                                Maximum="{Binding MaxHeat}"
+                                                Minimum="0"
+                                                TickFrequency="0.5"
                                                 Value="{Binding HeatProduction, Mode=TwoWay}" />
-                                                
+
                                             <TextBlock
                                                 Grid.Column="2"
                                                 VerticalAlignment="Center"
