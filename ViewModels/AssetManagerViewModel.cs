@@ -206,7 +206,7 @@ public partial class AssetManagerViewModel : ObservableObject
         }
         else if (destination == "PresetNavigation")
         {
-
+ShowScenarioSelection = true;
             CurrentViewState = ViewState.PresetNavigation;
             SelectedScenario = null;
             RefreshPresetList();
@@ -534,7 +534,8 @@ private void SaveConfiguration()
             );
         }
         OnSelectedScenarioChanged(SelectedScenario);
-        CurrentViewState = ViewState.PresetNavigation;
+        //CurrentViewState = ViewState.PresetNavigation;
+        NavigateTo("PresetNavigation");
         Debug.WriteLine("=== Configuration save completed successfully ===");
         Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
     }
