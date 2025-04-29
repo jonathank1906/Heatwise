@@ -158,7 +158,7 @@ public partial class OptimizerViewModel : ViewModelBase
 [RelayCommand]
 private void SelectPreset(Preset preset)
 {
-    if (preset == null) return;
+    //if (preset == null) return;
 
     // Find the index of the selected preset
     var presetIndex = _assetManager.Presets.IndexOf(preset);
@@ -166,12 +166,12 @@ private void SelectPreset(Preset preset)
     {
         _assetManager.SetScenario(presetIndex);
 
-        // Update selection states using internal method to prevent loops
-        foreach (var p in _assetManager.Presets)
-        {
-            p.SetIsSelectedInternal(false);
-        }
-        preset.SetIsSelectedInternal(true);
+        // // Update selection states using internal method to prevent loops
+        // foreach (var p in _assetManager.Presets)
+        // {
+        //     p.SetIsSelectedInternal(false);
+        // }
+        // preset.SetIsSelectedInternal(true);
     }
 }
     [RelayCommand]

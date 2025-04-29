@@ -138,6 +138,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 Id = p.Id,
                 Name = p.Name,
                 Machines = new List<string>(p.Machines), // Create a new list
+                IsPresetSelected = p.IsPresetSelected,
                 DeletePresetCommand = DeletePresetCommand,
                 NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name))
             })
@@ -197,28 +198,47 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             CurrentViewState = ViewState.AssetDetails;
             SelectedScenario = "All Assets";
+            if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
+        {
+            AvailablePresets[0].IsPresetSelected = true;
+        }
         }
         else if (_availablePresets.Any(p => p.Name == destination))
         {
-
+if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
+        {
+            AvailablePresets[0].IsPresetSelected = true;
+        }
             CurrentViewState = ViewState.AssetDetails;
             SelectedScenario = destination;
         }
         else if (destination == "PresetNavigation")
         {
 ShowScenarioSelection = true;
+
             CurrentViewState = ViewState.PresetNavigation;
             SelectedScenario = null;
             RefreshPresetList();
+if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
+        {
+            AvailablePresets[0].IsPresetSelected = true;
+        }
         }
         else if (destination == "Presets")
         {
-
+if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
+        {
+            AvailablePresets[0].IsPresetSelected = true;
+        }
             CurrentViewState = ViewState.PresetNavigation;
             SelectedScenario = null;
         }
         else
         {
+            if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
+        {
+            AvailablePresets[0].IsPresetSelected = true;
+        }
             CurrentViewState = ViewState.ScenarioSelection;
             SelectedScenario = null;
         }
@@ -533,7 +553,14 @@ private void SaveConfiguration()
                 })
             );
         }
+
+
         OnSelectedScenarioChanged(SelectedScenario);
+foreach (var preset in AvailablePresets)
+{
+    preset.IsPresetSelected = preset.Id == SelectedPresetForConfiguration.Id;
+    Debug.WriteLine($"Preset: {preset.Name}, IsPresetSelected: {preset.IsPresetSelected}");
+}
         //CurrentViewState = ViewState.PresetNavigation;
         NavigateTo("PresetNavigation");
         Debug.WriteLine("=== Configuration save completed successfully ===");
@@ -564,6 +591,7 @@ private void SaveConfiguration()
            {
                Id = p.Id,
                Name = p.Name,
+               IsPresetSelected = p.IsPresetSelected,
                MachineModels = new ObservableCollection<AssetModel>(
                    p.MachineModels.Select(m => new AssetModel
                    {
@@ -769,6 +797,7 @@ private void SaveConfiguration()
            Name = p.Name,
            Machines = new List<string>(p.Machines),
            IsSelected = false,
+              IsPresetSelected = p.IsPresetSelected,
            DeletePresetCommand = DeletePresetCommand,
            NavigateToPresetCommand = new RelayCommand(() => NavigateTo(p.Name)),
 
