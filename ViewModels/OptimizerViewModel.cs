@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ScottPlot;
-using ScottPlot.Avalonia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +7,14 @@ using System.Threading.Tasks;
 using Sem2Proj.Models;
 using System.Diagnostics;
 using Avalonia.Controls;
+using System.Collections.ObjectModel;
 
 
 namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
+     public AssetManager AssetManager => _assetManager;
     [ObservableProperty]
     private bool _hasOptimized = false;
 
@@ -74,14 +74,9 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isOpening;
 
+   public ObservableCollection<Preset> Presets => _assetManager.Presets;
+
     // Scenario radio buttons -------------------------------
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsScenario2Selected))]
-    private bool _isScenario1Selected = true;
-
-    [ObservableProperty]
-    private bool _isScenario2Selected;
-
     [ObservableProperty]
     private bool _isSummerSelected;
 
@@ -126,17 +121,59 @@ public partial class OptimizerViewModel : ViewModelBase
         SwitchGraph(value);
     }
 
-    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager)
-    {
-        _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
-        _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
-        _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
-        _optimizer = new Optimizer(_assetManager, _sourceDataManager);
+ public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager)
+{
+    _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
+    _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
+    _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
+    _optimizer = new Optimizer(_assetManager, _sourceDataManager);
 
-        _assetManager.SetScenario(0);
-        _isScenario1Selected = true;
+    // Set up the selection callback for each preset
+    foreach (var preset in _assetManager.Presets)
+    {
+        preset.SetSelectPresetAction(SelectPreset);
     }
 
+    // Select first preset by default if available
+    if (_assetManager.Presets.Count > 0)
+    {
+        _assetManager.Presets[0].SetIsSelectedInternal(true);
+        _assetManager.SetScenario(0);
+    }
+
+    // Subscribe to preset changes
+    _assetManager.Presets.CollectionChanged += (s, e) => 
+    {
+        OnPropertyChanged(nameof(Presets));
+        if (e.NewItems != null)
+        {
+            foreach (Preset preset in e.NewItems)
+            {
+                preset.SetSelectPresetAction(SelectPreset);
+            }
+        }
+    };
+}
+
+[RelayCommand]
+private void SelectPreset(Preset preset)
+{
+    //if (preset == null) return;
+
+    // Find the index of the selected preset
+    var presetIndex = _assetManager.Presets.IndexOf(preset);
+    if (presetIndex >= 0)
+    {
+        _assetManager.SetScenario(presetIndex);
+
+        // // Update selection states using internal method to prevent loops
+        // foreach (var p in _assetManager.Presets)
+        // {
+        //     p.SetIsSelectedInternal(false);
+        // }
+        // preset.SetIsSelectedInternal(true);
+    }
+}
     [RelayCommand]
     private void TriggerPane()
     {
@@ -394,24 +431,6 @@ public partial class OptimizerViewModel : ViewModelBase
         if (value)
         {
             OptimisationMode = OptimisationMode.CO2;
-        }
-    }
-
-    partial void OnIsScenario1SelectedChanged(bool value)
-    {
-        if (value)
-        {
-            _assetManager.SetScenario(0); // Scenario 1
-            Debug.WriteLine("Scenario 1 selected");
-        }
-    }
-
-    partial void OnIsScenario2SelectedChanged(bool value)
-    {
-        if (value)
-        {
-            _assetManager.SetScenario(1); // Scenario 2
-            Debug.WriteLine("Scenario 2 selected");
         }
     }
 

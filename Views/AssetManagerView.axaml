@@ -2,13 +2,28 @@
     x:Class="Sem2Proj.Views.AssetManagerView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:Sem2Proj.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:Sem2Proj.Views"
     xmlns:vm="using:Sem2Proj.ViewModels"
+    x:Name="userControl"
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:AssetManagerViewModel"
+    Tag="{Binding}"
     mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:AssetManagerViewModel />
+    </Design.DataContext>
+
+    <UserControl.Resources>
+        <conv:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+        <conv:StringToColorConverter x:Key="StringToColorConverter" />
+        <conv:StringToBrushConverter x:Key="StringToBrushConverter" />
+        <conv:BoolToBrushConverter x:Key="BoolToBrushConverter" />
+    </UserControl.Resources>
 
     <UserControl.Styles>
         <Style Selector="Border.value-box">
@@ -40,7 +55,18 @@
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="White" />
         </Style>
+
+        <Style Selector="ToolTip">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderBrush" Value="#CCCCCC" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
     </UserControl.Styles>
+
 
     <Grid Background="#1e1e1e" RowDefinitions="Auto,Auto,*">
 
@@ -56,12 +82,15 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
+                <!--  Default Top Bar (visible when not configuring)  -->
                 <StackPanel
                     Grid.Column="0"
                     Margin="10,0"
                     VerticalAlignment="Center"
+                    IsVisible="{Binding !IsConfiguring}"
                     Orientation="Horizontal">
                     <Button
                         Padding="0,0"
@@ -69,12 +98,12 @@
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding NavigateToCommand}"
-                        CommandParameter="Production Units">
+                        CommandParameter="Presets">
                         <TextBlock
                             FontSize="18"
                             FontWeight="Bold"
                             Foreground="White"
-                            Text="Production Units" />
+                            Text="Presets" />
                     </Button>
 
                     <TextBlock
@@ -84,7 +113,6 @@
                         Foreground="White"
                         Text="/" />
 
-
                     <TextBlock
                         Margin="5,0,0,0"
                         FontSize="18"
@@ -92,326 +120,454 @@
                         Foreground="White"
                         IsVisible="{Binding !ShowScenarioSelection}"
                         Text="{Binding SelectedScenario}" />
-
                 </StackPanel>
 
+                <!--  Configuration Mode Top Bar (visible when configuring)  -->
+                <StackPanel
+                    Grid.ColumnSpan="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Configuring" />
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="{Binding SelectedScenario}" />
+                </StackPanel>
+                <TextBlock
+                    Grid.ColumnSpan="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Create}"
+                    Text="Create" />
 
-                <!--  Button  -->
-                <!-- <Button
+                <TextBlock
+                    Grid.ColumnSpan="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=AssetDetails}"
+                    Text="Preset Explorer" />
+
+                <!--  Default Buttons  -->
+                <Button
                     Grid.Column="1"
-                    Width="120"
-                    Height="35"
+                    Width="150"
+                    Height="50"
                     Margin="5,0,8,0"
                     HorizontalAlignment="Center"
                     Background="#0078d7"
-                    Content="Configure Units"
-                    CornerRadius="5"
-                    Foreground="White" />-->
+                    Command="{Binding ShowConfigurationCommand}"
+                    CornerRadius="10"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=AssetDetails}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Path
+                                Width="24"
+                                Height="24"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource Edit}"
+                                Fill="White"
+                                Stretch="Uniform" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                Text="Configure" />
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <!--  Configuration Mode Buttons  -->
+
+
+                <Button
+                    Grid.Column="1"
+                    Width="85"
+                    Height="50"
+                    Margin="5,0,8,0"
+                    HorizontalAlignment="Center"
+                    Background="#00B300"
+                    Command="{Binding SaveConfigurationCommand}"
+                    CornerRadius="10"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Save" />
+                </Button>
+
+                <!--  Cancel Button for Configure View  -->
+                <Button
+                    Grid.Column="2"
+                    Width="85"
+                    Height="50"
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="PresetNavigation"
+                    CornerRadius="10"
+                    FontSize="22"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Cancel" />
+                </Button>
+
+                <!--  Cancel Button for Create View  -->
+                <Button
+                    Grid.Column="2"
+                    Width="85"
+                    Height="50"
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="PresetNavigation"
+                    CornerRadius="10"
+                    FontSize="22"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Create}">
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Cancel" />
+                </Button>
+
+                <Button
+                    Grid.Column="2"
+                    Width="85"
+                    Height="50"
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="PresetNavigation"
+                    CornerRadius="10"
+                    FontSize="22"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=AssetDetails}">
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Back" />
+                </Button>
+
+                <Button
+                    Grid.Column="2"
+                    Width="110"
+                    Height="50"
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Center"
+                    Background="#0078d7"
+                    Command="{Binding ShowSettingsCommand}"
+                    CornerRadius="10"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Path
+                                Width="24"
+                                Height="24"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource Add}"
+                                Fill="White"
+                                Stretch="Uniform" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                Text="Create" />
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
             </Grid>
         </Border>
 
-        <!--  Right Column: Scrollable Content  -->
         <ScrollViewer
             Grid.Row="2"
             Padding="20"
-            IsVisible="{Binding ShowAssetDetails}">
-            <ItemsControl ItemsSource="{Binding CurrentScenarioAssets}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border
-                            Margin="0,0,0,30"
-                            Padding="20"
-                            Background="#252526"
-                            CornerRadius="15">
-                            <Grid ColumnDefinitions="Auto,20,*">
-                                <!--  Machine Image - Restored original working version  -->
-                                <Grid Grid.Column="0" HorizontalAlignment="Center">
-                                    <!--  Shadow container  -->
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=AssetDetails}">
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,10"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="Production Units" />
+                <ItemsControl ItemsSource="{Binding CurrentScenarioAssets}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Margin="0,0,0,30"
+                                Padding="20"
+                                Background="#252526"
+                                BorderBrush="{Binding IsActive, Converter={StaticResource BoolToBrushConverter}}"
+                                BorderThickness="2"
+                                CornerRadius="15">
+                                <Grid>
                                     <Border
-                                        Width="300"
-                                        Height="200"
-                                        Background="Transparent"
-                                        CornerRadius="10">
-                                        <Border.Effect>
-                                            <DropShadowEffect BlurRadius="10" Color="Black" />
-                                        </Border.Effect>
-                                    </Border>
+                                        Width="30"
+                                        Height="30"
+                                        Margin="0,0,10,0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Background="{Binding Color, Converter={StaticResource StringToBrushConverter}}"
+                                        CornerRadius="5" />
+                                    <Grid ColumnDefinitions="Auto,20,*">
+                                        <!--  Machine Image  -->
+                                        <Grid Grid.Column="0" HorizontalAlignment="Center">
+                                            <Border
+                                                Width="300"
+                                                Height="200"
+                                                Background="Transparent"
+                                                CornerRadius="10">
+                                                <Border.Effect>
+                                                    <DropShadowEffect BlurRadius="10" Color="Black" />
+                                                </Border.Effect>
+                                            </Border>
+                                            <Border
+                                                Width="350"
+                                                Height="250"
+                                                ClipToBounds="True"
+                                                CornerRadius="10">
+                                                <Border.Clip>
+                                                    <RectangleGeometry
+                                                        RadiusX="10"
+                                                        RadiusY="10"
+                                                        Rect="0,0,350,250" />
+                                                </Border.Clip>
+                                                <Image Source="{Binding ImageFromBinding}" Stretch="UniformToFill" />
+                                            </Border>
+                                        </Grid>
 
-                                    <!--  Image with rounded corners  -->
-                                    <Border
-                                        Width="350"
-                                        Height="250"
-                                        ClipToBounds="True"
-                                        CornerRadius="10">
-                                        <Border.Clip>
-                                            <RectangleGeometry
-                                                RadiusX="10"
-                                                RadiusY="10"
-                                                Rect="0,0,350,250" />
-                                        </Border.Clip>
-                                        <Image Source="{Binding ImageFromBinding}" Stretch="UniformToFill" />
-                                    </Border>
-                                </Grid>
-
-                                <!--  Machine Details  -->
-                                <StackPanel Grid.Column="2">
-                                    <TextBlock
-                                        Classes="machine-name"
-                                        FontSize="20"
-                                        FontWeight="Bold"
-                                        Text="{Binding Name}" />
-
-                                    <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                                        <!--  Max Heat  -->
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            Grid.Column="0"
-                                            Margin="0,6,6,0"
-                                            HorizontalAlignment="Left"
-                                            Foreground="White"
-                                            Text="Max Heat" />
-                                        <Border
-                                            Grid.Row="0"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Left"
-                                            Classes="value-box">
+                                        <!--  Machine Details  -->
+                                        <StackPanel Grid.Column="2" Spacing="10">
+                                            <!--  Machine Name  -->
                                             <TextBlock
+                                                FontSize="20"
                                                 FontWeight="Bold"
-                                                Foreground="Black"
-                                                Text="{Binding MaxHeat, StringFormat={}{0:F1}}" />
-                                        </Border>
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            Grid.Column="2"
-                                            Classes="unit-text"
-                                            Text="MW" />
+                                                Foreground="White"
+                                                Text="{Binding Name}" />
 
-                                        <!--  Production Costs  -->
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            Grid.Column="0"
-                                            Margin="0,6,6,0"
-                                            HorizontalAlignment="Left"
-                                            Foreground="White"
-                                            Text="Production Costs" />
-                                        <Border
-                                            Grid.Row="1"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Left"
-                                            Classes="value-box">
-                                            <TextBlock
-                                                FontWeight="Bold"
-                                                Foreground="Black"
-                                                Text="{Binding ProductionCosts, StringFormat={}{0:F1}}" />
-                                        </Border>
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            Grid.Column="2"
-                                            Classes="unit-text"
-                                            Text="DKK / MWh(th)" />
+                                            <!--  Heat Production Progress  -->
+                                            <Grid Margin="0,6,0,0" ColumnDefinitions="Auto,Auto,Auto">
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    FontSize="14"
+                                                    Foreground="White"
+                                                    Text="Heat Production" />
+                                                <ProgressBar
+                                                    Grid.Column="1"
+                                                    Width="300"
+                                                    Height="10"
+                                                    Background="#3E3E3E"
+                                                    Foreground="#0078d7"
+                                                    Maximum="{Binding MaxHeat}"
+                                                    Minimum="0"
+                                                    Value="{Binding HeatProduction}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    FontSize="12"
+                                                    Foreground="White"
+                                                    Text="{Binding HeatProduction, StringFormat={}{0:F1} MW}" />
+                                            </Grid>
 
-                                        <!--  CO₂ Emissions  -->
-                                        <TextBlock
-                                            Grid.Row="2"
-                                            Grid.Column="0"
-                                            Margin="0,6,6,0"
-                                            HorizontalAlignment="Left"
-                                            Foreground="White"
-                                            Text="CO₂ Emissions" />
-                                        <Border
-                                            Grid.Row="2"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Left"
-                                            Classes="value-box">
-                                            <TextBlock
-                                                FontWeight="Bold"
-                                                Foreground="Black"
-                                                Text="{Binding Emissions, StringFormat={}{0:F1}}" />
-                                        </Border>
-                                        <TextBlock
-                                            Grid.Row="2"
-                                            Grid.Column="2"
-                                            Classes="unit-text"
-                                            Text="kg / MWh(th)" />
+                                            <!--  Machine Metrics  -->
+                                            <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                                                <!--  Max Heat  -->
+                                                <TextBlock
+                                                    Grid.Row="0"
+                                                    Grid.Column="0"
+                                                    Margin="0,6,6,0"
+                                                    HorizontalAlignment="Left"
+                                                    Foreground="White"
+                                                    Text="Max Heat" />
+                                                <Border
+                                                    Grid.Row="0"
+                                                    Grid.Column="1"
+                                                    HorizontalAlignment="Left"
+                                                    Classes="value-box">
+                                                    <TextBlock
+                                                        FontWeight="Bold"
+                                                        Foreground="Black"
+                                                        Text="{Binding MaxHeat, StringFormat={}{0:F1}}" />
+                                                </Border>
+                                                <TextBlock
+                                                    Grid.Row="0"
+                                                    Grid.Column="2"
+                                                    Classes="unit-text"
+                                                    Text="MW" />
 
-                                        <!--  Gas Consumption  -->
-                                        <TextBlock
-                                            Grid.Row="3"
-                                            Grid.Column="0"
-                                            Margin="0,6,6,0"
-                                            HorizontalAlignment="Left"
-                                            Foreground="White"
-                                            Text="Gas Consumption" />
-                                        <Border
-                                            Grid.Row="3"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Left"
-                                            Classes="value-box">
-                                            <TextBlock
-                                                FontWeight="Bold"
-                                                Foreground="Black"
-                                                Text="{Binding GasConsumption, StringFormat={}{0:F1}}" />
-                                        </Border>
-                                        <TextBlock
-                                            Grid.Row="3"
-                                            Grid.Column="2"
-                                            Classes="unit-text"
-                                            Text="MWh(gas) / MWh(th)" />
+                                                <!--  Production Costs  -->
+                                                <TextBlock
+                                                    Grid.Row="1"
+                                                    Grid.Column="0"
+                                                    Margin="0,6,6,0"
+                                                    HorizontalAlignment="Left"
+                                                    Foreground="White"
+                                                    Text="Production Costs" />
+                                                <Border
+                                                    Grid.Row="1"
+                                                    Grid.Column="1"
+                                                    HorizontalAlignment="Left"
+                                                    Classes="value-box">
+                                                    <TextBlock
+                                                        FontWeight="Bold"
+                                                        Foreground="Black"
+                                                        Text="{Binding ProductionCosts, StringFormat={}{0:F1}}" />
+                                                </Border>
+                                                <TextBlock
+                                                    Grid.Row="1"
+                                                    Grid.Column="2"
+                                                    Classes="unit-text"
+                                                    Text="DKK / MWh(th)" />
 
-                                        <!--  Oil Consumption  -->
-                                        <TextBlock
-                                            Grid.Row="4"
-                                            Grid.Column="0"
-                                            Margin="0,6,6,0"
-                                            HorizontalAlignment="Left"
-                                            Foreground="White"
-                                            Text="Oil Consumption" />
-                                        <Border
-                                            Grid.Row="4"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Left"
-                                            Classes="value-box">
-                                            <TextBlock
-                                                FontWeight="Bold"
-                                                Foreground="Black"
-                                                Text="{Binding OilConsumption, StringFormat={}{0:F1}}" />
-                                        </Border>
-                                        <TextBlock
-                                            Grid.Row="4"
-                                            Grid.Column="2"
-                                            Classes="unit-text"
-                                            Text="MWh(oil) / MWh(th)" />
+                                                <!--  CO₂ Emissions  -->
+                                                <TextBlock
+                                                    Grid.Row="2"
+                                                    Grid.Column="0"
+                                                    Margin="0,6,6,0"
+                                                    HorizontalAlignment="Left"
+                                                    Foreground="White"
+                                                    Text="CO₂ Emissions" />
+                                                <Border
+                                                    Grid.Row="2"
+                                                    Grid.Column="1"
+                                                    HorizontalAlignment="Left"
+                                                    Classes="value-box">
+                                                    <TextBlock
+                                                        FontWeight="Bold"
+                                                        Foreground="Black"
+                                                        Text="{Binding Emissions, StringFormat={}{0:F1}}" />
+                                                </Border>
+                                                <TextBlock
+                                                    Grid.Row="2"
+                                                    Grid.Column="2"
+                                                    Classes="unit-text"
+                                                    Text="kg / MWh(th)" />
 
-                                        <!--  Max Electricity  -->
-                                        <TextBlock
-                                            Grid.Row="5"
-                                            Grid.Column="0"
-                                            Margin="0,6,6,0"
-                                            HorizontalAlignment="Left"
-                                            Foreground="White"
-                                            Text="Max Electricity" />
-                                        <Border
-                                            Grid.Row="5"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Left"
-                                            Classes="value-box">
-                                            <TextBlock
-                                                FontWeight="Bold"
-                                                Foreground="Black"
-                                                Text="{Binding MaxElectricity, StringFormat={}{0:F1}}" />
-                                        </Border>
-                                        <TextBlock
-                                            Grid.Row="5"
-                                            Grid.Column="2"
-                                            Classes="unit-text"
-                                            Text="MW" />
+                                                <!--  Gas Consumption  -->
+                                                <TextBlock
+                                                    Grid.Row="3"
+                                                    Grid.Column="0"
+                                                    Margin="0,6,6,0"
+                                                    HorizontalAlignment="Left"
+                                                    Foreground="White"
+                                                    Text="Gas Consumption" />
+                                                <Border
+                                                    Grid.Row="3"
+                                                    Grid.Column="1"
+                                                    HorizontalAlignment="Left"
+                                                    Classes="value-box">
+                                                    <TextBlock
+                                                        FontWeight="Bold"
+                                                        Foreground="Black"
+                                                        Text="{Binding GasConsumption, StringFormat={}{0:F1}}" />
+                                                </Border>
+                                                <TextBlock
+                                                    Grid.Row="3"
+                                                    Grid.Column="2"
+                                                    Classes="unit-text"
+                                                    Text="MWh(gas) / MWh(th)" />
+
+                                                <!--  Oil Consumption  -->
+                                                <TextBlock
+                                                    Grid.Row="4"
+                                                    Grid.Column="0"
+                                                    Margin="0,6,6,0"
+                                                    HorizontalAlignment="Left"
+                                                    Foreground="White"
+                                                    Text="Oil Consumption" />
+                                                <Border
+                                                    Grid.Row="4"
+                                                    Grid.Column="1"
+                                                    HorizontalAlignment="Left"
+                                                    Classes="value-box">
+                                                    <TextBlock
+                                                        FontWeight="Bold"
+                                                        Foreground="Black"
+                                                        Text="{Binding OilConsumption, StringFormat={}{0:F1}}" />
+                                                </Border>
+                                                <TextBlock
+                                                    Grid.Row="4"
+                                                    Grid.Column="2"
+                                                    Classes="unit-text"
+                                                    Text="MWh(oil) / MWh(th)" />
+
+                                                <!--  Max Electricity  -->
+                                                <TextBlock
+                                                    Grid.Row="5"
+                                                    Grid.Column="0"
+                                                    Margin="0,6,6,0"
+                                                    HorizontalAlignment="Left"
+                                                    Foreground="White"
+                                                    Text="Max Electricity" />
+                                                <Border
+                                                    Grid.Row="5"
+                                                    Grid.Column="1"
+                                                    HorizontalAlignment="Left"
+                                                    Classes="value-box">
+                                                    <TextBlock
+                                                        FontWeight="Bold"
+                                                        Foreground="Black"
+                                                        Text="{Binding MaxElectricity, StringFormat={}{0:F1}}" />
+                                                </Border>
+                                                <TextBlock
+                                                    Grid.Row="5"
+                                                    Grid.Column="2"
+                                                    Classes="unit-text"
+                                                    Text="MW" />
+                                            </Grid>
+                                        </StackPanel>
                                     </Grid>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </ScrollViewer>
 
-        <Grid
+
+        <ScrollViewer
             Grid.Row="2"
-            Grid.Column="1"
-            Background="#1e1e1e"
-            IsVisible="{Binding ShowScenarioSelection}">
-            <Grid
-                Grid.Row="2"
-                Grid.Column="1"
-                Background="#1e1e1e"
-                IsVisible="{Binding ShowScenarioSelection}">
-                <StackPanel
-                    Margin="20"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Orientation="Horizontal">
+            Padding="20"
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
+            <views:PresetSelectionView DataContext="{Binding}" />
+        </ScrollViewer>
 
-                    <Button
-                        Width="110"
-                        Height="40"
-                        Background="#0078d7"
-                        Command="{Binding ShowSettingsCommand}"
-                        CornerRadius="5">
-                        <Button.Content>
-                            <StackPanel
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Orientation="Horizontal">
-                                <Path
-                                    Width="24"
-                                    Height="24"
-                                    Margin="0,0,8,0"
-                                    VerticalAlignment="Center"
-                                    Data="{StaticResource Add}"
-                                    Fill="White"
-                                    Stretch="Uniform" />
-                                <TextBlock
-                                    Margin="0,0,0,3"
-                                    VerticalAlignment="Center"
-                                    FontSize="18"
-                                    FontWeight="Bold"
-                                    Foreground="White"
-                                    Text="Create" />
-                            </StackPanel>
-                        </Button.Content>
-                    </Button>
-                </StackPanel>
-            </Grid>
+        <ScrollViewer
+            Grid.Row="2"
+            Padding="20"
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
+            <views:ConfigureView DataContext="{Binding}" />
+        </ScrollViewer>
 
-            <StackPanel
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Spacing="20">
-                <TextBlock
-                    Margin="0,0,0,30"
-                    HorizontalAlignment="Center"
-                    FontSize="24"
-                    Foreground="White"
-                    Text="Select a Preset" />
-
-                <Button
-                    Width="200"
-                    Height="60"
-                    Background="#0078d7"
-                    Command="{Binding NavigateToCommand}"
-                    CommandParameter="All Assets"
-                    CornerRadius="10">
-                    <TextBlock
-                        FontSize="18"
-                        Foreground="White"
-                        Text="All Assets" />
-                </Button>
-
-                <Button
-                    Width="200"
-                    Height="60"
-                    Background="#0078d7"
-                    Command="{Binding NavigateToCommand}"
-                    CommandParameter="Scenario 1"
-                    CornerRadius="10">
-                    <TextBlock
-                        FontSize="18"
-                        Foreground="White"
-                        Text="Scenario 1" />
-                </Button>
-
-                <Button
-                    Width="200"
-                    Height="60"
-                    Background="#0078d7"
-                    Command="{Binding NavigateToCommand}"
-                    CommandParameter="Scenario 2"
-                    CornerRadius="10">
-                    <TextBlock
-                        FontSize="18"
-                        Foreground="White"
-                        Text="Scenario 2" />
-                </Button>
-            </StackPanel>
-        </Grid>
+        <ScrollViewer
+            Grid.Row="2"
+            Padding="20"
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Create}">
+            <views:CreateView DataContext="{Binding}" />
+        </ScrollViewer>
     </Grid>
 </UserControl>

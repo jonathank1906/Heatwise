@@ -26,20 +26,13 @@ public partial class LoadingWindow : Window
 
     private async void StartLoading()
     {
-        if (DataContext is LoadingWindowViewModel viewModel)
+        var viewModel = DataContext as LoadingWindowViewModel;
+        if (viewModel != null)
         {
-            await viewModel.LoadApplicationAsync(vm =>
-            {
-                var mainWindow = new MainWindow
-                {
-                    DataContext = vm
-                };
-
-                mainWindow.Show();
-                mainWindow.Activate();
-                Close();
-            });
+            await viewModel.LoadApplicationAsync();
+            this.Close();
         }
+
     }
 
     private void WindowDragMove(object sender, PointerPressedEventArgs e)

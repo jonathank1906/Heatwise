@@ -193,7 +193,31 @@
                             Data="{StaticResource Home}" />
                     </Button>
 
-
+                    <Button
+                        x:Name="settingsButton"
+                        Width="30"
+                        Height="30"
+                        Margin="5,0,0,0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Classes="iconButton gear-clockwise"
+                        Command="{Binding ShowSettings}">
+                        <Button.Styles>
+                            <Style Selector="Button.gear-clockwise:pointerover &gt; Path">
+                                <Style.Animations>
+                                    <Animation IterationCount="1" Duration="0:0:0.4">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="RotateTransform.Angle" Value="0" />
+                                        </KeyFrame>
+                                        <KeyFrame Cue="20%">
+                                            <Setter Property="RotateTransform.Angle" Value="30" />
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Button.Styles>
+                        <Path Data="{StaticResource Settings}" />
+                    </Button>
 
 
                 </StackPanel>
@@ -256,8 +280,8 @@
             </Grid>
 
             <!--  Popup Overlay  -->
-            <!--  In MainWindow.xaml - keep your existing PopupOverlay section  -->
-            <!--  Popup Overlay section - corrected  -->
+            <!--  In MainWindow.xaml - keep your existing PopupOverlay section   ????? -->
+            <!--  Popup Overlay section - corrected  ??? -->
             <Grid
                 Name="PopupOverlay"
                 Background="#D0000000"
@@ -287,7 +311,8 @@
                                 <Border
                                     Background="Transparent"
                                     ClipToBounds="True"
-                                    CornerRadius="8">
+                                    CornerRadius="8"
+                                    Padding="20,20,20,20">
                                     <ContentPresenter
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"

@@ -1,0 +1,214 @@
+<UserControl
+    x:Class="Sem2Proj.Views.PresetSelectionView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:Sem2Proj.Converters"
+    xmlns:vm="using:Sem2Proj.ViewModels"
+    x:DataType="vm:AssetManagerViewModel">
+
+    <Design.DataContext>
+        <vm:AssetManagerViewModel />
+    </Design.DataContext>
+
+    <UserControl.Resources>
+        <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <conv:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!--  Header  -->
+            <RowDefinition Height="Auto" />
+            <!--  Presets list  -->
+            <RowDefinition Height="Auto" />
+            <!--  Toggle Switch  -->
+            <RowDefinition Height="*" />
+            <!--  Spacer  -->
+            <RowDefinition Height="Auto" />
+            <!--  Heating Grid (only appears when toggled)  -->
+        </Grid.RowDefinitions>
+
+        <!--  Header  -->
+        <TextBlock
+            Grid.Row="0"
+            Margin="10,0,0,20"
+            HorizontalAlignment="Left"
+            FontSize="20"
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Preset Explorer" />
+
+        <!--  Presets List  -->
+        <ItemsControl
+            Grid.Row="1"
+            Margin="10,0,0,20"
+            ItemsSource="{Binding AvailablePresets}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Preset Name or Editable TextBox  -->
+                        <Grid Grid.Column="0">
+                            <Button
+                              x:Name="PresetNameTextBlock"
+                                Width="200"
+                                Height="60"
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Left"
+                                Background="#0078d7"
+                                 IsVisible="{Binding IsRenaming, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+
+                                Command="{Binding NavigateToPresetCommand}"
+                                CommandParameter="{Binding Name}"
+                                CornerRadius="10">
+                                <TextBlock
+                                    FontSize="18"
+                                    Foreground="White"
+                                    Text="{Binding Name}" />
+                            </Button>
+                            <TextBox
+                                x:Name="PresetNameTextBox"
+                                VerticalAlignment="Center"
+                                FontSize="18"
+                                IsVisible="{Binding IsRenaming, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                KeyDown="OnRenameKeyDown"
+                                LostFocus="OnRenameLostFocus"
+                                Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+
+                        <!--  Three-Dots Button  -->
+                        <Button
+                            Grid.Column="1"
+                            Width="40"
+                            Height="40"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0">
+                            <Button.Flyout>
+                                <Flyout Placement="Bottom">
+                                    <StackPanel>
+                                        <!--  Rename Option  -->
+                                        <Button Command="{Binding StartRenamingCommand}" CommandParameter="{Binding}">
+                                            <TextBlock Foreground="White" Text="Rename" />
+                                        </Button>
+
+                                        <!--  Delete Option  -->
+                                        <Button Command="{Binding DeletePresetCommand}" CommandParameter="{Binding}">
+                                            <TextBlock Foreground="Red" Text="Delete" />
+                                        </Button>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                            <Path
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource ThreeDotsIcon}"
+                                Fill="White"
+                                Stretch="Uniform" />
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!--  Fixed Position ToggleSwitch (left-aligned with buttons)  -->
+        <Image
+            Grid.Row="2"
+            Width="50"
+            Height="50"
+            Margin="170,0,0,75"
+            HorizontalAlignment="Left"
+            Source="{SvgImage /Assets/District Heating.svg}" />
+        <ToggleSwitch
+            Grid.Row="2"
+            Margin="10,0,0,20"
+            HorizontalAlignment="Left"
+            IsChecked="{Binding IsHeatingGridVisible, Mode=TwoWay}">
+            <TextBlock
+                FontSize="18"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="View Heating Grid" />
+        </ToggleSwitch>
+
+        <!--  Heating Grid Info - appears below but doesn't affect toggle position  -->
+        <StackPanel
+            Grid.Row="4"
+            Margin="10,0,0,20"
+            IsVisible="{Binding IsHeatingGridVisible}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="550" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="300" />
+                </Grid.ColumnDefinitions>
+
+                <!--  Heating Grid Image  -->
+                <Border
+                    Grid.Column="0"
+                    ClipToBounds="True"
+                    CornerRadius="15">
+                    <Image
+                        Width="550"
+                        Height="400"
+                        Source="{Binding GridImageFromBinding}"
+                        Stretch="UniformToFill" />
+                </Border>
+
+                <!--  Heating Grid Info  -->
+                <Border
+                    Grid.Column="2"
+                    Background="#252526"
+                    CornerRadius="15">
+                    <StackPanel Margin="15">
+                        <TextBlock
+                            Margin="0,0,0,10"
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            Text="Grid Specifications" />
+
+                        <StackPanel Margin="0,5">
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="#BFBFBF"
+                                Text="Architecture" />
+                            <TextBlock
+                                FontSize="16"
+                                Foreground="White"
+                                Text="{Binding GridInfo.Architecture}" />
+                        </StackPanel>
+
+                        <StackPanel Margin="0,5">
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="#BFBFBF"
+                                Text="Size" />
+                            <TextBlock
+                                FontSize="16"
+                                Foreground="White"
+                                Text="{Binding GridInfo.Size}" />
+                        </StackPanel>
+
+                        <StackPanel Margin="0,5">
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="#BFBFBF"
+                                Text="Name" />
+                            <TextBlock
+                                FontSize="16"
+                                Foreground="White"
+                                Text="{Binding GridInfo.Name}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

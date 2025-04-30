@@ -7,164 +7,149 @@
     Height="700"
     x:DataType="vm:SettingsViewModel">
 
+    <!--  Styling  -->
+    <UserControl.Styles>
+        <Style Selector="Button.close">
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Template">
+                <!--  Ignore the Theme Template  -->
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border>
+                            <Border.Background>
+                                <!--  Adding a transparent background seems to make the 'hitbox' larger  -->
+                                <SolidColorBrush Opacity="0" Color="White" />
+                            </Border.Background>
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  Button on hover  -->
+        <Style Selector="Button.close:pointerover">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+    </UserControl.Styles>
+
+    <!--  Main Content  -->
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="45" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <!--  Title bar area  -->
         <Grid Grid.Row="0" Background="Transparent">
+            <TextBlock
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                FontSize="24"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="Settings" />
+
             <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Button
                     Canvas.Right="0"
-                    Width="46"
-                    Height="30"
-                    Padding="10,0,10,0"
-                    Background="Transparent"
+                    Width="25"
+                    Height="25"
                     BorderThickness="0"
+                    Classes="close"
                     Command="{Binding CloseCommand}">
+                    <Button.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                        </Transitions>
+                    </Button.Transitions>
                     <PathIcon
-                        Width="12"
-                        Height="12"
-                        Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                        Width="15"
+                        Height="15"
+                        Data="{StaticResource Close}"
                         Foreground="White" />
                 </Button>
             </Canvas>
         </Grid>
 
-        <TabControl Grid.Row="1">
-            <TabControl.Styles>
-                <Style Selector="TabItem">
-                    <Setter Property="Background" Value="#333333" />
-                    <Setter Property="Foreground" Value="White" />
-                    <Setter Property="FontWeight" Value="Normal" />
-                    <Setter Property="Padding" Value="15,10" />
-                    <Setter Property="BorderThickness" Value="0" />
-                </Style>
+        <!--  Main area  -->
+        <StackPanel Grid.Row="1" VerticalAlignment="Center">
 
-                <Style Selector="TabItem:selected">
-                    <Setter Property="Background" Value="#252526" />
-                    <Setter Property="FontWeight" Value="Bold" />
-                </Style>
+            <DockPanel LastChildFill="True">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    DockPanel.Dock="Left"
+                    FontSize="15"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="Dark/Light Mode" />
+                <ToggleSwitch
+                    Margin="0,0,0,1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center" />
+            </DockPanel>
+            <Border
+                Margin="0,20,0,20"
+                Background="White"
+                BorderThickness="0.01"
+                Opacity="0.2" />
 
-                <Style Selector="TabControl /template/ TabStrip#HeaderPanel">
-                    <Setter Property="Background" Value="#333333" />
-                </Style>
-            </TabControl.Styles>
 
-            <!--  Heat Production Unit Tab  -->
-            <TabItem Header="Production Unit">
-                <ScrollViewer Padding="20">
-                    <StackPanel Spacing="15">
-                        <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Machine Name:" />
-                            <TextBox
-                                Background="#3E3E3E"
-                                CaretBrush="White"
-                                Foreground="White"
-                                Text="{Binding MachineName}"
-                                Watermark="Enter machine name" />
-                        </StackPanel>
+            <DockPanel LastChildFill="True">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="15"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="Show Home Screen on Startup" />
+                <ToggleSwitch
+                    Margin="0,0,0,1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center" />
+            </DockPanel>
+            <Border
+                Margin="0,20,0,20"
+                Background="White"
+                BorderThickness="0.01"
+                Opacity="0.2" />
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Max Heat Output (MW):" />
-                            <TextBox
-                                Background="#3E3E3E"
-                                CaretBrush="White"
-                                Foreground="White"
-                                Text="{Binding MaxHeatOutput}"
-                                Watermark="0.00" />
-                        </StackPanel>
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Max Electricity Output (MW):" />
-                            <TextBox
-                                Background="#3E3E3E"
-                                CaretBrush="White"
-                                Foreground="White"
-                                Text="{Binding MaxElectricityOutput}"
-                                Watermark="0.00" />
-                        </StackPanel>
+            <DockPanel LastChildFill="True">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="15"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="Developer Mode" />
+                <ToggleSwitch
+                    Margin="0,0,0,1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center" />
+            </DockPanel>
+            <TextBlock
+                Margin="0,0,0,0"
+                VerticalAlignment="Center"
+                FontSize="12"
+                Foreground="#BBFFFFFF"
+                Text="Disables loading, login and home screens on startup" />
+            <Border
+                Margin="0,20,0,20"
+                Background="White"
+                BorderThickness="0.01"
+                Opacity="0.2" />
+        </StackPanel>
 
-                        <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Production Cost (DKK/MWh):" />
-                            <TextBox
-                                Background="#3E3E3E"
-                                CaretBrush="White"
-                                Foreground="White"
-                                Text="{Binding ProductionCost}"
-                                Watermark="0.00" />
-                        </StackPanel>
-
-                        <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="CO₂ Emissions (kg/MWh):" />
-                            <TextBox
-                                Background="#3E3E3E"
-                                CaretBrush="White"
-                                Foreground="White"
-                                Text="{Binding Co2Emissions}"
-                                Watermark="0.00" />
-                        </StackPanel>
-
-                        <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Gas Consumption (units/hour):" />
-                            <TextBox
-                                Background="#3E3E3E"
-                                CaretBrush="White"
-                                Foreground="White"
-                                Text="{Binding GasConsumption}"
-                                Watermark="0.00" />
-                        </StackPanel>
-
-                        <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Oil Consumption (units/hour):" />
-                            <TextBox
-                                Background="#3E3E3E"
-                                CaretBrush="White"
-                                Foreground="White"
-                                Text="{Binding OilConsumption}"
-                                Watermark="0.00" />
-                        </StackPanel>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-
-            <!--  Preset Tab  -->
-            <TabItem Header="Preset">
-                <ScrollViewer Padding="20">
-                    <StackPanel Spacing="15">
-                        <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Preset Name:" />
-                            <TextBox
-                                Background="#3E3E3E"
-                                CaretBrush="White"
-                                Foreground="White"
-                                Text="{Binding PresetName}"
-                                Watermark="Enter preset name" />
-                        </StackPanel>
-
-                       
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-        </TabControl>
-
-        <Border
-            Grid.Row="2"
-            Padding="10"
-            Background="#252526">
-            <StackPanel
-                HorizontalAlignment="Right"
-                Orientation="Horizontal"
-                Spacing="10">
-                <Button
-                    Width="100"
-                    Background="#0078D7"
-                    Command="{Binding CreateMachineCommand}"
-                    Content="Create"
-                    Foreground="White" />
-            </StackPanel>
-        </Border>
+        <Button
+            Grid.Row="4"
+            Width="450"
+            Height="40"
+            Padding="10,10,10,10"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Content="Restore Defaults"
+            FontWeight="Bold" />
     </Grid>
 </UserControl>

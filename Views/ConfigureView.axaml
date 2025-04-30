@@ -1,0 +1,298 @@
+<UserControl
+    x:Class="Sem2Proj.Views.ConfigureView"
+    xmlns="https://github.com/avaloniaui"
+       xmlns:conv="clr-namespace:Sem2Proj.Converters"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Sem2Proj.ViewModels"
+ 
+    x:DataType="vm:AssetManagerViewModel"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+    <conv:StringToColorConverter x:Key="StringToColorConverter" />
+</UserControl.Resources>
+
+    <StackPanel Spacing="20">
+        <TextBlock
+            Margin="0,0,0,10"
+            FontSize="24"
+            FontWeight="Bold"
+            Foreground="White"
+            Text="Production Units Configuration" />
+
+        <ItemsControl ItemsSource="{Binding AssetsForSelectedPreset}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border
+                        Margin="0,0,0,30"
+                        Padding="20"
+                        Background="#252526"
+                        CornerRadius="15">
+                        <Grid ColumnDefinitions="Auto,20,*">
+                            <!--  Delete Button  -->
+                            <Button
+                                Grid.Column="2"
+                                Width="30"
+                                Height="30"
+                                Margin="0,-10,-10,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding DeleteMachineCommand}"
+                                CommandParameter="{Binding Name}"
+                                ToolTip.Tip="Delete this machine">
+                                <Path
+                                    Width="20"
+                                    Height="20"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="{StaticResource TrashIcon}"
+                                    Fill="Red"
+                                    Stretch="Uniform" />
+                            </Button>
+
+                            <!--  Machine Image  -->
+                            <Grid Grid.Column="0" HorizontalAlignment="Center">
+                                <Border
+                                    Width="300"
+                                    Height="200"
+                                    Background="Transparent"
+                                    CornerRadius="10">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="10" Color="Black" />
+                                    </Border.Effect>
+                                </Border>
+                                <Border
+                                    Width="350"
+                                    Height="250"
+                                    ClipToBounds="True"
+                                    CornerRadius="10">
+                                    <Border.Clip>
+                                        <RectangleGeometry
+                                            RadiusX="10"
+                                            RadiusY="10"
+                                            Rect="0,0,350,250" />
+                                    </Border.Clip>
+                                    <Image Source="{Binding ImageFromBinding}" Stretch="UniformToFill" />
+                                </Border>
+                            </Grid>
+
+                            <!--  Machine Details and Controls  -->
+                            <StackPanel Grid.Column="2" Spacing="10">
+                                <!--  Machine Name and Toggle  -->
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <ToggleSwitch
+                                        Grid.Column="0"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        IsChecked="{Binding IsActive, Mode=TwoWay}"
+                                        OffContent="Off"
+                                        OnContent="On"
+                                        ToolTip.Tip="Enable or disable this machine" />
+
+                                    <TextBox
+                                        Grid.Column="1"
+                                        Classes="value-box"
+                                        FontSize="20"
+                                        FontWeight="Bold"
+                                        Foreground="White"
+                                        Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Watermark="Machine Name" />
+                                </Grid>
+
+                                <TextBlock
+                                    Margin="0,6,6,0"
+                                    Foreground="White"
+                                    Text="Machine Color" />
+                              <ColorPicker Color="{Binding Color, Converter={StaticResource StringToColorConverter}}" />
+
+
+                                <!--  Configuration Grid  -->
+                                <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                                    <!--  Max Heat  -->
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Margin="0,6,6,0"
+                                        Foreground="White"
+                                        Text="Max Heat" />
+                                    <TextBox
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        Classes="value-box"
+                                        Text="{Binding MaxHeat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
+                                        Watermark="{Binding MaxHeat, StringFormat={}{0:F1}}" />
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="2"
+                                        Margin="10,6,0,6"
+                                        Foreground="White"
+                                        Text="MW" />
+
+                                    <!--  Production Costs  -->
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Margin="0,6,6,0"
+                                        HorizontalAlignment="Left"
+                                        Foreground="White"
+                                        Text="Production Costs" />
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        Classes="value-box"
+                                        Text="{Binding ProductionCosts, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
+                                        Watermark="{Binding ProductionCosts, StringFormat={}{0:F1}}" />
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Grid.Column="2"
+                                        Classes="unit-text"
+                                        Text="DKK / MWh(th)" />
+
+                                    <!--  CO₂ Emissions  -->
+                                    <TextBlock
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        Margin="0,6,6,0"
+                                        HorizontalAlignment="Left"
+                                        Foreground="White"
+                                        Text="CO₂ Emissions" />
+                                    <TextBox
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        Classes="value-box"
+                                        Text="{Binding Emissions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
+                                        Watermark="{Binding Emissions, StringFormat={}{0:F1}}" />
+                                    <TextBlock
+                                        Grid.Row="2"
+                                        Grid.Column="2"
+                                        Classes="unit-text"
+                                        Text="kg / MWh(th)" />
+
+                                    <!--  Gas Consumption  -->
+                                    <TextBlock
+                                        Grid.Row="3"
+                                        Grid.Column="0"
+                                        Margin="0,6,6,0"
+                                        HorizontalAlignment="Left"
+                                        Foreground="White"
+                                        Text="Gas Consumption" />
+                                    <TextBox
+                                        Grid.Row="3"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        Classes="value-box"
+                                        Text="{Binding GasConsumption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
+                                        Watermark="{Binding GasConsumption, StringFormat={}{0:F1}}" />
+                                    <TextBlock
+                                        Grid.Row="3"
+                                        Grid.Column="2"
+                                        Classes="unit-text"
+                                        Text="MWh(gas) / MWh(th)" />
+
+                                    <!--  Oil Consumption  -->
+                                    <TextBlock
+                                        Grid.Row="4"
+                                        Grid.Column="0"
+                                        Margin="0,6,6,0"
+                                        HorizontalAlignment="Left"
+                                        Foreground="White"
+                                        Text="Oil Consumption" />
+                                    <TextBox
+                                        Grid.Row="4"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        Classes="value-box"
+                                        Text="{Binding OilConsumption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
+                                        Watermark="{Binding OilConsumption, StringFormat={}{0:F1}}" />
+                                    <TextBlock
+                                        Grid.Row="4"
+                                        Grid.Column="2"
+                                        Classes="unit-text"
+                                        Text="MWh(oil) / MWh(th)" />
+
+                                    <!--  Max Electricity  -->
+                                    <TextBlock
+                                        Grid.Row="5"
+                                        Grid.Column="0"
+                                        Margin="0,6,6,0"
+                                        HorizontalAlignment="Left"
+                                        Foreground="White"
+                                        Text="Max Electricity" />
+                                    <TextBox
+                                        Grid.Row="5"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Left"
+                                        Classes="value-box"
+                                        Text="{Binding MaxElectricity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
+                                        Watermark="{Binding MaxElectricity, StringFormat={}{0:F1}}" />
+                                    <TextBlock
+                                        Grid.Row="5"
+                                        Grid.Column="2"
+                                        Classes="unit-text"
+                                        Text="MW" />
+                                </Grid>
+
+                                <!--  Heat Production Slider (only visible when active)  -->
+                                <Border
+                                    Margin="0,10,0,0"
+                                    Padding="10"
+                                    Background="#1E1E1E"
+                                    CornerRadius="5"
+                                    IsVisible="{Binding IsActive}">
+                                    <StackPanel Spacing="5">
+                                        <TextBlock
+                                            FontSize="14"
+                                            Foreground="White"
+                                            Text="Heat Production Adjustment" />
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                VerticalAlignment="Center"
+                                                Foreground="White"
+                                                Text="{Binding HeatProduction, StringFormat={}{0:F1} MW}" />
+
+                                            <Slider
+                                                Grid.Column="1"
+                                                Margin="10,0"
+                                                IsSnapToTickEnabled="True"
+                                                Maximum="{Binding MaxHeat}"
+                                                Minimum="0"
+                                                TickFrequency="0.5"
+                                                Value="{Binding HeatProduction, Mode=TwoWay}" />
+
+                                            <TextBlock
+                                                Grid.Column="2"
+                                                VerticalAlignment="Center"
+                                                Foreground="White"
+                                                Text="{Binding MaxHeat, StringFormat={}Max: {0:F1} MW}" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

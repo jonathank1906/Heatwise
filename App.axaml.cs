@@ -23,8 +23,6 @@ public partial class App : Application
 
             var loadingViewModel = new LoadingWindowViewModel();
             var loadingWindow = new LoadingWindow(loadingViewModel);
-            
-            desktop.MainWindow = loadingWindow;
 
             loadingWindow.Topmost = true; // Switching 'Topmost' to true, to make the loading screen popup on top
             loadingWindow.Show();

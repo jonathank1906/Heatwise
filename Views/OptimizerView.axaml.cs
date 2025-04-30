@@ -8,6 +8,7 @@ using System;
 using Sem2Proj.Models;
 using Avalonia;
 using ScottPlot.Avalonia;
+using System.Diagnostics;
 
 namespace Sem2Proj.Views;
 
@@ -23,33 +24,23 @@ public partial class OptimizerView : UserControl
     private string? _lastTooltipContent;
     private ScottPlot.Plottables.Scatter? _heatDemandPlot;
     private ScottPlot.Plottables.Crosshair? _hoverCrosshair;
-    private readonly Dictionary<string, Color> _machineColors = new()
-    {
-        { "Gas Boiler 1", Colors.Orange },
-        { "Gas Boiler 2", Colors.DarkOrange },
-        { "Oil Boiler 1", Colors.Brown },
-        { "Oil Boiler 2", Colors.SaddleBrown },
-        { "Gas Motor 1", Colors.Blue },
-        { "Gas Motor 2", Colors.LightBlue },
-        { "Heat Pump 1", Colors.Green },
-        { "Heat Pump 2", Colors.LightGreen }
-    };
-
     private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
     private List<HeatProductionResult>? _currentOptimizationResults;
     private List<HeatProductionResult>? _currentFilteredResults;
-    private readonly DataVisualization _dataVisualization = new();
-
+  private DataVisualization _dataVisualization;
+public AssetManager AssetManager { get; }
     public OptimizerView()
     {
         InitializeComponent();
         InitializeFlyoutEvents();
+        
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
 
         DataContextChanged += (sender, e) =>
         {
             if (DataContext is OptimizerViewModel vm)
             {
+                 _dataVisualization = new DataVisualization(vm.AssetManager);
                 vm.UpdateXAxisTicks += (timestamps) =>
     {
         _dataVisualization.SetXAxisTicks(OptimizationPlot.Plot, timestamps);
@@ -488,9 +479,11 @@ public partial class OptimizerView : UserControl
     {
         if (DataContext is OptimizerViewModel viewModel)
         {
+            Debug.WriteLine("Export button clicked.outer");
             var parentWindow = TopLevel.GetTopLevel(this) as Window;
             if (parentWindow != null)
             {
+                Debug.WriteLine("Export button clicked.inner");
                 await viewModel.ExportToCsv(parentWindow);
             }
         }
