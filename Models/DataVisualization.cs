@@ -69,7 +69,9 @@ public class DataVisualization
         for (int i = 0; i < groupedResults.Count; i++)
         {
             double currentBase = 0;
-            foreach (var result in groupedResults[i].OrderBy(r => r.AssetName))
+
+            // First process all regular assets
+            foreach (var result in groupedResults[i].Where(r => r.AssetName != "Unmet Demand").OrderBy(r => r.AssetName))
             {
                 var possibleKey = $"{result.AssetName} (ID: {result.PresetId})";
                 Debug.WriteLine($"[PlotHeatProduction] Checking for key: {possibleKey}");
@@ -105,8 +107,32 @@ public class DataVisualization
                     Debug.WriteLine($"[PlotHeatProduction] No color found for key: {possibleKey}");
                 }
             }
+
+            // Then add unmet demand on top if it exists
+            var unmetDemand = groupedResults[i].FirstOrDefault(r => r.AssetName == "Unmet Demand");
+            if (unmetDemand != null)
+            {
+                var unmetColor = new ScottPlot.Color(255, 0, 0, 180); // Semi-transparent red
+                plt.Add.Bar(new Bar
+                {
+                    Position = i,
+                    ValueBase = currentBase,
+                    Value = currentBase + unmetDemand.HeatProduced,
+                    FillColor = unmetColor
+                });
+
+                if (addedToLegend.Add("Unmet Demand"))
+                {
+                    plt.Legend.ManualItems.Add(new LegendItem
+                    {
+                        LabelText = "Unmet Demand",
+                        FillColor = unmetColor
+                    });
+                }
+            }
         }
 
+        // [Rest of the method remains exactly the same...]
         // Add heat demand line to the plot
         if (heatDemandData != null && heatDemandData.Any())
         {
