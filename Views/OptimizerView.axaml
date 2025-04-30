@@ -149,115 +149,120 @@
             </Border.Styles>
 
             <Grid>
-                <StackPanel
+                <!--  Wrap the StackPanel with a ScrollViewer  -->
+                <ScrollViewer
                     Margin="0,50,0,0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Top"
-                    Spacing="10">
-
-                    <TextBlock
-                        Margin="0,0,0,10"
-                        FontSize="22"
-                        FontWeight="Bold"
-                        Text="Optimization Settings" />
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            FontSize="18"
-                            FontWeight="SemiBold"
-                            Text="Preset" />
-                        <Image
-                            Width="20"
-                            Height="20"
-                            Margin="10,0,0,0"
-                            Source="{SvgImage Assets/info-circle.svg}"
-                            ToolTip.Tip="Select a preset configuration." />
-                    </StackPanel>
-
-                    <ItemsControl ItemsSource="{Binding Presets}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Spacing="10" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <RadioButton
-                                    Classes="fancy"
-                                    Command="{Binding SelectPresetCommand}"
-                                    CommandParameter="{Binding}"
-                                    Content="{Binding Name}"
-                                    GroupName="PresetGroup"
-                                    IsChecked="{Binding IsPresetSelected}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-
-                    <Border
-                        Height="1"
-                        Margin="0,10,0,10"
-                        Background="#CCCCCC"
-                        Opacity="0.5" />
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            FontSize="18"
-                            FontWeight="SemiBold"
-                            Text="Source Data" />
-                        <Image
-                            Width="20"
-                            Height="20"
-                            Margin="10,0,0,0"
-                            Source="{SvgImage Assets/info-circle.svg}"
-                            ToolTip.Tip="Select the source data for optimization." />
-                    </StackPanel>
-                    <RadioButton
-                        Classes="fancy"
-                        Content="Summer"
-                        GroupName="SeasonGroup"
-                        IsChecked="{Binding IsSummerSelected}" />
-                    <RadioButton
-                        Classes="fancy"
-                        Content="Winter"
-                        GroupName="SeasonGroup"
-                        IsChecked="{Binding IsWinterSelected}" />
-
-                    <Border
-                        Height="1"
-                        Margin="0,10,0,10"
-                        Background="#CCCCCC"
-                        Opacity="0.5" />
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            FontSize="18"
-                            FontWeight="SemiBold"
-                            Text="Operation Mode" />
-                        <Image
-                            Width="20"
-                            Height="20"
-                            Margin="10,0,0,0"
-                            Source="{SvgImage Assets/info-circle.svg}"
-                            ToolTip.Tip="Optimize for lowest heat production costs or lowest CO₂ emissions." />
-                    </StackPanel>
-                    <RadioButton
-                        Classes="fancy"
-                        Content="Cost"
-                        GroupName="OptimizationGroup"
-                        IsChecked="{Binding IsCostSelected}" />
-                    <RadioButton
-                        Classes="fancy"
-                        Content="CO₂"
-                        GroupName="OptimizationGroup"
-                        IsChecked="{Binding IsCO2Selected}" />
-
-                    <Button
-                        Width="110"
-                        Height="50"
-                        Margin="0,20,0,0"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+                    <StackPanel
                         HorizontalAlignment="Center"
-                        Classes="FancyGreenButton"
-                        Command="{Binding OptimizeAndPlotCommand}"
-                        Content="Optimize" />
-                </StackPanel>
+                        VerticalAlignment="Top"
+                        Spacing="10">
+
+                        <TextBlock
+                            Margin="0,0,0,10"
+                            FontSize="22"
+                            FontWeight="Bold"
+                            Text="Optimization Settings" />
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Text="Preset" />
+                            <Image
+                                Width="20"
+                                Height="20"
+                                Margin="10,0,0,0"
+                                Source="{SvgImage Assets/info-circle.svg}"
+                                ToolTip.Tip="Select a preset configuration." />
+                        </StackPanel>
+
+                        <ItemsControl ItemsSource="{Binding Presets}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="10" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton
+                                        Classes="fancy"
+                                        Command="{Binding SelectPresetCommand}"
+                                        CommandParameter="{Binding}"
+                                        Content="{Binding Name}"
+                                        GroupName="PresetGroup"
+                                        IsChecked="{Binding IsPresetSelected}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Border
+                            Height="1"
+                            Margin="0,10,0,10"
+                            Background="#CCCCCC"
+                            Opacity="0.5" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Text="Source Data" />
+                            <Image
+                                Width="20"
+                                Height="20"
+                                Margin="10,0,0,0"
+                                Source="{SvgImage Assets/info-circle.svg}"
+                                ToolTip.Tip="Select the source data for optimization." />
+                        </StackPanel>
+                        <RadioButton
+                            Classes="fancy"
+                            Content="Summer"
+                            GroupName="SeasonGroup"
+                            IsChecked="{Binding IsSummerSelected}" />
+                        <RadioButton
+                            Classes="fancy"
+                            Content="Winter"
+                            GroupName="SeasonGroup"
+                            IsChecked="{Binding IsWinterSelected}" />
+
+                        <Border
+                            Height="1"
+                            Margin="0,10,0,10"
+                            Background="#CCCCCC"
+                            Opacity="0.5" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Text="Operation Mode" />
+                            <Image
+                                Width="20"
+                                Height="20"
+                                Margin="10,0,0,0"
+                                Source="{SvgImage Assets/info-circle.svg}"
+                                ToolTip.Tip="Optimize for lowest heat production costs or lowest CO₂ emissions." />
+                        </StackPanel>
+                        <RadioButton
+                            Classes="fancy"
+                            Content="Cost"
+                            GroupName="OptimizationGroup"
+                            IsChecked="{Binding IsCostSelected}" />
+                        <RadioButton
+                            Classes="fancy"
+                            Content="CO₂"
+                            GroupName="OptimizationGroup"
+                            IsChecked="{Binding IsCO2Selected}" />
+
+                        <Button
+                            Width="110"
+                            Height="50"
+                            Margin="0,20,0,0"
+                            HorizontalAlignment="Center"
+                            Classes="FancyGreenButton"
+                            Command="{Binding OptimizeAndPlotCommand}"
+                            Content="Optimize" />
+                    </StackPanel>
+                </ScrollViewer>
 
                 <Button
                     Grid.Column="0"
