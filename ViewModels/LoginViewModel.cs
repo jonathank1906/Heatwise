@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Sem2Proj.Views;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Sem2Proj.Interfaces;
 
@@ -38,17 +37,15 @@ public partial class LoginViewModel : ViewModelBase
     [RelayCommand]
     private async Task AttemptLogin()
     {
-        if (Username == "admin" && Password == "admin") // You can replace this with actual user auth later
+        if (Username == "1" && Password == "1")
         {
-            Debug.WriteLine("Login success.");
             OpenMainApplication();
         }
         else
         {
             ErrorMessage = "Invalid username or password.";
-            await Task.Delay(2000);
-            ErrorMessage = "Invalid username or password."; // Reset error message after 2 seconds
-            Debug.WriteLine("Login failed.");
+            await Task.Delay(3000);
+            ErrorMessage = ""; 
         }
     }
 

@@ -14,27 +14,11 @@ public class Optimizer
     {
         _assetManager = assetManager;
         _sourceDataManager = sourceDataManager;
-
         Debug.WriteLine($"Optimizer initialized with scenario: {_assetManager.CurrentScenarioName}");
-
     }
 
-    private void LogCurrentAssets()
-    {
-        Debug.WriteLine($"Current Assets ({_assetManager.CurrentAssets.Count}):");
-        foreach (var asset in _assetManager.CurrentAssets)
-        {
-            Debug.WriteLine($"[{asset.Name}] " +
-                          $"MaxHeat: {asset.MaxHeat} MW, " +
-                          $"Cost: {asset.ProductionCosts:C}/h, " +
-                          $"Emissions: {asset.Emissions} kg/MWh, " +
-                          $"Electricity: {(asset.IsElectricBoiler ? "Consumer" : asset.IsGenerator ? "Producer" : "None")}");
-        }
-    }
 
-    public List<HeatProductionResult> CalculateOptimalHeatProduction(
-        List<(DateTime timestamp, double heatDemand)> heatDemandIntervals,
-        OptimisationMode optimisationMode)
+    public List<HeatProductionResult> CalculateOptimalHeatProduction(List<(DateTime timestamp, double heatDemand)> heatDemandIntervals, OptimisationMode optimisationMode)
     {
         Debug.WriteLine($"Optimizing with {_assetManager.CurrentAssets.Count} assets in current scenario");
 
@@ -55,10 +39,7 @@ public class Optimizer
         return results;
     }
 
-    private IEnumerable<HeatProductionResult> ProcessInterval(
-        (DateTime timestamp, double heatDemand) interval,
-        OptimisationMode optimisationMode,
-        List<(DateTime timestamp, double value)> electricityPriceData)
+    private IEnumerable<HeatProductionResult> ProcessInterval((DateTime timestamp, double heatDemand) interval, OptimisationMode optimisationMode, List<(DateTime timestamp, double value)> electricityPriceData)
     {
         var (timestamp, heatDemand) = interval;
 
@@ -74,27 +55,9 @@ public class Optimizer
             optimisationMode,
             electricityPrice);
     }
-    private void LogOptimizationStart(OptimisationMode optimisationMode, int intervalCount)
-    {
-        Debug.WriteLine($"\n=== Starting optimization ===");
-        Debug.WriteLine($"Mode: {optimisationMode}");
-        Debug.WriteLine($"Time intervals: {intervalCount}");
-        Debug.WriteLine($"Available assets: {_assetManager.CurrentAssets.Count}");
-        LogCurrentAssets();
-    }
 
-    private void LogOptimizationCompletion(int resultCount)
-    {
-        Debug.WriteLine($"\n=== Optimization completed ===");
-        Debug.WriteLine($"Total results: {resultCount}");
-    }
 
-    private List<HeatProductionResult> ProcessTimeInterval(
-      DateTime timestamp,
-      double heatDemand,
-      List<AssetModel> assets,
-      OptimisationMode optimisationMode,
-      double electricityPrice)
+    private List<HeatProductionResult> ProcessTimeInterval(DateTime timestamp, double heatDemand, List<AssetModel> assets, OptimisationMode optimisationMode, double electricityPrice)
     {
         var results = new List<HeatProductionResult>();
         double remainingDemand = heatDemand;
@@ -105,19 +68,17 @@ public class Optimizer
         Debug.WriteLine($"Initial demand: {heatDemand} MW");
 
         // Filter assets to include only active ones
-        var activeAssets = assets.Where(a => a.IsActive).ToList();
+        var activeAssets = assets.Where(a => a.IsActive && a.HeatProduction > 0).ToList();
 
         // Prioritize assets based on the optimization mode
         var prioritizedAssets = optimisationMode switch
         {
             OptimisationMode.Cost => activeAssets
-                .Where(a => a.HeatProduction > 0)
                 .OrderBy(a => a.CostPerMW + (a.IsElectricBoiler ? electricityPrice : 0)) // Include electricity price for consumers
                 .ToList(),
 
             OptimisationMode.CO2 => activeAssets
-                .Where(a => a.HeatProduction > 0)
-                .OrderBy(a => a.EmissionsPerMW)
+                .OrderBy(a => a.EmissionsPerMW) // No electricity adjustment for CO2 mode
                 .ToList(),
 
             _ => throw new ArgumentOutOfRangeException(nameof(optimisationMode))
@@ -125,7 +86,7 @@ public class Optimizer
 
         foreach (var asset in prioritizedAssets)
         {
-            if (remainingDemand <= 0) break;
+            if (remainingDemand <= 0) break; // Stop if heat demand is met
 
             double allocation = Math.Min(asset.HeatProduction, remainingDemand);
             remainingDemand -= allocation;
@@ -133,16 +94,19 @@ public class Optimizer
             double productionCost = allocation * asset.CostPerMW;
             double electricityProfitOrExpense = 0;
 
-            // Adjust cost for electricity producers or consumers
-            if (asset.IsElectricBoiler)
+            // Adjust cost for electricity producers or consumers (only for Cost mode)
+            if (optimisationMode == OptimisationMode.Cost)
             {
-                electricityProfitOrExpense = allocation * electricityPrice; // Expense for consuming electricity
-                productionCost += electricityProfitOrExpense;
-            }
-            else if (asset.IsGenerator)
-            {
-                electricityProfitOrExpense = -allocation * electricityPrice; // Profit for producing electricity
-                productionCost += electricityProfitOrExpense;
+                if (asset.IsElectricBoiler)
+                {
+                    electricityProfitOrExpense = allocation * electricityPrice; // Expense for consuming electricity
+                    productionCost += electricityProfitOrExpense;
+                }
+                else if (asset.IsGenerator)
+                {
+                    electricityProfitOrExpense = -allocation * electricityPrice; // Profit for producing electricity
+                    productionCost += electricityProfitOrExpense;
+                }
             }
 
             var result = new HeatProductionResult
@@ -162,10 +126,19 @@ public class Optimizer
             Debug.WriteLine($"- Allocated {allocation} MW from {asset.Name} " +
                             $"(Cost: {result.ProductionCost:C}, Emissions: {result.Emissions} kg, Electricity Impact: {electricityProfitOrExpense:C}, PresetId: {result.PresetId})");
         }
-
         if (remainingDemand > 0)
         {
             Debug.WriteLine($"WARNING: Unmet demand of {remainingDemand} MW");
+
+            results.Add(new HeatProductionResult
+            {
+                AssetName = "Unmet Demand",
+                HeatProduced = remainingDemand,
+                ProductionCost = 0,
+                Emissions = 0,
+                Timestamp = timestamp,
+                PresetId = -1 // Special ID for unmet demand
+            });
         }
 
         // Add interval summary
@@ -181,4 +154,37 @@ public class Optimizer
 
         return results;
     }
+
+    // --------------------------------------------------------------------------------------------------
+    // Logging methods for debugging and tracking optimization process
+    // --------------------------------------------------------------------------------------------------
+    private void LogCurrentAssets()
+    {
+        Debug.WriteLine($"Current Assets ({_assetManager.CurrentAssets.Count}):");
+        foreach (var asset in _assetManager.CurrentAssets)
+        {
+            Debug.WriteLine($"[{asset.Name}] " +
+                          $"MaxHeat: {asset.MaxHeat} MW, " +
+                          $"Cost: {asset.ProductionCosts:C}/h, " +
+                          $"Emissions: {asset.Emissions} kg/MWh, " +
+                          $"Electricity: {(asset.IsElectricBoiler ? "Consumer" : asset.IsGenerator ? "Producer" : "None")}");
+        }
+    }
+
+    private void LogOptimizationStart(OptimisationMode optimisationMode, int intervalCount)
+    {
+        Debug.WriteLine($"\n=== Starting optimization ===");
+        Debug.WriteLine($"Mode: {optimisationMode}");
+        Debug.WriteLine($"Time intervals: {intervalCount}");
+        Debug.WriteLine($"Available assets: {_assetManager.CurrentAssets.Count}");
+        LogCurrentAssets();
+    }
+
+    private void LogOptimizationCompletion(int resultCount)
+    {
+        Debug.WriteLine($"\n=== Optimization completed ===");
+        Debug.WriteLine($"Total results: {resultCount}");
+    }
+
 }
+

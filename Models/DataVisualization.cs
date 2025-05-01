@@ -48,10 +48,7 @@ public class DataVisualization
         }
     }
 
-    public void RefreshMachineColors()
-    {
-        InitializeMachineColors();
-    }
+
     public void PlotHeatProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
         var plt = optimizationPlot.Plot;
@@ -68,8 +65,19 @@ public class DataVisualization
         var addedToLegend = new HashSet<string>();
         for (int i = 0; i < groupedResults.Count; i++)
         {
+            // Separate unmet demand from regular assets
+            var unmetDemand = groupedResults[i].FirstOrDefault(r => r.AssetName == "Unmet Demand");
+            var regularAssets = groupedResults[i].Where(r => r.AssetName != "Unmet Demand").ToList();
+
+            // Order regular assets by heat produced (descending) so largest contributions are at bottom
+            var orderedAssets = regularAssets
+                .OrderByDescending(r => r.HeatProduced)
+                .ToList();
+
             double currentBase = 0;
-            foreach (var result in groupedResults[i].OrderBy(r => r.AssetName))
+
+            // Process regular assets from largest to smallest
+            foreach (var result in orderedAssets)
             {
                 var possibleKey = $"{result.AssetName} (ID: {result.PresetId})";
                 Debug.WriteLine($"[PlotHeatProduction] Checking for key: {possibleKey}");
@@ -105,9 +113,30 @@ public class DataVisualization
                     Debug.WriteLine($"[PlotHeatProduction] No color found for key: {possibleKey}");
                 }
             }
+
+            // Add unmet demand on very top if it exists
+            if (unmetDemand != null)
+            {
+                var unmetColor = new ScottPlot.Color(255, 0, 0, 180); // Semi-transparent red
+                plt.Add.Bar(new Bar
+                {
+                    Position = i,
+                    ValueBase = currentBase,
+                    Value = currentBase + unmetDemand.HeatProduced,
+                    FillColor = unmetColor
+                });
+
+                if (addedToLegend.Add("Unmet Demand"))
+                {
+                    plt.Legend.ManualItems.Add(new LegendItem
+                    {
+                        LabelText = "Unmet Demand",
+                        FillColor = unmetColor
+                    });
+                }
+            }
         }
 
-        // Add heat demand line to the plot
         if (heatDemandData != null && heatDemandData.Any())
         {
             var orderedDemand = heatDemandData
@@ -143,7 +172,6 @@ public class DataVisualization
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
     }
-
     public void PlotElectricityPrice(AvaPlot optimizationPlot, List<double> prices)
     {
         var plt = optimizationPlot.Plot;
