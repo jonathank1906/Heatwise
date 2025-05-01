@@ -3,6 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+    xmlns:anim="https://github.com/whistyun/AnimatedImage.Avalonia"
     xmlns:conv="clr-namespace:Sem2Proj.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -410,6 +411,7 @@
                                                             FontSize="16"
                                                             FontWeight="Bold"
                                                             Text="Hold shift to select multiple days" />
+                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\sad.gif" />
                                                     </StackPanel>
                                                 </Flyout>
                                             </Button.Flyout>
@@ -512,6 +514,7 @@
                                             FontSize="16"
                                             FontWeight="Bold"
                                             Text="Scroll into the graph to zoom in and out" />
+                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\sad.gif" />
                                     </StackPanel>
                                 </Flyout>
                             </Button.Flyout>

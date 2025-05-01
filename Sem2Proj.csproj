@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AnimatedImage.Avalonia" Version="2.0.0" />
     <PackageReference Include="Avalonia" Version="11.2.1" />
     <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.1" />
@@ -48,5 +49,6 @@
      <Content Include="Data/*">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> 
     </Content> 
+  <AvaloniaResource Include="Assets\sad.gif" />
   </ItemGroup>
 </Project>
