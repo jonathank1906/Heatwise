@@ -27,25 +27,25 @@ public partial class OptimizerView : UserControl
     private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
     private List<HeatProductionResult>? _currentOptimizationResults;
     private List<HeatProductionResult>? _currentFilteredResults;
-  private DataVisualization _dataVisualization;
-public AssetManager AssetManager { get; }
+    private DataVisualization _dataVisualization;
+    public AssetManager AssetManager { get; }
     public OptimizerView()
     {
         InitializeComponent();
         InitializeFlyoutEvents();
-        
+
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
 
         DataContextChanged += (sender, e) =>
         {
             if (DataContext is OptimizerViewModel vm)
             {
-                 _dataVisualization = new DataVisualization(vm.AssetManager);
+                _dataVisualization = new DataVisualization(vm.AssetManager);
                 vm.UpdateXAxisTicks += (timestamps) =>
-    {
-        _dataVisualization.SetXAxisTicks(OptimizationPlot.Plot, timestamps);
-        OptimizationPlot.Refresh();
-    };
+                {
+                    _dataVisualization.SetXAxisTicks(OptimizationPlot.Plot, timestamps);
+                    OptimizationPlot.Refresh();
+                };
                 vm.PlotOptimizationResults = (results, demand) =>
                 {
                     _currentOptimizationResults = results;
@@ -115,6 +115,25 @@ public AssetManager AssetManager { get; }
 
                     InitializeCalendar(dummyDemand); // Initialize calendar with emissions data timestamps
                     _dataVisualization.PlotEmissions(OptimizationPlot, results);
+                    PlotCrosshair(results, dummyDemand);
+                };
+                vm.PlotElectricityConsumption = (results) =>
+                {
+                    _currentFilteredResults = results;
+                    var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
+
+                    InitializeCalendar(dummyDemand); // Initialize calendar with electricity consumption data timestamps
+                    _dataVisualization.PlotElectricityConsumption(OptimizationPlot, results);
+                    PlotCrosshair(results, dummyDemand);
+                };
+
+                vm.PlotElectricityProduction = (results) =>
+                {
+                    _currentFilteredResults = results;
+                    var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
+
+                    InitializeCalendar(dummyDemand); // Initialize calendar with electricity production data timestamps
+                    _dataVisualization.PlotElectricityProduction(OptimizationPlot, results);
                     PlotCrosshair(results, dummyDemand);
                 };
             }
@@ -203,7 +222,7 @@ public AssetManager AssetManager { get; }
                         }
 
                         _hoverCrosshair.HorizontalLine.Position = heatDemand;
-                        _hoverCrosshair.VerticalLine.Position = barIndex; // Keep offset for HeatProduction
+                        _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
                     case OptimizerViewModel.GraphType.ElectricityPrices:
@@ -212,7 +231,7 @@ public AssetManager AssetManager { get; }
 
                         tooltip += $"Electricity Price: {electricityPrice:F2} DKK\n";
                         _hoverCrosshair.HorizontalLine.Position = electricityPrice;
-                        _hoverCrosshair.VerticalLine.Position = barIndex; // No offset
+                        _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
                     case OptimizerViewModel.GraphType.ProductionCosts:
@@ -222,7 +241,7 @@ public AssetManager AssetManager { get; }
 
                         tooltip += $"Production Cost: {productionCost:F2} DKK\n";
                         _hoverCrosshair.HorizontalLine.Position = productionCost;
-                        _hoverCrosshair.VerticalLine.Position = barIndex; // No offset
+                        _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
                     case OptimizerViewModel.GraphType.CO2Emissions:
@@ -232,12 +251,32 @@ public AssetManager AssetManager { get; }
 
                         tooltip += $"CO2 Emissions: {emissions:F2} kg\n";
                         _hoverCrosshair.HorizontalLine.Position = emissions;
-                        _hoverCrosshair.VerticalLine.Position = barIndex; // No offset
+                        _hoverCrosshair.VerticalLine.Position = barIndex;
+                        break;
+
+                    case OptimizerViewModel.GraphType.ElectricityConsumption:
+                        var electricityConsumption = _currentFilteredResults
+                            .Where(r => r.Timestamp == timestamp)
+                            .Sum(r => r.HeatProduced < 0 ? Math.Abs(r.HeatProduced) : 0);
+
+                        tooltip += $"Electricity Consumption: {electricityConsumption:F2} MWh\n";
+                        _hoverCrosshair.HorizontalLine.Position = electricityConsumption;
+                        _hoverCrosshair.VerticalLine.Position = barIndex;
+                        break;
+
+                    case OptimizerViewModel.GraphType.ElectricityProduction:
+                        var electricityProduction = _currentFilteredResults
+                            .Where(r => r.Timestamp == timestamp)
+                            .Sum(r => r.ElectricityProduction);
+
+                        tooltip += $"Electricity Production: {electricityProduction:F2} MWh\n";
+                        _hoverCrosshair.HorizontalLine.Position = electricityProduction;
+                        _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
                     default:
                         tooltip += "No data available for this graph type.\n";
-                        _hoverCrosshair.VerticalLine.Position = barIndex; // No offset
+                        _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
                 }
 

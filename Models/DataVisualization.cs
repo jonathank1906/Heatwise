@@ -80,11 +80,11 @@ public class DataVisualization
             foreach (var result in orderedAssets)
             {
                 var possibleKey = $"{result.AssetName} (ID: {result.PresetId})";
-              //  Debug.WriteLine($"[PlotHeatProduction] Checking for key: {possibleKey}");
+                //  Debug.WriteLine($"[PlotHeatProduction] Checking for key: {possibleKey}");
 
                 if (_machineColors.TryGetValue(possibleKey, out var color))
                 {
-                //    Debug.WriteLine($"[PlotHeatProduction] Found color for key: {possibleKey}, Color: {color}");
+                    //    Debug.WriteLine($"[PlotHeatProduction] Found color for key: {possibleKey}, Color: {color}");
 
                     plt.Add.Bar(new Bar
                     {
@@ -93,7 +93,7 @@ public class DataVisualization
                         Value = currentBase + result.HeatProduced,
                         FillColor = color
                     });
-                //    Debug.WriteLine($"[PlotHeatProduction] Added bar for {result.AssetName} at position {i} with value {result.HeatProduced}");
+                    //    Debug.WriteLine($"[PlotHeatProduction] Added bar for {result.AssetName} at position {i} with value {result.HeatProduced}");
 
                     currentBase += result.HeatProduced;
 
@@ -105,12 +105,12 @@ public class DataVisualization
                             LabelText = result.AssetName,
                             FillColor = color
                         });
-                 //       Debug.WriteLine($"[PlotHeatProduction] Added legend item for {result.AssetName}");
+                        //       Debug.WriteLine($"[PlotHeatProduction] Added legend item for {result.AssetName}");
                     }
                 }
                 else
                 {
-                //    Debug.WriteLine($"[PlotHeatProduction] No color found for key: {possibleKey}");
+                    //    Debug.WriteLine($"[PlotHeatProduction] No color found for key: {possibleKey}");
                 }
             }
 
@@ -183,6 +183,47 @@ public class DataVisualization
         plot.LineWidth = 2;
         plot.MarkerSize = 5;
 
+        // Add max line
+        double max = prices.Max();
+        var maxLine = plt.Add.HorizontalLine(max);
+        maxLine.Color = ScottPlot.Color.FromHex("006400");
+        maxLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add median line
+        double median = prices.OrderBy(p => p).ElementAt(prices.Count / 2);
+        var medianLine = plt.Add.HorizontalLine(median);
+        medianLine.Color = ScottPlot.Color.FromHex("00800040");
+        medianLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add min line
+        double min = prices.Min();
+        var minLine = plt.Add.HorizontalLine(min);
+        minLine.Color = ScottPlot.Color.FromHex("006400");
+        minLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add legend items for max, median, and min
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Max",
+            LineColor = ScottPlot.Color.FromHex("006400"),
+            LineWidth = 2
+        });
+
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Median",
+            LineColor = ScottPlot.Color.FromHex("00800040"),
+            LineWidth = 2
+        });
+
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Min",
+            LineColor = ScottPlot.Color.FromHex("006400"),
+            LineWidth = 2
+        });
+
+        // Add legend item for electricity price
         plt.Legend.ManualItems.Add(new LegendItem
         {
             LabelText = "Electricity Price",
@@ -210,20 +251,62 @@ public class DataVisualization
             })
             .ToList();
 
+        double[] timestamps = groupedResults.Select((g, i) => (double)i).ToArray();
+        double[] costs = groupedResults.Select(g => g.TotalCost).ToArray();
+
+        // Plot the production costs
+        var costPlot = plt.Add.Scatter(timestamps, costs);
+        costPlot.Color = Colors.Orange;
+        costPlot.LineWidth = 2;
+        costPlot.MarkerSize = 5;
+
+        // Add max line
+        double max = costs.Max();
+        var maxLine = plt.Add.HorizontalLine(max);
+        maxLine.Color = ScottPlot.Color.FromHex("006400");
+        maxLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add median line
+        double median = costs.OrderBy(c => c).ElementAt(costs.Length / 2);
+        var medianLine = plt.Add.HorizontalLine(median);
+        medianLine.Color = ScottPlot.Color.FromHex("00800040");
+        medianLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add min line
+        double min = costs.Min();
+        var minLine = plt.Add.HorizontalLine(min);
+        minLine.Color = ScottPlot.Color.FromHex("8B0000");
+        minLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add legend items for max, median, and min
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Max",
+            LineColor = ScottPlot.Color.FromHex("006400"),
+            LineWidth = 2
+        });
+
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Median",
+            LineColor = ScottPlot.Color.FromHex("00800040"),
+            LineWidth = 2
+        });
+
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Min",
+            LineColor = ScottPlot.Color.FromHex("8B0000"),
+            LineWidth = 2
+        });
+
+        // Add legend item for production costs
         plt.Legend.ManualItems.Add(new LegendItem
         {
             LabelText = "Production Costs",
             LineColor = Colors.Orange,
             LineWidth = 2
         });
-
-        double[] timestamps = groupedResults.Select((g, i) => (double)i).ToArray();
-        double[] costs = groupedResults.Select(g => g.TotalCost).ToArray();
-
-        var costPlot = plt.Add.Scatter(timestamps, costs);
-        costPlot.Color = Colors.Orange;
-        costPlot.LineWidth = 2;
-        costPlot.MarkerSize = 5;
 
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
@@ -248,10 +331,145 @@ public class DataVisualization
         double[] timestamps = groupedResults.Select((g, i) => (double)i).ToArray();
         double[] emissions = groupedResults.Select(g => g.TotalEmissions).ToArray();
 
+        // Plot the emissions
         var emissionsPlot = plt.Add.Scatter(timestamps, emissions);
         emissionsPlot.Color = Colors.Red;
         emissionsPlot.LineWidth = 2;
         emissionsPlot.MarkerSize = 5;
+
+        // Add max line
+        double max = emissions.Max();
+        var maxLine = plt.Add.HorizontalLine(max);
+        maxLine.Color = ScottPlot.Color.FromHex("006400");
+        maxLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add median line
+        double median = emissions.OrderBy(e => e).ElementAt(emissions.Length / 2);
+        var medianLine = plt.Add.HorizontalLine(median);
+        medianLine.Color = ScottPlot.Color.FromHex("00800040");
+        medianLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add min line
+        double min = emissions.Min();
+        var minLine = plt.Add.HorizontalLine(min);
+        minLine.Color = ScottPlot.Color.FromHex("8B0000");
+        minLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add legend items for max, median, and min
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Max",
+            LineColor = ScottPlot.Color.FromHex("006400"),
+            LineWidth = 2
+        });
+
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Median",
+            LineColor = ScottPlot.Color.FromHex("00800040"),
+            LineWidth = 2
+        });
+
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Min",
+            LineColor = ScottPlot.Color.FromHex("8B0000"),
+            LineWidth = 2
+        });
+
+        // Add legend item for emissions
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Emissions",
+            LineColor = Colors.Red,
+            LineWidth = 2
+        });
+
+        plt.Axes.Margins(bottom: 0.02, top: 0.1);
+        optimizationPlot.Refresh();
+    }
+
+    public void PlotElectricityConsumption(AvaPlot optimizationPlot, List<HeatProductionResult> results)
+    {
+        var plt = optimizationPlot.Plot;
+        InitializePlot(plt, "Electricity Consumption", "", "Electricity (MWh)");
+
+        // Group results by timestamp and calculate total electricity consumption per timestamp
+        var groupedResults = results
+        .GroupBy(r => r.Timestamp)
+        .OrderBy(g => g.Key)
+        .Select(g => new
+        {
+            Timestamp = g.Key,
+            TotalConsumption = g.Sum(r => r.ElectricityConsumption) // Use the ElectricityConsumption property
+        })
+        .ToList();
+
+        double[] timestamps = groupedResults.Select((g, i) => (double)i).ToArray();
+        double[] consumption = groupedResults.Select(g => g.TotalConsumption).ToArray();
+
+        // Plot the electricity consumption
+        var consumptionPlot = plt.Add.Scatter(timestamps, consumption);
+        consumptionPlot.Color = Colors.Blue;
+        consumptionPlot.LineWidth = 2;
+        consumptionPlot.MarkerSize = 5;
+
+        // Add max line
+        double max = consumption.Max();
+        var maxLine = plt.Add.HorizontalLine(max);
+        maxLine.Color = ScottPlot.Color.FromHex("006400");
+        maxLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add legend items
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Electricity Consumption",
+            LineColor = Colors.Blue,
+            LineWidth = 2
+        });
+
+        plt.Axes.Margins(bottom: 0.02, top: 0.1);
+        optimizationPlot.Refresh();
+    }
+
+    public void PlotElectricityProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results)
+    {
+        var plt = optimizationPlot.Plot;
+        InitializePlot(plt, "Electricity Production", "", "Electricity (MWh)");
+
+        // Group results by timestamp and calculate total electricity production per timestamp
+        var groupedResults = results
+            .GroupBy(r => r.Timestamp)
+            .OrderBy(g => g.Key)
+            .Select(g => new
+            {
+                Timestamp = g.Key,
+                TotalProduction = g.Sum(r => r.ElectricityProduction) // Use the ElectricityProduction property
+            })
+            .ToList();
+
+        double[] timestamps = groupedResults.Select((g, i) => (double)i).ToArray();
+        double[] production = groupedResults.Select(g => g.TotalProduction).ToArray();
+
+        // Plot the electricity production
+        var productionPlot = plt.Add.Scatter(timestamps, production);
+        productionPlot.Color = Colors.Purple;
+        productionPlot.LineWidth = 2;
+        productionPlot.MarkerSize = 5;
+
+        // Add max line
+        double max = production.Max();
+        var maxLine = plt.Add.HorizontalLine(max);
+        maxLine.Color = ScottPlot.Color.FromHex("800080"); // Purple
+        maxLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+        // Add legend items
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Electricity Production",
+            LineColor = Colors.Purple,
+            LineWidth = 2
+        });
 
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();

@@ -101,6 +101,8 @@ public partial class OptimizerViewModel : ViewModelBase
     public Action<List<(DateTime timestamp, double price)>>? PlotElectricityPrices { get; set; }
     public Action<List<HeatProductionResult>>? PlotExpenses { get; set; }
     public Action<List<HeatProductionResult>>? PlotEmissions { get; set; }
+    public Action<List<HeatProductionResult>>? PlotElectricityConsumption { get; set; }
+    public Action<List<HeatProductionResult>>? PlotElectricityProduction { get; set; }
 
 
     public enum GraphType
@@ -251,6 +253,18 @@ public partial class OptimizerViewModel : ViewModelBase
                         PlotEmissions?.Invoke(OptimizationResults);
                     }
                     break;
+                case GraphType.ElectricityConsumption:
+                    if (OptimizationResults != null)
+                    {
+                        PlotElectricityConsumption?.Invoke(OptimizationResults);
+                    }
+                    break;
+                case GraphType.ElectricityProduction:
+                    if (OptimizationResults != null)
+                    {
+                        PlotElectricityProduction?.Invoke(OptimizationResults);
+                    }
+                    break;
             }
         }
         else
@@ -337,6 +351,20 @@ public partial class OptimizerViewModel : ViewModelBase
                     PlotEmissions?.Invoke(FilteredOptimizationResults);
                 }
                 break;
+
+            case GraphType.ElectricityConsumption:
+                if (OptimizationResults != null)
+                {
+                    PlotElectricityConsumption?.Invoke(OptimizationResults);
+                }
+                break;
+
+            case GraphType.ElectricityProduction: // New case
+                if (FilteredOptimizationResults != null)
+                {
+                    PlotElectricityProduction?.Invoke(FilteredOptimizationResults);
+                }
+                break;
         }
     }
 
@@ -356,8 +384,6 @@ public partial class OptimizerViewModel : ViewModelBase
             UpdateXAxisTicks?.Invoke(timestamps); // Add this event
         }
 
-
-        // Depending on which graph is currently selected, reset that specific view
         switch (SelectedGraphType)
         {
             case GraphType.HeatProduction:
@@ -388,6 +414,19 @@ public partial class OptimizerViewModel : ViewModelBase
                 if (OptimizationResults != null)
                 {
                     PlotEmissions?.Invoke(OptimizationResults);
+                }
+                break;
+            case GraphType.ElectricityConsumption:
+                if (OptimizationResults != null)
+                {
+                    PlotElectricityConsumption?.Invoke(OptimizationResults);
+                }
+                break;
+
+            case GraphType.ElectricityProduction: 
+                if (OptimizationResults != null)
+                {
+                    PlotElectricityProduction?.Invoke(OptimizationResults);
                 }
                 break;
 

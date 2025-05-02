@@ -33,112 +33,118 @@ public class ResultDataManager
     }
 
     // Saves new results (after clearing old data)
- public void SaveResultsToDatabase(List<HeatProductionResult> results)
-{
-    try
+    public void SaveResultsToDatabase(List<HeatProductionResult> results)
     {
-        using (var conn = new SQLiteConnection(dbPath))
+        try
         {
-            conn.Open();
-            using (var transaction = conn.BeginTransaction())
+            using (var conn = new SQLiteConnection(dbPath))
             {
-                // 1. Clear old data
-                new SQLiteCommand("DELETE FROM RDM", conn).ExecuteNonQuery();
-
-                // 2. Insert new results with PresetId
-                string insertQuery = @"
-                    INSERT INTO RDM 
-                    (Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId])
-                    VALUES 
-                    (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions, @PresetId)";
-
-                using (var cmd = new SQLiteCommand(insertQuery, conn))
+                conn.Open();
+                using (var transaction = conn.BeginTransaction())
                 {
-                    foreach (var result in results)
+                    // 1. Clear old data
+                    new SQLiteCommand("DELETE FROM RDM", conn).ExecuteNonQuery();
+
+                    // 2. Insert new results with ElectricityConsumption
+                    string insertQuery = @"
+                    INSERT INTO RDM 
+                    (Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId], [Electricity Consumption], [Electricity Production])
+                    VALUES 
+                    (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions, @PresetId, @ElectricityConsumption, @ElectricityProduction)";
+
+                    using (var cmd = new SQLiteCommand(insertQuery, conn))
                     {
-                        cmd.Parameters.Clear();
-                        cmd.Parameters.AddWithValue("@Timestamp", result.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
-                        cmd.Parameters.AddWithValue("@AssetName", result.AssetName);
-                        cmd.Parameters.AddWithValue("@HeatProduced", result.HeatProduced);
-                        cmd.Parameters.AddWithValue("@ProductionCost", result.ProductionCost);
-                        cmd.Parameters.AddWithValue("@Emissions", result.Emissions);
-                        cmd.Parameters.AddWithValue("@PresetId", result.PresetId);
-                        cmd.ExecuteNonQuery();
+                        foreach (var result in results)
+                        {
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.AddWithValue("@Timestamp", result.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
+                            cmd.Parameters.AddWithValue("@AssetName", result.AssetName);
+                            cmd.Parameters.AddWithValue("@HeatProduced", result.HeatProduced);
+                            cmd.Parameters.AddWithValue("@ProductionCost", result.ProductionCost);
+                            cmd.Parameters.AddWithValue("@Emissions", result.Emissions);
+                            cmd.Parameters.AddWithValue("@PresetId", result.PresetId);
+                            cmd.Parameters.AddWithValue("@ElectricityConsumption", result.ElectricityConsumption);
+                            cmd.Parameters.AddWithValue("@ElectricityProduction", result.ElectricityProduction); // New parameter
+                            cmd.ExecuteNonQuery();
+                        }
                     }
+                    transaction.Commit();
+                    Debug.WriteLine("New results with ElectricityConsumption saved to RDM after clearing old data.");
                 }
-                transaction.Commit();
-                Debug.WriteLine("New results with PresetIds saved to RDM after clearing old data.");
             }
         }
-    }
-    catch (Exception ex)
-    {
-        Debug.WriteLine($"Error saving results to DB: {ex.Message}");
-    }
-}
-
-public List<HeatProductionResult> GetLatestResults()
-{
-    var results = new List<HeatProductionResult>();
-    try
-    {
-        using (var conn = new SQLiteConnection(dbPath))
+        catch (Exception ex)
         {
-            conn.Open();
-            string query = @"
-                SELECT Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId]
+            Debug.WriteLine($"Error saving results to DB: {ex.Message}");
+        }
+    }
+
+    public List<HeatProductionResult> GetLatestResults()
+    {
+        var results = new List<HeatProductionResult>();
+        try
+        {
+            using (var conn = new SQLiteConnection(dbPath))
+            {
+                conn.Open();
+                string query = @"
+                SELECT Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId], [Electricity Consumption], [Electricity Production]
                 FROM RDM
                 ORDER BY Timestamp";
 
-            using (var cmd = new SQLiteCommand(query, conn))
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
+                using (var cmd = new SQLiteCommand(query, conn))
+                using (var reader = cmd.ExecuteReader())
                 {
-                    results.Add(new HeatProductionResult
+                    while (reader.Read())
                     {
-                        Timestamp = DateTime.Parse(reader["Timestamp"].ToString()!),
-                        AssetName = reader["Asset Name"].ToString()!,
-                        HeatProduced = Convert.ToDouble(reader["Produced Heat"]),
-                        ProductionCost = Convert.ToDouble(reader["Production Cost"]),
-                        Emissions = Convert.ToDouble(reader["Emissions"]),
-                        PresetId = Convert.ToInt32(reader["PresetId"])
-                    });
+                        results.Add(new HeatProductionResult
+                        {
+                            Timestamp = DateTime.Parse(reader["Timestamp"].ToString()!),
+                            AssetName = reader["Asset Name"].ToString()!,
+                            HeatProduced = Convert.ToDouble(reader["Produced Heat"]),
+                            ProductionCost = Convert.ToDouble(reader["Production Cost"]),
+                            Emissions = Convert.ToDouble(reader["Emissions"]),
+                            PresetId = Convert.ToInt32(reader["PresetId"]),
+                            ElectricityConsumption = Convert.ToDouble(reader["Electricity Consumption"]),
+                            ElectricityProduction = Convert.ToDouble(reader["Electricity Production"]) // New field
+                        });
+                    }
                 }
             }
         }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error loading results from RDM: {ex.Message}");
+        }
+        return results;
     }
-    catch (Exception ex)
-    {
-        Debug.WriteLine($"Error loading results from RDM: {ex.Message}");
-    }
-    return results;
-}
 
-      public void ExportToCsv(string filePath)
+    public void ExportToCsv(string filePath)
     {
         try
         {
             var results = GetLatestResults();
-            
+
             using (var writer = new StreamWriter(filePath))
             {
                 // Write CSV header
-                writer.WriteLine("Timestamp,Asset Name,Produced Heat (MW),Production Cost (DKK),Emissions (kg CO2)");
-                
+                writer.WriteLine("Timestamp,Asset Name,Produced Heat (MW),Production Cost (DKK),Emissions (kg CO2),Electricity Consumption (MWh),Electricity Production (MWh)");
+
                 // Write data rows
                 foreach (var result in results)
                 {
                     writer.WriteLine(
-                        $"{result.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")}," +
-                        $"{EscapeCsvField(result.AssetName)}," +
-                        $"{result.HeatProduced.ToString(CultureInfo.InvariantCulture)}," +
-                        $"{result.ProductionCost.ToString(CultureInfo.InvariantCulture)}," +
-                        $"{result.Emissions.ToString(CultureInfo.InvariantCulture)}"
-                    );
+                    $"{result.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")}," +
+                    $"{EscapeCsvField(result.AssetName)}," +
+                    $"{result.HeatProduced.ToString(CultureInfo.InvariantCulture)}," +
+                    $"{result.ProductionCost.ToString(CultureInfo.InvariantCulture)}," +
+                    $"{result.Emissions.ToString(CultureInfo.InvariantCulture)}," +
+                    $"{result.ElectricityConsumption.ToString(CultureInfo.InvariantCulture)}," +
+                    $"{result.ElectricityProduction.ToString(CultureInfo.InvariantCulture)}" // New field
+                );
                 }
             }
-            
+
             Debug.WriteLine($"Successfully exported results to {filePath}");
         }
         catch (Exception ex)
@@ -164,7 +170,9 @@ public class HeatProductionResult
     public double ProductionCost { get; set; }
     public double Emissions { get; set; }
     public DateTime Timestamp { get; set; }
-    public int PresetId { get; set; } 
+    public int PresetId { get; set; }
+    public double ElectricityConsumption { get; set; }
+    public double ElectricityProduction { get; set; }
 }
 public enum OptimisationMode
 {

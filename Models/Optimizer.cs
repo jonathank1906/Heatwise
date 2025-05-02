@@ -125,6 +125,18 @@ public class Optimizer
             double netCostPerMWh = CalculateNetCost(asset, electricityPrice);
             double productionCost = allocation * netCostPerMWh;
 
+            // Calculate electricity consumption or production
+            double electricityConsumption = 0;
+            double electricityProduction = 0;
+            if (asset.ConsumesElectricity)
+            {
+                electricityConsumption = allocation * Math.Abs(asset.MaxElectricity / asset.MaxHeat);
+            }
+            else if (asset.ProducesElectricity)
+            {
+                electricityProduction = allocation * (asset.MaxElectricity / asset.MaxHeat);
+            }
+
             results.Add(new HeatProductionResult
             {
                 AssetName = asset.Name,
@@ -132,15 +144,17 @@ public class Optimizer
                 ProductionCost = productionCost,
                 Emissions = allocation * asset.EmissionsPerMW,
                 Timestamp = timestamp,
-                PresetId = asset.Id
+                PresetId = asset.Id,
+                ElectricityConsumption = electricityConsumption,
+                ElectricityProduction = electricityProduction 
             });
 
-            Debug.WriteLine($"- Allocated {allocation} MW from {asset.Name} (Net Cost: {netCostPerMWh:F2} DKK/MWh, Total Cost: {productionCost:F2} DKK)");
+            Debug.WriteLine($"- Allocated {allocation} MW from {asset.Name} (Net Cost: {netCostPerMWh:F2} DKK/MWh, Total Cost: {productionCost:F2} DKK, Electricity Consumption: {electricityConsumption:F2} MWh)");
         }
 
         if (remainingDemand > 0)
         {
-            Debug.WriteLine($"WARNING: Unmet demand of {remainingDemand} MW");
+            // Debug.WriteLine($"WARNING: Unmet demand of {remainingDemand} MW");
 
             results.Add(new HeatProductionResult
             {
@@ -149,7 +163,9 @@ public class Optimizer
                 ProductionCost = 0,
                 Emissions = 0,
                 Timestamp = timestamp,
-                PresetId = -1
+                PresetId = -1,
+                ElectricityConsumption = 0,
+                ElectricityProduction = 0
             });
         }
 

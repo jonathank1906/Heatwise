@@ -350,12 +350,14 @@
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Electricity Production"
-                                            GroupName="GraphTypeGroup" />
+                                            GroupName="GraphTypeGroup" 
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityProduction}}"/>
 
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Electricity Consumption"
-                                            GroupName="GraphTypeGroup" />
+                                            GroupName="GraphTypeGroup" 
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityConsumption}}" />
 
                                         <RadioButton
                                             Classes="fancy"
