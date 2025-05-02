@@ -670,15 +670,14 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty] private double gasConsumption;
     [ObservableProperty] private double oilConsumption;
     [ObservableProperty] private double maxElectricity;
-    [ObservableProperty] private ICommand? deleteMachineCommand; // Command to delete the machine (Configure View)
-
+    [ObservableProperty] private ICommand? deleteMachineCommand;
     [ObservableProperty] private string originalName = string.Empty;
-
+    [ObservableProperty] public double netCost;
     [ObservableProperty] private string color;
     public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
 
-    public bool IsElectricBoiler => MaxElectricity < 0;
-    public bool IsGenerator => MaxElectricity > 0;
+    public bool ConsumesElectricity => MaxElectricity < 0;
+    public bool ProducesElectricity => MaxElectricity > 0;
     public double CostPerMW => ProductionCosts;
     public double EmissionsPerMW => MaxHeat > 0 ? Emissions / MaxHeat : 0;
 
@@ -686,13 +685,13 @@ public partial class AssetModel : ObservableObject
     private ObservableCollection<PresetSelectionItem> _presetSelections = new();
 
     [ObservableProperty]
-    private bool isActive; // Represents whether the machine is active in a preset
+    private bool isActive; 
 
     [ObservableProperty]
-    private double heatProduction; // Represents the current heat production of the machine
+    private double heatProduction; 
 
     [ObservableProperty]
-    private ObservableCollection<AssetModel> machineModels = new(); // Represents the collection of machines in the preset
+    private ObservableCollection<AssetModel> machineModels = new();
 
     public void InitializePresetSelections(IEnumerable<Preset> allPresets)
     {

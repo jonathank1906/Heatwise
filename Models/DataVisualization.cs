@@ -80,11 +80,11 @@ public class DataVisualization
             foreach (var result in orderedAssets)
             {
                 var possibleKey = $"{result.AssetName} (ID: {result.PresetId})";
-                Debug.WriteLine($"[PlotHeatProduction] Checking for key: {possibleKey}");
+              //  Debug.WriteLine($"[PlotHeatProduction] Checking for key: {possibleKey}");
 
                 if (_machineColors.TryGetValue(possibleKey, out var color))
                 {
-                    Debug.WriteLine($"[PlotHeatProduction] Found color for key: {possibleKey}, Color: {color}");
+                //    Debug.WriteLine($"[PlotHeatProduction] Found color for key: {possibleKey}, Color: {color}");
 
                     plt.Add.Bar(new Bar
                     {
@@ -93,7 +93,7 @@ public class DataVisualization
                         Value = currentBase + result.HeatProduced,
                         FillColor = color
                     });
-                    Debug.WriteLine($"[PlotHeatProduction] Added bar for {result.AssetName} at position {i} with value {result.HeatProduced}");
+                //    Debug.WriteLine($"[PlotHeatProduction] Added bar for {result.AssetName} at position {i} with value {result.HeatProduced}");
 
                     currentBase += result.HeatProduced;
 
@@ -105,12 +105,12 @@ public class DataVisualization
                             LabelText = result.AssetName,
                             FillColor = color
                         });
-                        Debug.WriteLine($"[PlotHeatProduction] Added legend item for {result.AssetName}");
+                 //       Debug.WriteLine($"[PlotHeatProduction] Added legend item for {result.AssetName}");
                     }
                 }
                 else
                 {
-                    Debug.WriteLine($"[PlotHeatProduction] No color found for key: {possibleKey}");
+                //    Debug.WriteLine($"[PlotHeatProduction] No color found for key: {possibleKey}");
                 }
             }
 

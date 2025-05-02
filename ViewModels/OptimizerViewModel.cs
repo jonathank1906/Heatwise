@@ -14,7 +14,7 @@ namespace Sem2Proj.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
-     public AssetManager AssetManager => _assetManager;
+    public AssetManager AssetManager => _assetManager;
     [ObservableProperty]
     private bool _hasOptimized = false;
 
@@ -74,7 +74,7 @@ public partial class OptimizerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isOpening;
 
-   public ObservableCollection<Preset> Presets => _assetManager.Presets;
+    public ObservableCollection<Preset> Presets => _assetManager.Presets;
 
     // Scenario radio buttons -------------------------------
     [ObservableProperty]
@@ -121,59 +121,59 @@ public partial class OptimizerViewModel : ViewModelBase
         SwitchGraph(value);
     }
 
- public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager)
-{
-    _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
-    _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
-    _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
-    _optimizer = new Optimizer(_assetManager, _sourceDataManager);
-
-    // Set up the selection callback for each preset
-    foreach (var preset in _assetManager.Presets)
+    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager)
     {
-        preset.SetSelectPresetAction(SelectPreset);
-    }
+        _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
+        _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
+        _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
+        _optimizer = new Optimizer(_assetManager, _sourceDataManager);
 
-    // Select first preset by default if available
-    if (_assetManager.Presets.Count > 0)
-    {
-        _assetManager.Presets[0].SetIsSelectedInternal(true);
-        _assetManager.SetScenario(0);
-    }
-
-    // Subscribe to preset changes
-    _assetManager.Presets.CollectionChanged += (s, e) => 
-    {
-        OnPropertyChanged(nameof(Presets));
-        if (e.NewItems != null)
+        // Set up the selection callback for each preset
+        foreach (var preset in _assetManager.Presets)
         {
-            foreach (Preset preset in e.NewItems)
-            {
-                preset.SetSelectPresetAction(SelectPreset);
-            }
+            preset.SetSelectPresetAction(SelectPreset);
         }
-    };
-}
 
-[RelayCommand]
-private void SelectPreset(Preset preset)
-{
-    //if (preset == null) return;
+        // Select first preset by default if available
+        if (_assetManager.Presets.Count > 0)
+        {
+            _assetManager.Presets[0].SetIsSelectedInternal(true);
+            _assetManager.SetScenario(0);
+        }
 
-    // Find the index of the selected preset
-    var presetIndex = _assetManager.Presets.IndexOf(preset);
-    if (presetIndex >= 0)
-    {
-        _assetManager.SetScenario(presetIndex);
-
-        // // Update selection states using internal method to prevent loops
-        // foreach (var p in _assetManager.Presets)
-        // {
-        //     p.SetIsSelectedInternal(false);
-        // }
-        // preset.SetIsSelectedInternal(true);
+        // Subscribe to preset changes
+        _assetManager.Presets.CollectionChanged += (s, e) =>
+        {
+            OnPropertyChanged(nameof(Presets));
+            if (e.NewItems != null)
+            {
+                foreach (Preset preset in e.NewItems)
+                {
+                    preset.SetSelectPresetAction(SelectPreset);
+                }
+            }
+        };
     }
-}
+
+    [RelayCommand]
+    private void SelectPreset(Preset preset)
+    {
+        //if (preset == null) return;
+
+        // Find the index of the selected preset
+        var presetIndex = _assetManager.Presets.IndexOf(preset);
+        if (presetIndex >= 0)
+        {
+            _assetManager.SetScenario(presetIndex);
+
+            // // Update selection states using internal method to prevent loops
+            // foreach (var p in _assetManager.Presets)
+            // {
+            //     p.SetIsSelectedInternal(false);
+            // }
+            // preset.SetIsSelectedInternal(true);
+        }
+    }
     [RelayCommand]
     private void TriggerPane()
     {
@@ -195,8 +195,13 @@ private void SelectPreset(Preset preset)
         SummerElectricityPriceData = _sourceDataManager.GetSummerElectricityPriceData()
             .Select(x => x.value).ToList();
 
+        // Select the appropriate electricity price data
+        var selectedElectricityPriceData = IsWinterSelected
+            ? _sourceDataManager.GetWinterElectricityPriceData()
+            : _sourceDataManager.GetSummerElectricityPriceData();
+
         // Perform optimization
-        OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimisationMode);
+        OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimisationMode, selectedElectricityPriceData);
 
         // Save and fetch results
         _resultDataManager.SaveResultsToDatabase(
