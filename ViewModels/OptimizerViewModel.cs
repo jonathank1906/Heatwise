@@ -355,11 +355,11 @@ public partial class OptimizerViewModel : ViewModelBase
             case GraphType.ElectricityConsumption:
                 if (OptimizationResults != null)
                 {
-                    PlotElectricityConsumption?.Invoke(OptimizationResults);
+                    PlotElectricityConsumption?.Invoke(FilteredOptimizationResults);
                 }
                 break;
 
-            case GraphType.ElectricityProduction: // New case
+            case GraphType.ElectricityProduction: 
                 if (FilteredOptimizationResults != null)
                 {
                     PlotElectricityProduction?.Invoke(FilteredOptimizationResults);
@@ -423,7 +423,7 @@ public partial class OptimizerViewModel : ViewModelBase
                 }
                 break;
 
-            case GraphType.ElectricityProduction: 
+            case GraphType.ElectricityProduction:
                 if (OptimizationResults != null)
                 {
                     PlotElectricityProduction?.Invoke(OptimizationResults);

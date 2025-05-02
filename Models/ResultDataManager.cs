@@ -64,7 +64,7 @@ public class ResultDataManager
                             cmd.Parameters.AddWithValue("@Emissions", result.Emissions);
                             cmd.Parameters.AddWithValue("@PresetId", result.PresetId);
                             cmd.Parameters.AddWithValue("@ElectricityConsumption", result.ElectricityConsumption);
-                            cmd.Parameters.AddWithValue("@ElectricityProduction", result.ElectricityProduction); // New parameter
+                            cmd.Parameters.AddWithValue("@ElectricityProduction", result.ElectricityProduction); 
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -106,7 +106,7 @@ public class ResultDataManager
                             Emissions = Convert.ToDouble(reader["Emissions"]),
                             PresetId = Convert.ToInt32(reader["PresetId"]),
                             ElectricityConsumption = Convert.ToDouble(reader["Electricity Consumption"]),
-                            ElectricityProduction = Convert.ToDouble(reader["Electricity Production"]) // New field
+                            ElectricityProduction = Convert.ToDouble(reader["Electricity Production"]) 
                         });
                     }
                 }
@@ -140,7 +140,7 @@ public class ResultDataManager
                     $"{result.ProductionCost.ToString(CultureInfo.InvariantCulture)}," +
                     $"{result.Emissions.ToString(CultureInfo.InvariantCulture)}," +
                     $"{result.ElectricityConsumption.ToString(CultureInfo.InvariantCulture)}," +
-                    $"{result.ElectricityProduction.ToString(CultureInfo.InvariantCulture)}" // New field
+                    $"{result.ElectricityProduction.ToString(CultureInfo.InvariantCulture)}" 
                 );
                 }
             }

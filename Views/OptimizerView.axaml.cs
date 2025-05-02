@@ -117,6 +117,7 @@ public partial class OptimizerView : UserControl
                     _dataVisualization.PlotEmissions(OptimizationPlot, results);
                     PlotCrosshair(results, dummyDemand);
                 };
+                
                 vm.PlotElectricityConsumption = (results) =>
                 {
                     _currentFilteredResults = results;

@@ -402,7 +402,7 @@ public class DataVisualization
         .Select(g => new
         {
             Timestamp = g.Key,
-            TotalConsumption = g.Sum(r => r.ElectricityConsumption) // Use the ElectricityConsumption property
+            TotalConsumption = g.Sum(r => r.ElectricityConsumption)
         })
         .ToList();
 
@@ -445,7 +445,7 @@ public class DataVisualization
             .Select(g => new
             {
                 Timestamp = g.Key,
-                TotalProduction = g.Sum(r => r.ElectricityProduction) // Use the ElectricityProduction property
+                TotalProduction = g.Sum(r => r.ElectricityProduction) 
             })
             .ToList();
 
