@@ -172,6 +172,7 @@ public class DataVisualization
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
     }
+    
     public void PlotElectricityPrice(AvaPlot optimizationPlot, List<double> prices)
     {
         var plt = optimizationPlot.Plot;

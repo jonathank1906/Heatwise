@@ -257,7 +257,7 @@ public partial class OptimizerView : UserControl
                     case OptimizerViewModel.GraphType.ElectricityConsumption:
                         var electricityConsumption = _currentFilteredResults
                             .Where(r => r.Timestamp == timestamp)
-                            .Sum(r => r.HeatProduced < 0 ? Math.Abs(r.HeatProduced) : 0);
+                            .Sum(r => r.ElectricityConsumption);
 
                         tooltip += $"Electricity Consumption: {electricityConsumption:F2} MWh\n";
                         _hoverCrosshair.HorizontalLine.Position = electricityConsumption;
