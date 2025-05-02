@@ -66,9 +66,17 @@ public class Optimizer
 
         return netCost;
     }
-
-    private List<AssetModel> SortByPriority(List<AssetModel> assets, double electricityPrice)
+    private List<AssetModel> SortByPriority(List<AssetModel> assets, double electricityPrice, OptimisationMode optimisationMode)
     {
+        if (optimisationMode == OptimisationMode.CO2)
+        {
+            return assets
+                .Where(a => a.IsActive && a.HeatProduction > 0)
+                .OrderBy(a => a.EmissionsPerMW) // Prioritize lower emissions
+                .ToList();
+        }
+
+        // Default to cost optimization
         return assets
             .Where(a => a.IsActive && a.HeatProduction > 0)
             .OrderBy(a => CalculateNetCost(a, electricityPrice))
@@ -96,7 +104,7 @@ public class Optimizer
         Debug.WriteLine($"Electricity price: {electricityPrice} DKK/MWh");
 
         // Sort assets by priority based on the electricity price
-        var prioritizedAssets = SortByPriority(_assetManager.CurrentAssets, electricityPrice);
+        var prioritizedAssets = SortByPriority(_assetManager.CurrentAssets, electricityPrice, optimisationMode);
 
         // Allocate heat demand to the prioritized assets
         return AllocateHeat(timestamp, heatDemand, prioritizedAssets, electricityPrice);
