@@ -172,7 +172,7 @@ public class DataVisualization
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
     }
-    
+
     public void PlotElectricityPrice(AvaPlot optimizationPlot, List<double> prices)
     {
         var plt = optimizationPlot.Plot;
@@ -445,7 +445,7 @@ public class DataVisualization
             .Select(g => new
             {
                 Timestamp = g.Key,
-                TotalProduction = g.Sum(r => r.ElectricityProduction) 
+                TotalProduction = g.Sum(r => r.ElectricityProduction)
             })
             .ToList();
 
@@ -469,6 +469,60 @@ public class DataVisualization
         {
             LabelText = "Electricity Production",
             LineColor = Colors.Purple,
+            LineWidth = 2
+        });
+
+        plt.Axes.Margins(bottom: 0.02, top: 0.1);
+        optimizationPlot.Refresh();
+    }
+
+    public void PlotFuelConsumption(AvaPlot optimizationPlot, List<HeatProductionResult> results)
+    {
+        var plt = optimizationPlot.Plot;
+        InitializePlot(plt, "Fuel Consumption", "", "Fuel Consumption (MWh)");
+
+        // Group results by timestamp and calculate total oil and gas consumption per timestamp
+        var groupedResults = results
+            .GroupBy(r => r.Timestamp)
+            .OrderBy(g => g.Key)
+            .Select(g => new
+            {
+                Timestamp = g.Key,
+                TotalOilConsumption = g.Sum(r => r.OilConsumption),
+                TotalGasConsumption = g.Sum(r => r.GasConsumption)
+            })
+            .ToList();
+
+        double[] timestamps = groupedResults.Select((g, i) => (double)i).ToArray();
+        double[] oilConsumption = groupedResults.Select(g => g.TotalOilConsumption).ToArray();
+        double[] gasConsumption = groupedResults.Select(g => g.TotalGasConsumption).ToArray();
+
+        // Plot oil consumption
+        var oilPlot = plt.Add.Scatter(timestamps, oilConsumption);
+        oilPlot.Color = Colors.Orange;
+        oilPlot.LineWidth = 2;
+        oilPlot.MarkerSize = 5;
+        oilPlot.Label = "Oil Consumption";
+
+        // Plot gas consumption
+        var gasPlot = plt.Add.Scatter(timestamps, gasConsumption);
+        gasPlot.Color = Colors.Blue;
+        gasPlot.LineWidth = 2;
+        gasPlot.MarkerSize = 5;
+        gasPlot.Label = "Gas Consumption";
+
+        // Add legend items
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Oil Consumption",
+            LineColor = Colors.Orange,
+            LineWidth = 2
+        });
+
+        plt.Legend.ManualItems.Add(new LegendItem
+        {
+            LabelText = "Gas Consumption",
+            LineColor = Colors.Blue,
             LineWidth = 2
         });
 

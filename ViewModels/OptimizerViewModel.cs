@@ -103,7 +103,7 @@ public partial class OptimizerViewModel : ViewModelBase
     public Action<List<HeatProductionResult>>? PlotEmissions { get; set; }
     public Action<List<HeatProductionResult>>? PlotElectricityConsumption { get; set; }
     public Action<List<HeatProductionResult>>? PlotElectricityProduction { get; set; }
-
+    public Action<List<HeatProductionResult>>? PlotFuelConsumption { get; set; }
 
     public enum GraphType
     {
@@ -265,6 +265,12 @@ public partial class OptimizerViewModel : ViewModelBase
                         PlotElectricityProduction?.Invoke(OptimizationResults);
                     }
                     break;
+                case GraphType.FuelConsumption:
+                    if (OptimizationResults != null)
+                    {
+                        PlotFuelConsumption?.Invoke(OptimizationResults);
+                    }
+                    break;
             }
         }
         else
@@ -359,10 +365,16 @@ public partial class OptimizerViewModel : ViewModelBase
                 }
                 break;
 
-            case GraphType.ElectricityProduction: 
+            case GraphType.ElectricityProduction:
                 if (FilteredOptimizationResults != null)
                 {
                     PlotElectricityProduction?.Invoke(FilteredOptimizationResults);
+                }
+                break;
+            case GraphType.FuelConsumption:
+                if (FilteredOptimizationResults != null)
+                {
+                    PlotFuelConsumption?.Invoke(FilteredOptimizationResults);
                 }
                 break;
         }
@@ -429,7 +441,12 @@ public partial class OptimizerViewModel : ViewModelBase
                     PlotElectricityProduction?.Invoke(OptimizationResults);
                 }
                 break;
-
+            case GraphType.FuelConsumption:
+                if (OptimizationResults != null)
+                {
+                    PlotFuelConsumption?.Invoke(OptimizationResults);
+                }
+                break;
             // Add cases for other graph types as needed
             default:
                 // Default to heat production if no specific case matches

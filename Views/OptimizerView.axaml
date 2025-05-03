@@ -362,7 +362,8 @@
                                         <RadioButton
                                             Classes="fancy"
                                             Content="Fuel Consumption"
-                                            GroupName="GraphTypeGroup" />
+                                            GroupName="GraphTypeGroup"
+                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.FuelConsumption}}"  />
 
                                         <RadioButton
                                             Classes="fancy"

@@ -137,6 +137,10 @@ public class Optimizer
                 electricityProduction = allocation * (asset.MaxElectricity / asset.MaxHeat);
             }
 
+            // Calculate oil and gas consumption
+            double oilConsumption = allocation * asset.OilConsumption;
+            double gasConsumption = allocation * asset.GasConsumption;
+
             results.Add(new HeatProductionResult
             {
                 AssetName = asset.Name,
@@ -146,10 +150,12 @@ public class Optimizer
                 Timestamp = timestamp,
                 PresetId = asset.Id,
                 ElectricityConsumption = electricityConsumption,
-                ElectricityProduction = electricityProduction 
+                ElectricityProduction = electricityProduction,
+                OilConsumption = oilConsumption, // Added
+                GasConsumption = gasConsumption  // Added
             });
 
-            Debug.WriteLine($"- Allocated {allocation} MW from {asset.Name} (Net Cost: {netCostPerMWh:F2} DKK/MWh, Total Cost: {productionCost:F2} DKK, Electricity Consumption: {electricityConsumption:F2} MWh)");
+            Debug.WriteLine($"- Allocated {allocation} MW from {asset.Name} (Net Cost: {netCostPerMWh:F2} DKK/MWh, Total Cost: {productionCost:F2} DKK, Electricity Consumption: {electricityConsumption:F2} MWh, Oil Consumption: {oilConsumption:F2} MWh, Gas Consumption: {gasConsumption:F2} MWh)");
         }
 
         if (remainingDemand > 0)
@@ -165,7 +171,9 @@ public class Optimizer
                 Timestamp = timestamp,
                 PresetId = -1,
                 ElectricityConsumption = 0,
-                ElectricityProduction = 0
+                ElectricityProduction = 0,
+                OilConsumption = 0, // Added
+                GasConsumption = 0  // Added
             });
         }
 

@@ -48,9 +48,9 @@ public class ResultDataManager
                     // 2. Insert new results with ElectricityConsumption
                     string insertQuery = @"
                     INSERT INTO RDM 
-                    (Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId], [Electricity Consumption], [Electricity Production])
+                    (Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId], [Electricity Consumption], [Electricity Production], [Oil Consumption], [Gas Consumption])
                     VALUES 
-                    (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions, @PresetId, @ElectricityConsumption, @ElectricityProduction)";
+                    (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions, @PresetId, @ElectricityConsumption, @ElectricityProduction, @OilConsumption, @GasConsumption)";
 
                     using (var cmd = new SQLiteCommand(insertQuery, conn))
                     {
@@ -64,7 +64,9 @@ public class ResultDataManager
                             cmd.Parameters.AddWithValue("@Emissions", result.Emissions);
                             cmd.Parameters.AddWithValue("@PresetId", result.PresetId);
                             cmd.Parameters.AddWithValue("@ElectricityConsumption", result.ElectricityConsumption);
-                            cmd.Parameters.AddWithValue("@ElectricityProduction", result.ElectricityProduction); 
+                            cmd.Parameters.AddWithValue("@ElectricityProduction", result.ElectricityProduction);
+                            cmd.Parameters.AddWithValue("@OilConsumption", result.OilConsumption);
+                            cmd.Parameters.AddWithValue("@GasConsumption", result.GasConsumption);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -88,10 +90,9 @@ public class ResultDataManager
             {
                 conn.Open();
                 string query = @"
-                SELECT Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId], [Electricity Consumption], [Electricity Production]
+                SELECT Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId], [Electricity Consumption], [Electricity Production], [Oil Consumption], [Gas Consumption]
                 FROM RDM
                 ORDER BY Timestamp";
-
                 using (var cmd = new SQLiteCommand(query, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -106,7 +107,9 @@ public class ResultDataManager
                             Emissions = Convert.ToDouble(reader["Emissions"]),
                             PresetId = Convert.ToInt32(reader["PresetId"]),
                             ElectricityConsumption = Convert.ToDouble(reader["Electricity Consumption"]),
-                            ElectricityProduction = Convert.ToDouble(reader["Electricity Production"]) 
+                            ElectricityProduction = Convert.ToDouble(reader["Electricity Production"]),
+                            OilConsumption = Convert.ToDouble(reader["Oil Consumption"]),
+                            GasConsumption = Convert.ToDouble(reader["Gas Consumption"])
                         });
                     }
                 }
@@ -140,7 +143,7 @@ public class ResultDataManager
                     $"{result.ProductionCost.ToString(CultureInfo.InvariantCulture)}," +
                     $"{result.Emissions.ToString(CultureInfo.InvariantCulture)}," +
                     $"{result.ElectricityConsumption.ToString(CultureInfo.InvariantCulture)}," +
-                    $"{result.ElectricityProduction.ToString(CultureInfo.InvariantCulture)}" 
+                    $"{result.ElectricityProduction.ToString(CultureInfo.InvariantCulture)}"
                 );
                 }
             }
@@ -173,6 +176,8 @@ public class HeatProductionResult
     public int PresetId { get; set; }
     public double ElectricityConsumption { get; set; }
     public double ElectricityProduction { get; set; }
+    public double OilConsumption { get; set; }
+    public double GasConsumption { get; set; }
 }
 public enum OptimisationMode
 {

@@ -117,7 +117,7 @@ public partial class OptimizerView : UserControl
                     _dataVisualization.PlotEmissions(OptimizationPlot, results);
                     PlotCrosshair(results, dummyDemand);
                 };
-                
+
                 vm.PlotElectricityConsumption = (results) =>
                 {
                     _currentFilteredResults = results;
@@ -135,6 +135,16 @@ public partial class OptimizerView : UserControl
 
                     InitializeCalendar(dummyDemand); // Initialize calendar with electricity production data timestamps
                     _dataVisualization.PlotElectricityProduction(OptimizationPlot, results);
+                    PlotCrosshair(results, dummyDemand);
+                };
+
+                vm.PlotFuelConsumption = (results) =>
+                {
+                    _currentFilteredResults = results;
+                    var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
+
+                    InitializeCalendar(dummyDemand); // Initialize calendar with fuel consumption data timestamps
+                    _dataVisualization.PlotFuelConsumption(OptimizationPlot, results);
                     PlotCrosshair(results, dummyDemand);
                 };
             }
@@ -272,6 +282,22 @@ public partial class OptimizerView : UserControl
 
                         tooltip += $"Electricity Production: {electricityProduction:F2} MWh\n";
                         _hoverCrosshair.HorizontalLine.Position = electricityProduction;
+                        _hoverCrosshair.VerticalLine.Position = barIndex;
+                        break;
+
+                    case OptimizerViewModel.GraphType.FuelConsumption:
+                        var oilConsumption = _currentFilteredResults
+                            .Where(r => r.Timestamp == timestamp)
+                            .Sum(r => r.OilConsumption);
+
+                        var gasConsumption = _currentFilteredResults
+                            .Where(r => r.Timestamp == timestamp)
+                            .Sum(r => r.GasConsumption);
+
+                        tooltip += $"Oil Consumption: {oilConsumption:F2} MWh\n";
+                        tooltip += $"Gas Consumption: {gasConsumption:F2} MWh\n";
+
+                        _hoverCrosshair.HorizontalLine.IsVisible = false; // No single horizontal value for two lines
                         _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
