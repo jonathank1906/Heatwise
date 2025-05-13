@@ -419,7 +419,7 @@
                                                             FontSize="16"
                                                             FontWeight="Bold"
                                                             Text="Hold shift to select multiple days" />
-                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\sad.gif" />
+                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\Calendar.gif" />
                                                     </StackPanel>
                                                 </Flyout>
                                             </Button.Flyout>
@@ -522,7 +522,7 @@
                                             FontSize="16"
                                             FontWeight="Bold"
                                             Text="Scroll into the graph to zoom in and out" />
-                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\sad.gif" />
+                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\Scrolling.gif" />
                                     </StackPanel>
                                 </Flyout>
                             </Button.Flyout>
