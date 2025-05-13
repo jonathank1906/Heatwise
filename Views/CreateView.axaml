@@ -172,7 +172,7 @@
                             CornerRadius="10">
                             <TextBlock
                                 FontSize="18"
-                                Foreground="White"
+                                Foreground="{DynamicResource TextColor}"
                                 Text="Create" />
                         </Button>
                     </StackPanel>
@@ -201,7 +201,7 @@
                             CornerRadius="10">
                             <TextBlock
                                 FontSize="18"
-                                Foreground="White"
+                                Foreground="{DynamicResource TextColor}"
                                 Text="Create" />
                         </Button>
                     </StackPanel>
