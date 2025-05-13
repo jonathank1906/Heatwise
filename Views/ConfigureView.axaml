@@ -1,18 +1,17 @@
 <UserControl
     x:Class="Sem2Proj.Views.ConfigureView"
     xmlns="https://github.com/avaloniaui"
-       xmlns:conv="clr-namespace:Sem2Proj.Converters"
+    xmlns:conv="clr-namespace:Sem2Proj.Converters"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Sem2Proj.ViewModels"
- 
     x:DataType="vm:AssetManagerViewModel"
     mc:Ignorable="d">
 
     <UserControl.Resources>
-    <conv:StringToColorConverter x:Key="StringToColorConverter" />
-</UserControl.Resources>
+        <conv:StringToColorConverter x:Key="StringToColorConverter" />
+    </UserControl.Resources>
 
     <StackPanel Spacing="20">
         <TextBlock
@@ -93,6 +92,7 @@
                                     <ToggleSwitch
                                         Grid.Column="0"
                                         Margin="0,0,10,0"
+                                        Foreground="{DynamicResource TextColor}"
                                         VerticalAlignment="Center"
                                         IsChecked="{Binding IsActive, Mode=TwoWay}"
                                         OffContent="Off"
@@ -104,7 +104,7 @@
                                         Classes="value-box"
                                         FontSize="20"
                                         FontWeight="Bold"
-                                        Foreground="White"
+                                        Foreground="{DynamicResource TextColor}"
                                         Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                         Watermark="Machine Name" />
                                 </Grid>
@@ -130,6 +130,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Left"
                                         Classes="value-box"
+                                        Foreground="{DynamicResource TextColor}"
                                         Text="{Binding MaxHeat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                         Watermark="{Binding MaxHeat, StringFormat={}{0:F1}}" />
                                     <TextBlock
@@ -152,6 +153,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Left"
                                         Classes="value-box"
+                                        Foreground="{DynamicResource TextColor}"
                                         Text="{Binding ProductionCosts, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                         Watermark="{Binding ProductionCosts, StringFormat={}{0:F1}}" />
                                     <TextBlock
@@ -173,12 +175,14 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Left"
                                         Classes="value-box"
+                                        Foreground="{DynamicResource TextColor}"
                                         Text="{Binding Emissions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                         Watermark="{Binding Emissions, StringFormat={}{0:F1}}" />
                                     <TextBlock
                                         Grid.Row="2"
                                         Grid.Column="2"
                                         Classes="unit-text"
+                                        Foreground="{DynamicResource TextColor}"
                                         Text="kg / MWh(th)" />
 
                                     <!--  Gas Consumption  -->
@@ -194,6 +198,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Left"
                                         Classes="value-box"
+                                        Foreground="{DynamicResource TextColor}"
                                         Text="{Binding GasConsumption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                         Watermark="{Binding GasConsumption, StringFormat={}{0:F1}}" />
                                     <TextBlock
@@ -215,6 +220,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Left"
                                         Classes="value-box"
+                                        Foreground="{DynamicResource TextColor}"
                                         Text="{Binding OilConsumption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                         Watermark="{Binding OilConsumption, StringFormat={}{0:F1}}" />
                                     <TextBlock
@@ -236,6 +242,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Left"
                                         Classes="value-box"
+                                        Foreground="{DynamicResource TextColor}"
                                         Text="{Binding MaxElectricity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"
                                         Watermark="{Binding MaxElectricity, StringFormat={}{0:F1}}" />
                                     <TextBlock
