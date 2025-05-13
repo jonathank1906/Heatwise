@@ -29,7 +29,7 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
     {
         // Save the theme setting to the database
         _dataManager.SaveSetting("Theme", value ? "Dark" : "Light");
-          (Application.Current as App)?.UpdateTheme(value);
+        (Application.Current as App)?.UpdateTheme(value);
     }
 
     public void SetCloseAction(Action closeCallback)

@@ -11,7 +11,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:OptimizerViewModel"
-    Background="#1e1e1e"
+    Background="{DynamicResource BackgroundColor}"
     mc:Ignorable="d">
 
     <Design.DataContext>
@@ -281,7 +281,7 @@
         </Border>
 
         <!--  Main Content Area  -->
-        <Border Grid.Column="1" Background="#1e1e1e">
+        <Border Grid.Column="1" Background="{DynamicResource BackgroundColor}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />

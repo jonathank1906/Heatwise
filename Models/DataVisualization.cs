@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Diagnostics;
+using Avalonia;
 
 namespace Sem2Proj.Models;
 
@@ -11,11 +12,13 @@ public class DataVisualization
 {
     private readonly AssetManager _assetManager;
     private Dictionary<string, Color> _machineColors;
+
     public DataVisualization(AssetManager assetManager)
     {
         _assetManager = assetManager;
         InitializeMachineColors();
     }
+
     private void InitializeMachineColors()
     {
         _machineColors = new Dictionary<string, ScottPlot.Color>();
@@ -48,11 +51,52 @@ public class DataVisualization
         }
     }
 
+    public ScottPlot.Color GetCurrentThemeTextColor()
+    {
+        if (Application.Current == null)
+        {
+            Debug.WriteLine("Application.Current is null");
+            return new ScottPlot.Color(255, 255, 255); // Fallback to white
+        }
+        try
+        {
+            // Get the current text color from resources
+            if (Application.Current.Styles.TryGetResource("TextColor", Application.Current.ActualThemeVariant, out var colorValue)
+                && colorValue is Avalonia.Media.Color avaloniaColor)
+            {
+                Debug.WriteLine($"[GetCurrentThemeTextColor] Retrieved color: R={avaloniaColor.R}, G={avaloniaColor.G}, B={avaloniaColor.B}, A={avaloniaColor.A}");
+                return new ScottPlot.Color(
+                    avaloniaColor.R,
+                    avaloniaColor.G,
+                    avaloniaColor.B,
+                    avaloniaColor.A);
+            }
+        }
+        catch
+        {
+            // Fallback color if something goes wrong
+            Debug.WriteLine("Couldn't get TextColor from resources");
+        }
 
+        return new ScottPlot.Color(255, 255, 255); // Fallback to white
+    }
     public void PlotHeatProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Heat Production Optimization", "", "Heat (MW)");
+        plt.Clear();
+        plt.Legend.ManualItems.Clear();
+        var bgColor = new Color("{DynamicResource BackgroundColor}");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(GetCurrentThemeTextColor());
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+        plt.Title("Heat Production Optimization");
+        plt.XLabel("");
+        plt.YLabel("Heat (MW)");
+        plt.HideGrid();
 
         // Process optimization results (stacked bars)
         var groupedResults = results
@@ -80,12 +124,8 @@ public class DataVisualization
             foreach (var result in orderedAssets)
             {
                 var possibleKey = $"{result.AssetName} (ID: {result.PresetId})";
-                //  Debug.WriteLine($"[PlotHeatProduction] Checking for key: {possibleKey}");
-
                 if (_machineColors.TryGetValue(possibleKey, out var color))
                 {
-                    //    Debug.WriteLine($"[PlotHeatProduction] Found color for key: {possibleKey}, Color: {color}");
-
                     plt.Add.Bar(new Bar
                     {
                         Position = i,
@@ -93,7 +133,6 @@ public class DataVisualization
                         Value = currentBase + result.HeatProduced,
                         FillColor = color
                     });
-                    //    Debug.WriteLine($"[PlotHeatProduction] Added bar for {result.AssetName} at position {i} with value {result.HeatProduced}");
 
                     currentBase += result.HeatProduced;
 
@@ -105,12 +144,7 @@ public class DataVisualization
                             LabelText = result.AssetName,
                             FillColor = color
                         });
-                        //       Debug.WriteLine($"[PlotHeatProduction] Added legend item for {result.AssetName}");
                     }
-                }
-                else
-                {
-                    //    Debug.WriteLine($"[PlotHeatProduction] No color found for key: {possibleKey}");
                 }
             }
 
@@ -140,8 +174,8 @@ public class DataVisualization
         if (heatDemandData != null && heatDemandData.Any())
         {
             var orderedDemand = heatDemandData
-            .OrderBy(x => x.timestamp)
-            .ToList();
+                .OrderBy(x => x.timestamp)
+                .ToList();
 
             double[] positions = new double[orderedDemand.Count + 1];
             double[] values = new double[orderedDemand.Count + 1];
@@ -176,7 +210,20 @@ public class DataVisualization
     public void PlotElectricityPrice(AvaPlot optimizationPlot, List<double> prices)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Electricity Prices", "", "Electricity Price (DKK/MWh)");
+        plt.Clear();
+        plt.Legend.ManualItems.Clear();
+        var bgColor = new Color("#1e1e1e");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(new Color("#FFFFFF"));
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+        plt.Title("Electricity Prices");
+        plt.XLabel("");
+        plt.YLabel("Electricity Price (DKK/MWh)");
+        plt.HideGrid();
 
         double[] xs = Enumerable.Range(0, prices.Count).Select(i => (double)i).ToArray();
         var plot = plt.Add.Scatter(xs, prices.ToArray());
@@ -239,7 +286,20 @@ public class DataVisualization
     public void PlotExpenses(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Production Costs", "", "Cost (DKK)");
+        plt.Clear();
+        plt.Legend.ManualItems.Clear();
+        var bgColor = new Color("#1e1e1e");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(new Color("#FFFFFF"));
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+        plt.Title("Production Costs");
+        plt.XLabel("");
+        plt.YLabel("Cost (DKK)");
+        plt.HideGrid();
 
         // Group results by timestamp and calculate total production cost per timestamp
         var groupedResults = results
@@ -316,7 +376,20 @@ public class DataVisualization
     public void PlotEmissions(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Emissions", "", "Emissions (kg CO2)");
+        plt.Clear();
+        plt.Legend.ManualItems.Clear();
+        var bgColor = new Color("#1e1e1e");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(new Color("#FFFFFF"));
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+        plt.Title("Emissions");
+        plt.XLabel("");
+        plt.YLabel("Emissions (kg CO2)");
+        plt.HideGrid();
 
         // Group results by timestamp and calculate total emissions per timestamp
         var groupedResults = results
@@ -393,18 +466,31 @@ public class DataVisualization
     public void PlotElectricityConsumption(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Electricity Consumption", "", "Electricity (MWh)");
+        plt.Clear();
+        plt.Legend.ManualItems.Clear();
+        var bgColor = new Color("#1e1e1e");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(new Color("#FFFFFF"));
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+        plt.Title("Electricity Consumption");
+        plt.XLabel("");
+        plt.YLabel("Electricity (MWh)");
+        plt.HideGrid();
 
         // Group results by timestamp and calculate total electricity consumption per timestamp
         var groupedResults = results
-        .GroupBy(r => r.Timestamp)
-        .OrderBy(g => g.Key)
-        .Select(g => new
-        {
-            Timestamp = g.Key,
-            TotalConsumption = g.Sum(r => r.ElectricityConsumption)
-        })
-        .ToList();
+            .GroupBy(r => r.Timestamp)
+            .OrderBy(g => g.Key)
+            .Select(g => new
+            {
+                Timestamp = g.Key,
+                TotalConsumption = g.Sum(r => r.ElectricityConsumption)
+            })
+            .ToList();
 
         double[] timestamps = groupedResults.Select((g, i) => (double)i).ToArray();
         double[] consumption = groupedResults.Select(g => g.TotalConsumption).ToArray();
@@ -436,7 +522,20 @@ public class DataVisualization
     public void PlotElectricityProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Electricity Production", "", "Electricity (MWh)");
+        plt.Clear();
+        plt.Legend.ManualItems.Clear();
+        var bgColor = new Color("#1e1e1e");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(new Color("#FFFFFF"));
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+        plt.Title("Electricity Production");
+        plt.XLabel("");
+        plt.YLabel("Electricity (MWh)");
+        plt.HideGrid();
 
         // Group results by timestamp and calculate total electricity production per timestamp
         var groupedResults = results
@@ -479,7 +578,20 @@ public class DataVisualization
     public void PlotFuelConsumption(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        InitializePlot(plt, "Fuel Consumption", "", "Fuel Consumption (MWh)");
+        plt.Clear();
+        plt.Legend.ManualItems.Clear();
+        var bgColor = new Color("#1e1e1e");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(new Color("#FFFFFF"));
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+        plt.Title("Fuel Consumption");
+        plt.XLabel("");
+        plt.YLabel("Fuel Consumption (MWh)");
+        plt.HideGrid();
 
         // Group results by timestamp and calculate total oil and gas consumption per timestamp
         var groupedResults = results
@@ -528,26 +640,6 @@ public class DataVisualization
 
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
-    }
-
-    private void InitializePlot(Plot plt, string title, string xLabel, string yLabel)
-    {
-        plt.Clear();
-
-        plt.Legend.ManualItems.Clear();
-        var bgColor = new Color("#1e1e1e");
-        plt.FigureBackground.Color = bgColor;
-        plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(new Color("#FFFFFF"));
-        plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
-        plt.Title(title);
-        plt.XLabel(xLabel);
-
-        plt.YLabel(yLabel);
-        plt.HideGrid();
     }
 
     public void SetXAxisTicks(Plot plt, List<DateTime> timestamps)

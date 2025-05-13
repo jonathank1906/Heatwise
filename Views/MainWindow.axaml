@@ -304,7 +304,7 @@
                     <ContentControl.Template>
                         <ControlTemplate>
                             <Border
-                                Background="#FF2D2D2D"
+                                Background="{DynamicResource BackgroundColor}"
                                 BorderBrush="#FF444444"
                                 BorderThickness="1"
                                 CornerRadius="8">

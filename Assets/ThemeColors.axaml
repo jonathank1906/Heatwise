@@ -1,14 +1,14 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Light Theme Colors -->
-    <Color x:Key="LightBackgroundColor">#00f2eb</Color>
+    <Color x:Key="LightBackgroundColor">#F3F3F4</Color>
     <Color x:Key="LightForegroundColor">#000000</Color>
     <Color x:Key="LightAccentColor">#B22222</Color>
-    <Color x:Key="LightTextColor">#000000</Color>
-    <Color x:Key="LightSecondaryBackground">#F5F5F5</Color>
+    <Color x:Key="LightTextColor">#404146</Color>
+    <Color x:Key="LightSecondaryBackground">#5E5E68</Color>
     <Color x:Key="LightBorderColor">#E0E0E0</Color>
     
     <!-- Dark Theme Colors -->
-    <Color x:Key="DarkBackgroundColor">#ffaa00</Color>
+    <Color x:Key="DarkBackgroundColor">#1e1e1e</Color>
     <Color x:Key="DarkForegroundColor">#FFFFFF</Color>
     <Color x:Key="DarkAccentColor">#B22222</Color>
     <Color x:Key="DarkTextColor">#FFFFFF</Color>

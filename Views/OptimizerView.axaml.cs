@@ -33,6 +33,7 @@ public partial class OptimizerView : UserControl
     {
         InitializeComponent();
         InitializeFlyoutEvents();
+         App.ThemeChanged += OnThemeChanged;
 
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
 
@@ -169,6 +170,18 @@ public partial class OptimizerView : UserControl
         };
     }
 
+    private void OnThemeChanged()
+    {
+        if (_dataVisualization != null && OptimizationPlot != null)
+        {
+            // Reapply the theme color and refresh the plot
+            var plt = OptimizationPlot.Plot;
+            plt.Axes.Color(_dataVisualization.GetCurrentThemeTextColor());
+            OptimizationPlot.Refresh();
+        }
+    }
+
+  
     private void PlotCrosshair(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
         var plt = OptimizationPlot.Plot;

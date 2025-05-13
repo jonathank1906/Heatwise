@@ -14,6 +14,7 @@ namespace Sem2Proj;
 
 public partial class App : Application
 {
+     public static event Action? ThemeChanged;
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -86,7 +87,7 @@ public partial class App : Application
                 Current.Resources["SecondaryBackground"] = themeColors["LightSecondaryBackground"];
                 Current.Resources["BorderColor"] = themeColors["LightBorderColor"];
             }
-
+            ThemeChanged?.Invoke();
             Debug.WriteLine($"Theme updated to {(isDarkMode ? "Dark" : "Light")} mode");
         }
         catch (Exception ex)

@@ -50,7 +50,7 @@
                 VerticalAlignment="Center"
                 FontSize="24"
                 FontWeight="Bold"
-                Foreground="White"
+                Foreground="{DynamicResource TextColor}"
                 Text="Settings" />
 
             <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -70,7 +70,7 @@
                         Width="15"
                         Height="15"
                         Data="{StaticResource Close}"
-                        Foreground="White" />
+                        Foreground="{DynamicResource TextColor}" />
                 </Button>
             </Canvas>
         </Grid>
@@ -84,17 +84,18 @@
                     DockPanel.Dock="Left"
                     FontSize="15"
                     FontWeight="Bold"
-                    Foreground="White"
+                    Foreground="{DynamicResource TextColor}"
                     Text="Dark/Light Mode" />
                 <ToggleSwitch
                     Margin="0,0,0,1"
+                    Foreground="{DynamicResource TextColor}"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     IsChecked="{Binding IsDarkMode}" />
             </DockPanel>
             <Border
                 Margin="0,20,0,20"
-                Background="White"
+                Background="{DynamicResource TextColor}"
                 BorderThickness="0.01"
                 Opacity="0.2" />
 
@@ -104,16 +105,17 @@
                     VerticalAlignment="Center"
                     FontSize="15"
                     FontWeight="Bold"
-                    Foreground="White"
+                    Foreground="{DynamicResource TextColor}"
                     Text="Show Home Screen on Startup" />
                 <ToggleSwitch
                     Margin="0,0,0,1"
+                    Foreground="{DynamicResource TextColor}"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center" />
             </DockPanel>
             <Border
                 Margin="0,20,0,20"
-                Background="White"
+                Background="{DynamicResource TextColor}"
                 BorderThickness="0.01"
                 Opacity="0.2" />
 
@@ -123,10 +125,11 @@
                     VerticalAlignment="Center"
                     FontSize="15"
                     FontWeight="Bold"
-                    Foreground="White"
+                    Foreground="{DynamicResource TextColor}"
                     Text="Developer Mode" />
                 <ToggleSwitch
                     Margin="0,0,0,1"
+                    Foreground="{DynamicResource TextColor}"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center" />
             </DockPanel>
@@ -134,11 +137,11 @@
                 Margin="0,0,0,0"
                 VerticalAlignment="Center"
                 FontSize="12"
-                Foreground="#BBFFFFFF"
+                Foreground="{DynamicResource TextColor}"
                 Text="Disables loading, login and home screens on startup" />
             <Border
                 Margin="0,20,0,20"
-                Background="White"
+                Background="{DynamicResource TextColor}"
                 BorderThickness="0.01"
                 Opacity="0.2" />
         </StackPanel>
@@ -148,6 +151,7 @@
             Width="450"
             Height="40"
             Padding="10,10,10,10"
+            Background="{DynamicResource SecondaryBackground}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Content="Restore Defaults"
