@@ -14,7 +14,7 @@ namespace Sem2Proj.Models;
 
 public class AssetManager
 {
-    private readonly string dbPath = "Data Source=Data/heat_optimization.v2.db;";
+    private readonly string dbPath = "Data Source=Data/heat_optimization.db;";
 
     public HeatingGrid? GridInfo { get; private set; }
 

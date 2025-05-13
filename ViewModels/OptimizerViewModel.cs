@@ -524,7 +524,7 @@ public partial class OptimizerViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Export failed: {ex.Message}");
+            Console.WriteLine($"Export failed: {ex.Message}");
             //await ShowErrorAsync("Export Failed", ex.Message);
         }
     }

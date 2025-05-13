@@ -9,7 +9,7 @@ namespace Sem2Proj.Models;
 
 public class ResultDataManager
 {
-    private readonly string dbPath = "Data Source=Data/heat_optimization.v2.db;";
+    private readonly string dbPath = "Data Source=Data/heat_optimization.db;";
 
     // Clears ALL data from the RDM table before saving new results
     public void ClearAllResults()
@@ -115,7 +115,6 @@ public class ResultDataManager
                             GasConsumption = Convert.ToDouble(reader["GasConsumption"])
                         });
                     }
-                    Console.WriteLine($"✅ Loaded {results.Count} results from RDM table.");
                 }
             }
         }
