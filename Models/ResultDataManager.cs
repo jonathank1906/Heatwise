@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.Diagnostics;
 using System.Globalization;
 
@@ -9,26 +9,26 @@ namespace Sem2Proj.Models;
 
 public class ResultDataManager
 {
-    private readonly string dbPath = "Data Source=Data/heat_optimization.db;Version=3;";
+    private readonly string dbPath = "Data Source=Data/heat_optimization.v2.db;";
 
     // Clears ALL data from the RDM table before saving new results
     public void ClearAllResults()
     {
         try
         {
-            using (var conn = new SQLiteConnection(dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
-                using (var cmd = new SQLiteCommand("DELETE FROM RDM", conn))
+                using (var cmd = new SqliteCommand("DELETE FROM RDM", conn))
                 {
                     cmd.ExecuteNonQuery();
-                    Debug.WriteLine("RDM table cleared successfully.");
+                    Console.WriteLine("RDM table cleared successfully.");
                 }
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error clearing RDM table: {ex.Message}");
+            Console.WriteLine($"Error clearing RDM table: {ex.Message}");
         }
     }
 
@@ -37,22 +37,22 @@ public class ResultDataManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
                 using (var transaction = conn.BeginTransaction())
                 {
                     // 1. Clear old data
-                    new SQLiteCommand("DELETE FROM RDM", conn).ExecuteNonQuery();
+                    new SqliteCommand("DELETE FROM RDM", conn, transaction).ExecuteNonQuery();
 
                     // 2. Insert new results with ElectricityConsumption
                     string insertQuery = @"
                     INSERT INTO RDM 
-                    (Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId], [Electricity Consumption], [Electricity Production], [Oil Consumption], [Gas Consumption])
+                    (Timestamp, AssetName, ProducedHeat, ProductionCost, Emissions, PresetId, ElectricityConsumption, ElectricityProduction, OilConsumption, GasConsumption)
                     VALUES 
                     (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions, @PresetId, @ElectricityConsumption, @ElectricityProduction, @OilConsumption, @GasConsumption)";
 
-                    using (var cmd = new SQLiteCommand(insertQuery, conn))
+                    using (var cmd = new SqliteCommand(insertQuery, conn, transaction))
                     {
                         foreach (var result in results)
                         {
@@ -71,13 +71,13 @@ public class ResultDataManager
                         }
                     }
                     transaction.Commit();
-                    Debug.WriteLine("New results with ElectricityConsumption saved to RDM after clearing old data.");
+                    Console.WriteLine("New results with ElectricityConsumption saved to RDM after clearing old data.");
                 }
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error saving results to DB: {ex.Message}");
+            Console.WriteLine($"Error saving results to DB: {ex.Message}");
         }
     }
 
@@ -86,38 +86,42 @@ public class ResultDataManager
         var results = new List<HeatProductionResult>();
         try
         {
-            using (var conn = new SQLiteConnection(dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
                 string query = @"
-                SELECT Timestamp, [Asset Name], [Produced Heat], [Production Cost], [Emissions], [PresetId], [Electricity Consumption], [Electricity Production], [Oil Consumption], [Gas Consumption]
+                SELECT Timestamp, AssetName, ProducedHeat, ProductionCost, Emissions, PresetId, ElectricityConsumption, ElectricityProduction, OilConsumption, GasConsumption
                 FROM RDM
                 ORDER BY Timestamp";
-                using (var cmd = new SQLiteCommand(query, conn))
+                using (var cmd = new SqliteCommand(query, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
+                    if (!reader.HasRows)
+                    {
+                    }
                     while (reader.Read())
                     {
                         results.Add(new HeatProductionResult
                         {
                             Timestamp = DateTime.Parse(reader["Timestamp"].ToString()!),
-                            AssetName = reader["Asset Name"].ToString()!,
-                            HeatProduced = Convert.ToDouble(reader["Produced Heat"]),
-                            ProductionCost = Convert.ToDouble(reader["Production Cost"]),
+                            AssetName = reader["AssetName"].ToString()!,
+                            HeatProduced = Convert.ToDouble(reader["ProducedHeat"]),
+                            ProductionCost = Convert.ToDouble(reader["ProductionCost"]),
                             Emissions = Convert.ToDouble(reader["Emissions"]),
                             PresetId = Convert.ToInt32(reader["PresetId"]),
-                            ElectricityConsumption = Convert.ToDouble(reader["Electricity Consumption"]),
-                            ElectricityProduction = Convert.ToDouble(reader["Electricity Production"]),
-                            OilConsumption = Convert.ToDouble(reader["Oil Consumption"]),
-                            GasConsumption = Convert.ToDouble(reader["Gas Consumption"])
+                            ElectricityConsumption = Convert.ToDouble(reader["ElectricityConsumption"]),
+                            ElectricityProduction = Convert.ToDouble(reader["ElectricityProduction"]),
+                            OilConsumption = Convert.ToDouble(reader["OilConsumption"]),
+                            GasConsumption = Convert.ToDouble(reader["GasConsumption"])
                         });
                     }
+                    Console.WriteLine($"✅ Loaded {results.Count} results from RDM table.");
                 }
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error loading results from RDM: {ex.Message}");
+            Console.WriteLine($"Error loading results from RDM: {ex.Message}");
         }
         return results;
     }
@@ -148,11 +152,11 @@ public class ResultDataManager
                 }
             }
 
-            Debug.WriteLine($"Successfully exported results to {filePath}");
+            Console.WriteLine($"Successfully exported results to {filePath}");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error exporting to CSV: {ex.Message}");
+            Console.WriteLine($"Error exporting to CSV: {ex.Message}");
             throw; // Re-throw to handle in UI
         }
     }

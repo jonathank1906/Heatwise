@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Avalonia.Media.Imaging;
@@ -15,7 +14,7 @@ namespace Sem2Proj.Models;
 
 public class AssetManager
 {
-    private readonly string _dbPath = "Data Source=Data/heat_optimization.db;Version=3;";
+    private readonly string dbPath = "Data Source=Data/heat_optimization.v2.db;";
 
     public HeatingGrid? GridInfo { get; private set; }
 
@@ -42,7 +41,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
 
@@ -55,15 +54,15 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Database error in AssetManager: {ex.Message}");
+            Console.WriteLine($"Database error in AssetManager: {ex.Message}");
         }
     }
 
-    private void LoadAllPresets(SQLiteConnection conn)
+    private void LoadAllPresets(SqliteConnection conn)
     {
         // Load preset definitions
         const string presetQuery = "SELECT * FROM AM_Presets";
-        using (var presetCmd = new SQLiteCommand(presetQuery, conn))
+        using (var presetCmd = new SqliteCommand(presetQuery, conn))
         using (var presetReader = presetCmd.ExecuteReader())
         {
             bool isFirstPreset = true;
@@ -87,7 +86,7 @@ public class AssetManager
         FROM PresetMachines
         WHERE PresetId = @presetId";
 
-            using (var machineCmd = new SQLiteCommand(machineQuery, conn))
+            using (var machineCmd = new SqliteCommand(machineQuery, conn))
             {
                 machineCmd.Parameters.AddWithValue("@presetId", preset.Id);
                 using (var machineReader = machineCmd.ExecuteReader())
@@ -110,20 +109,20 @@ public class AssetManager
                             HeatProduction = Convert.ToDouble(machineReader["HeatProduction"]),
                             Color = machineReader["Color"].ToString() ?? "#FFFFFF"
                         };
-
+                        Console.WriteLine($"Loaded Image: {machine.ImageSource}");
                         preset.MachineModels.Add(machine);
                     }
                 }
             }
         }
 
-        Debug.WriteLine($"Loaded {Presets.Count} presets from database.");
+        Console.WriteLine($"Loaded {Presets.Count} presets from database.");
     }
 
-    private void LoadHeatingGridInfo(SQLiteConnection conn)
+    private void LoadHeatingGridInfo(SqliteConnection conn)
     {
         const string query = "SELECT * FROM AM_HeatingGrid LIMIT 1";
-        using (var cmd = new SQLiteCommand(query, conn))
+        using (var cmd = new SqliteCommand(query, conn))
         using (var reader = cmd.ExecuteReader())
         {
             if (reader.Read())
@@ -135,7 +134,8 @@ public class AssetManager
                     Architecture = reader["Architecture"].ToString() ?? string.Empty,
                     Size = reader["Size"].ToString() ?? string.Empty
                 };
-                Debug.WriteLine($"Loaded heating grid: {GridInfo.Name}");
+                Console.WriteLine($"Loaded heating grid image: {GridInfo.ImageSource}");
+                Console.WriteLine($"Loaded heating grid: {GridInfo.Name}");
             }
         }
     }
@@ -144,7 +144,7 @@ public class AssetManager
     {
         if (scenarioIndex < 0 || scenarioIndex >= Presets.Count)
         {
-            Debug.WriteLine($"Invalid scenario index: {scenarioIndex}");
+            Console.WriteLine($"Invalid scenario index: {scenarioIndex}");
             return false;
         }
 
@@ -154,7 +154,7 @@ public class AssetManager
         CurrentAssets = preset.MachineModels.ToList();
 
         SelectedScenarioIndex = scenarioIndex;
-        Debug.WriteLine($"Set scenario '{preset.Name}' with {CurrentAssets.Count} assets");
+        Console.WriteLine($"Set scenario '{preset.Name}' with {CurrentAssets.Count} assets");
         return true;
     }
 
@@ -163,7 +163,7 @@ public class AssetManager
         var preset = Presets.FirstOrDefault(p => p.Name.Equals(scenarioName, StringComparison.OrdinalIgnoreCase));
         if (preset == null)
         {
-            Debug.WriteLine($"Scenario '{scenarioName}' not found");
+            Console.WriteLine($"Scenario '{scenarioName}' not found");
             return false;
         }
         return SetScenario(Presets.IndexOf(preset));
@@ -175,7 +175,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
 
@@ -186,7 +186,7 @@ public class AssetManager
             VALUES
             (@presetId, @name, @imageSource, @maxHeat, @maxElectricity, @productionCosts, @emissions, @gasConsumption, @oilConsumption, @isActive, @heatProduction, @color)";
 
-                using (var cmd = new SQLiteCommand(insertQuery, conn))
+                using (var cmd = new SqliteCommand(insertQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@name", name);
@@ -204,13 +204,13 @@ public class AssetManager
                     cmd.ExecuteNonQuery();
                 }
 
-                Debug.WriteLine($"New machine '{name}' created in PresetId {presetId}");
+                Console.WriteLine($"New machine '{name}' created in PresetId {presetId}");
                 return true;
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error creating machine: {ex.Message}");
+            Console.WriteLine($"Error creating machine: {ex.Message}");
             return false;
         }
     }
@@ -222,7 +222,7 @@ public class AssetManager
         Presets.Clear();
 
         // Reload from database
-        using (var conn = new SQLiteConnection(_dbPath))
+        using (var conn = new SqliteConnection(dbPath))
         {
             conn.Open();
             LoadAllPresets(conn);
@@ -236,14 +236,14 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
                 const string query = @"
                 DELETE FROM PresetMachines 
                 WHERE PresetId = @presetId AND Name = @machineName";
 
-                using (var cmd = new SQLiteCommand(query, conn))
+                using (var cmd = new SqliteCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@machineName", machineName);
@@ -266,7 +266,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error removing machine from preset: {ex.Message}");
+            Console.WriteLine($"Error removing machine from preset: {ex.Message}");
             return false;
         }
     }
@@ -275,14 +275,14 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
 
                 // Get the current maximum ID
                 int newId = 1;
                 const string getMaxIdQuery = "SELECT MAX(Id) FROM AM_Presets";
-                using (var cmd = new SQLiteCommand(getMaxIdQuery, conn))
+                using (var cmd = new SqliteCommand(getMaxIdQuery, conn))
                 {
                     var result = cmd.ExecuteScalar();
                     if (result != null && result != DBNull.Value)
@@ -293,7 +293,7 @@ public class AssetManager
 
                 // Insert the new preset
                 const string insertPresetQuery = "INSERT INTO AM_Presets (Id, Name) VALUES (@id, @name)";
-                using (var cmd = new SQLiteCommand(insertPresetQuery, conn))
+                using (var cmd = new SqliteCommand(insertPresetQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", newId);
                     cmd.Parameters.AddWithValue("@name", presetName);
@@ -303,13 +303,13 @@ public class AssetManager
                 // Refresh the in-memory presets
                 RefreshAssets();
 
-                Debug.WriteLine($"New preset created with ID: {newId}, Name: {presetName}");
+                Console.WriteLine($"New preset created with ID: {newId}, Name: {presetName}");
                 return true;
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error creating preset: {ex.Message}");
+            Console.WriteLine($"Error creating preset: {ex.Message}");
             return false;
         }
     }
@@ -319,7 +319,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
 
@@ -329,7 +329,7 @@ public class AssetManager
             FROM PresetMachines 
             WHERE PresetId = @presetId AND Name = @name";
 
-                using (var checkCmd = new SQLiteCommand(checkQuery, conn))
+                using (var checkCmd = new SqliteCommand(checkQuery, conn))
                 {
                     checkCmd.Parameters.AddWithValue("@presetId", presetId);
                     checkCmd.Parameters.AddWithValue("@name", machine.Name);
@@ -337,7 +337,7 @@ public class AssetManager
                     int count = Convert.ToInt32(checkCmd.ExecuteScalar());
                     if (count > 0)
                     {
-                        Debug.WriteLine($"Machine '{machine.Name}' already exists in PresetId {presetId}. Skipping insertion.");
+                        Console.WriteLine($"Machine '{machine.Name}' already exists in PresetId {presetId}. Skipping insertion.");
                         return true;
                     }
                 }
@@ -347,7 +347,7 @@ public class AssetManager
             INSERT INTO PresetMachines (PresetId, Name, MaxHeat, ProductionCosts, Emissions, GasConsumption, OilConsumption, MaxElectricity, IsActive, HeatProduction, Color)
             VALUES (@presetId, @name, @maxHeat, @productionCosts, @emissions, @gasConsumption, @oilConsumption, @maxElectricity, @isActive, @heatProduction, @color)";
 
-                using (var insertCmd = new SQLiteCommand(insertQuery, conn))
+                using (var insertCmd = new SqliteCommand(insertQuery, conn))
                 {
                     insertCmd.Parameters.AddWithValue("@presetId", presetId);
                     insertCmd.Parameters.AddWithValue("@name", machine.Name);
@@ -369,7 +369,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error adding machine to preset: {ex.Message}");
+            Console.WriteLine($"Error adding machine to preset: {ex.Message}");
             return false;
         }
     }
@@ -377,7 +377,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
                 const string query = @"
@@ -385,7 +385,7 @@ public class AssetManager
                 FROM AM_PresetAssets 
                 WHERE PresetId = @presetId AND AssetId = @assetId";
 
-                using (var cmd = new SQLiteCommand(query, conn))
+                using (var cmd = new SqliteCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@assetId", assetId);
@@ -395,7 +395,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error checking preset membership: {ex.Message}");
+            Console.WriteLine($"Error checking preset membership: {ex.Message}");
             return false;
         }
     }
@@ -405,13 +405,13 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
 
                 // Delete preset associations first
                 const string deleteAssociationsQuery = "DELETE FROM AM_PresetAssets WHERE PresetId = @presetId";
-                using (var cmd = new SQLiteCommand(deleteAssociationsQuery, conn))
+                using (var cmd = new SqliteCommand(deleteAssociationsQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.ExecuteNonQuery();
@@ -419,7 +419,7 @@ public class AssetManager
 
                 // Delete the preset itself
                 const string deletePresetQuery = "DELETE FROM AM_Presets WHERE Id = @presetId";
-                using (var cmd = new SQLiteCommand(deletePresetQuery, conn))
+                using (var cmd = new SqliteCommand(deletePresetQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     int rowsAffected = cmd.ExecuteNonQuery();
@@ -438,7 +438,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error deleting preset: {ex.Message}");
+            Console.WriteLine($"Error deleting preset: {ex.Message}");
         }
         return false;
     }
@@ -447,7 +447,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
 
@@ -456,7 +456,7 @@ public class AssetManager
                 DELETE FROM PresetMachines 
                 WHERE PresetId = @presetId AND Name = @machineName";
 
-                using (var cmd = new SQLiteCommand(deleteQuery, conn))
+                using (var cmd = new SqliteCommand(deleteQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@machineName", machineName);
@@ -464,12 +464,12 @@ public class AssetManager
                     int rowsAffected = cmd.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
-                        Debug.WriteLine($"Machine '{machineName}' deleted from PresetId {presetId}");
+                        Console.WriteLine($"Machine '{machineName}' deleted from PresetId {presetId}");
                         return true;
                     }
                     else
                     {
-                        Debug.WriteLine($"Machine '{machineName}' not found in PresetId {presetId}");
+                        Console.WriteLine($"Machine '{machineName}' not found in PresetId {presetId}");
                         return false;
                     }
                 }
@@ -477,7 +477,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error deleting machine: {ex.Message}");
+            Console.WriteLine($"Error deleting machine: {ex.Message}");
             return false;
         }
     }
@@ -498,7 +498,7 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
 
@@ -517,7 +517,7 @@ public class AssetManager
                 Color = @color
             WHERE PresetId = @presetId AND Name = @originalName";
 
-                using (var cmd = new SQLiteCommand(updateQuery, conn))
+                using (var cmd = new SqliteCommand(updateQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.Parameters.AddWithValue("@originalName", originalName);
@@ -535,12 +535,12 @@ public class AssetManager
                     int rowsAffected = cmd.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
-                        Debug.WriteLine($"Machine '{newName}' updated in PresetId {presetId}");
+                        Console.WriteLine($"Machine '{newName}' updated in PresetId {presetId}");
                         return true;
                     }
                     else
                     {
-                        Debug.WriteLine($"Machine '{originalName}' not found in PresetId {presetId}");
+                        Console.WriteLine($"Machine '{originalName}' not found in PresetId {presetId}");
                         return false;
                     }
                 }
@@ -548,7 +548,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error updating machine: {ex.Message}");
+            Console.WriteLine($"Error updating machine: {ex.Message}");
             return false;
         }
     }
@@ -556,11 +556,11 @@ public class AssetManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(_dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
                 const string query = "UPDATE AM_Presets SET Name = @newName WHERE Id = @presetId";
-                using (var cmd = new SQLiteCommand(query, conn))
+                using (var cmd = new SqliteCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@newName", newName);
                     cmd.Parameters.AddWithValue("@presetId", presetId);
@@ -580,7 +580,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error updating preset name: {ex.Message}");
+            Console.WriteLine($"Error updating preset name: {ex.Message}");
         }
         return false;
     }
@@ -699,13 +699,13 @@ public partial class AssetModel : ObservableObject
 
         foreach (var preset in allPresets)
         {
-            Debug.WriteLine($"[InitializePresetSelections] Checking Machine: {Name} against Preset: {preset.Name}");
-            Debug.WriteLine($"[InitializePresetSelections] Machines in Preset: {string.Join(", ", preset.Machines)}");
+            Console.WriteLine($"[InitializePresetSelections] Checking Machine: {Name} against Preset: {preset.Name}");
+            Console.WriteLine($"[InitializePresetSelections] Machines in Preset: {string.Join(", ", preset.Machines)}");
 
             bool isSelected = preset.Machines.Any(machineName =>
                 string.Equals(machineName.Trim(), Name.Trim(), StringComparison.OrdinalIgnoreCase)); // Case-insensitive comparison
 
-            Debug.WriteLine($"[InitializePresetSelections] Machine: {Name}, Preset: {preset.Name}, IsSelected: {isSelected}");
+            Console.WriteLine($"[InitializePresetSelections] Machine: {Name}, Preset: {preset.Name}, IsSelected: {isSelected}");
             PresetSelections.Add(new PresetSelectionItem(preset.Name, isSelected));
         }
     }

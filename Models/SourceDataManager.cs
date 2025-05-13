@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.Diagnostics;
 
 public class SourceDataManager
@@ -13,7 +13,7 @@ public class SourceDataManager
         SummerElectricityPrice
     }
 
-    private readonly string dbPath = "Data Source=Data/heat_optimization.db;Version=3;";
+    private readonly string dbPath = "Data Source=Data/heat_optimization.v2.db;";
 
     public List<(DateTime timestamp, double value)> GetData(DataType dataType)
     {
@@ -21,10 +21,10 @@ public class SourceDataManager
 
         try
         {
-            using (var conn = new SQLiteConnection(dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
-                Debug.WriteLine("Database connection opened successfully");
+                Console.WriteLine("Database connection opened successfully");
 
                 // Determine which columns to select based on the dataType
                 string timeColumn, valueColumn;
@@ -32,20 +32,20 @@ public class SourceDataManager
                 switch (dataType)
                 {
                     case DataType.WinterHeatDemand:
-                        timeColumn = "[Time From (Winter)]";
-                        valueColumn = "[Heat Demand (Winter)]";
+                        timeColumn = "TimeFromWinter";
+                        valueColumn = "HeatDemandWinter";
                         break;
                     case DataType.SummerHeatDemand:
-                        timeColumn = "[Time From (Summer)]";
-                        valueColumn = "[Heat Demand (Summer)]";
+                        timeColumn = "TimeFromSummer";
+                        valueColumn = "HeatDemandSummer";
                         break;
                     case DataType.WinterElectricityPrice:
-                        timeColumn = "[Time From (Winter)]";
-                        valueColumn = "[Electricity Price (Winter)]";
+                        timeColumn = "TimeFromWinter";
+                        valueColumn = "ElectricityPriceWinter";
                         break;
                     case DataType.SummerElectricityPrice:
-                        timeColumn = "[Time From (Summer)]";
-                        valueColumn = "[Electricity Price (Summer)]";
+                        timeColumn = "TimeFromSummer";
+                        valueColumn = "ElectricityPriceSummer";
                         break;
                     default:
                         throw new ArgumentException("Invalid data type specified");
@@ -59,10 +59,10 @@ public class SourceDataManager
                                       AND {valueColumn} IS NOT NULL
                                       ORDER BY {timeColumn}";
 
-                using (var cmd = new SQLiteCommand(selectQuery, conn))
+                using (var cmd = new SqliteCommand(selectQuery, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
-                    Debug.WriteLine($"Executing query for {dataType}...");
+                    Console.WriteLine($"Executing query for {dataType}...");
                     int pointCount = 0;
 
                     while (reader.Read())
@@ -80,31 +80,31 @@ public class SourceDataManager
                                 // Display first 5 and last 5 points for verification
                                 if (pointCount <= 5 || pointCount >= data.Count - 5)
                                 {
-                                    Debug.WriteLine($"Point {pointCount}: {timestamp} = {value}");
+                                    Console.WriteLine($"Point {pointCount}: {timestamp} = {value}");
                                 }
                                 else if (pointCount == 6)
                                 {
-                                    Debug.WriteLine($"... (showing first/last 5 points)");
+                                    Console.WriteLine($"... (showing first/last 5 points)");
                                 }
                             }
                             else
                             {
-                                Debug.WriteLine($"Failed to parse timestamp: {dateStr}");
+                                Console.WriteLine($"Failed to parse timestamp: {dateStr}");
                             }
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine($"Error processing row: {ex.Message}");
+                            Console.WriteLine($"Error processing row: {ex.Message}");
                         }
                     }
 
-                    Debug.WriteLine($"Total points retrieved: {pointCount}");
+                    Console.WriteLine($"Total points retrieved: {pointCount}");
                 }
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Database error: {ex.Message}");
+            Console.WriteLine($"Database error: {ex.Message}");
         }
 
         return data;
@@ -114,7 +114,7 @@ public class SourceDataManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
                 const string query = @"
@@ -122,7 +122,7 @@ public class SourceDataManager
                     VALUES (@key, @value)
                     ON CONFLICT(Key) DO UPDATE SET Value = @value";
 
-                using (var cmd = new SQLiteCommand(query, conn))
+                using (var cmd = new SqliteCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@key", key);
                     cmd.Parameters.AddWithValue("@value", value);
@@ -132,7 +132,7 @@ public class SourceDataManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error saving setting '{key}': {ex.Message}");
+            Console.WriteLine($"Error saving setting '{key}': {ex.Message}");
         }
     }
 
@@ -140,12 +140,12 @@ public class SourceDataManager
     {
         try
         {
-            using (var conn = new SQLiteConnection(dbPath))
+            using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
                 const string query = "SELECT Value FROM UserSettings WHERE Key = @key";
 
-                using (var cmd = new SQLiteCommand(query, conn))
+                using (var cmd = new SqliteCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@key", key);
                     var result = cmd.ExecuteScalar();
@@ -155,7 +155,7 @@ public class SourceDataManager
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error retrieving setting '{key}': {ex.Message}");
+            Console.WriteLine($"Error retrieving setting '{key}': {ex.Message}");
             return null;
         }
     }
