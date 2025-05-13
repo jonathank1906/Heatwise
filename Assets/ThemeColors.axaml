@@ -4,7 +4,7 @@
     <Color x:Key="LightForegroundColor">#000000</Color>
     <Color x:Key="LightAccentColor">#B22222</Color>
     <Color x:Key="LightTextColor">#404146</Color>
-    <Color x:Key="LightSecondaryBackground">#5E5E68</Color>
+    <Color x:Key="LightSecondaryBackground">#E4E4E7</Color>
     <Color x:Key="LightBorderColor">#E0E0E0</Color>
     
     <!-- Dark Theme Colors -->

@@ -36,7 +36,7 @@
             HorizontalAlignment="Left"
             FontSize="20"
             FontWeight="Bold"
-            Foreground="White"
+            Foreground="{DynamicResource TextColor}"
             Text="Preset Explorer" />
 
         <!--  Presets List  -->
@@ -61,7 +61,7 @@
                                 Margin="0,10,0,0"
                                 HorizontalAlignment="Left"
                                 Background="#0078d7"
-                                 IsVisible="{Binding IsRenaming, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                IsVisible="{Binding IsRenaming, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
 
                                 Command="{Binding NavigateToPresetCommand}"
                                 CommandParameter="{Binding Name}"
@@ -109,7 +109,7 @@
                                 Width="20"
                                 Height="20"
                                 Data="{StaticResource ThreeDotsIcon}"
-                                Fill="White"
+                                Fill="{DynamicResource TextColor}"
                                 Stretch="Uniform" />
                         </Button>
                     </Grid>
@@ -118,26 +118,28 @@
         </ItemsControl>
 
         <!--  Fixed Position ToggleSwitch (left-aligned with buttons)  -->
-        <Image
-            Grid.Row="2"
-            Width="50"
-            Height="50"
-            Margin="170,0,0,75"
-            HorizontalAlignment="Left"
-            Source="{SvgImage /Assets/District Heating.svg}" />
+      <PathIcon
+    Grid.Row="2"
+    Width="50"
+    Height="50"
+    Margin="170,0,0,75"
+    HorizontalAlignment="Left"
+    Data="{StaticResource DistrictHeating}"
+    Foreground="{DynamicResource TextColor}" />
         <ToggleSwitch
             Grid.Row="2"
             Margin="10,0,0,20"
+            Foreground="{DynamicResource TextColor}"
             HorizontalAlignment="Left"
             IsChecked="{Binding IsHeatingGridVisible, Mode=TwoWay}">
             <TextBlock
                 FontSize="18"
                 FontWeight="Bold"
-                Foreground="White"
+                Foreground="{DynamicResource TextColor}"
                 Text="View Heating Grid" />
         </ToggleSwitch>
 
-        <!--  Heating Grid Info - appears below but doesn't affect toggle position  -->
+        <!--  Heating Grid Info  -->
         <StackPanel
             Grid.Row="4"
             Margin="10,0,0,20"

@@ -88,9 +88,9 @@
                     Text="Dark/Light Mode" />
                 <ToggleSwitch
                     Margin="0,0,0,1"
-                    Foreground="{DynamicResource TextColor}"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
+                    Foreground="{DynamicResource TextColor}"
                     IsChecked="{Binding IsDarkMode}" />
             </DockPanel>
             <Border
@@ -109,9 +109,9 @@
                     Text="Show Home Screen on Startup" />
                 <ToggleSwitch
                     Margin="0,0,0,1"
-                    Foreground="{DynamicResource TextColor}"
                     HorizontalAlignment="Right"
-                    VerticalAlignment="Center" />
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource TextColor}" />
             </DockPanel>
             <Border
                 Margin="0,20,0,20"
@@ -129,9 +129,9 @@
                     Text="Developer Mode" />
                 <ToggleSwitch
                     Margin="0,0,0,1"
-                    Foreground="{DynamicResource TextColor}"
                     HorizontalAlignment="Right"
-                    VerticalAlignment="Center" />
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource TextColor}" />
             </DockPanel>
             <TextBlock
                 Margin="0,0,0,0"
@@ -151,10 +151,18 @@
             Width="450"
             Height="40"
             Padding="10,10,10,10"
-            Background="{DynamicResource SecondaryBackground}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Content="Restore Defaults"
-            FontWeight="Bold" />
+            Background="{DynamicResource SecondaryBackground}"
+            FontWeight="Bold">
+            <Button.Content>
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource TextColor}"
+                    FontWeight="Bold"
+                    Text="Restore Defaults" />
+            </Button.Content>
+        </Button>
     </Grid>
 </UserControl>
