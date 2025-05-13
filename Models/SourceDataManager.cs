@@ -18,17 +18,17 @@ public class SourceDataManager
     public List<(DateTime timestamp, double value)> GetData(DataType dataType)
     {
         var data = new List<(DateTime timestamp, double value)>();
-        
+
         try
         {
             using (var conn = new SQLiteConnection(dbPath))
             {
                 conn.Open();
                 Debug.WriteLine("Database connection opened successfully");
-                
+
                 // Determine which columns to select based on the dataType
                 string timeColumn, valueColumn;
-                
+
                 switch (dataType)
                 {
                     case DataType.WinterHeatDemand:
@@ -50,7 +50,7 @@ public class SourceDataManager
                     default:
                         throw new ArgumentException("Invalid data type specified");
                 }
-                
+
                 string selectQuery = $@"SELECT 
                                       {timeColumn} AS Timestamp,
                                       {valueColumn} AS Value
@@ -64,19 +64,19 @@ public class SourceDataManager
                 {
                     Debug.WriteLine($"Executing query for {dataType}...");
                     int pointCount = 0;
-                    
+
                     while (reader.Read())
                     {
                         try
                         {
                             var dateStr = reader["Timestamp"].ToString();
                             var value = Convert.ToDouble(reader["Value"]);
-                            
+
                             if (DateTime.TryParse(dateStr, out DateTime timestamp))
                             {
                                 data.Add((timestamp, value));
                                 pointCount++;
-                                
+
                                 // Display first 5 and last 5 points for verification
                                 if (pointCount <= 5 || pointCount >= data.Count - 5)
                                 {
@@ -97,7 +97,7 @@ public class SourceDataManager
                             Debug.WriteLine($"Error processing row: {ex.Message}");
                         }
                     }
-                    
+
                     Debug.WriteLine($"Total points retrieved: {pointCount}");
                 }
             }
@@ -106,8 +106,58 @@ public class SourceDataManager
         {
             Debug.WriteLine($"Database error: {ex.Message}");
         }
-        
+
         return data;
+    }
+
+    public void SaveSetting(string key, string value)
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(dbPath))
+            {
+                conn.Open();
+                const string query = @"
+                    INSERT INTO UserSettings (Key, Value)
+                    VALUES (@key, @value)
+                    ON CONFLICT(Key) DO UPDATE SET Value = @value";
+
+                using (var cmd = new SQLiteCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@key", key);
+                    cmd.Parameters.AddWithValue("@value", value);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error saving setting '{key}': {ex.Message}");
+        }
+    }
+
+    public string? GetSetting(string key)
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(dbPath))
+            {
+                conn.Open();
+                const string query = "SELECT Value FROM UserSettings WHERE Key = @key";
+
+                using (var cmd = new SQLiteCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@key", key);
+                    var result = cmd.ExecuteScalar();
+                    return result?.ToString();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error retrieving setting '{key}': {ex.Message}");
+            return null;
+        }
     }
 
     // You can keep these convenience methods for backward compatibility

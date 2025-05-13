@@ -10,10 +10,17 @@
         <local:ViewLocator />
     </Application.DataTemplates>
 
-
     <Application.Styles>
         <sty:FluentAvaloniaTheme CustomAccentColor="Firebrick" PreferUserAccentColor="False" />
         <StyleInclude Source="Assets/Icons.axaml" />
         <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
     </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://Sem2Proj/Assets/ThemeColors.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>
