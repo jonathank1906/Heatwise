@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using Sem2Proj.Models;
 using System.Linq;
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
 using Sem2Proj.Interfaces;
 using Sem2Proj.Enums;
@@ -248,7 +247,7 @@ if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected)
     {
         if (value != null)
         {
-            Debug.WriteLine($"Selected asset changed to: {value.Name}");
+            Console.WriteLine($"Selected asset changed to: {value.Name}");
             LoadImageFromSource(value.ImageSource);
         }
     }
@@ -280,8 +279,8 @@ if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected)
             : new ObservableCollection<AssetModel>();
 
 
-        Debug.WriteLine($"Selected Scenario: {value}");
-        Debug.WriteLine($"CurrentScenarioAssets Count: {CurrentScenarioAssets.Count}");
+        Console.WriteLine($"Selected Scenario: {value}");
+        Console.WriteLine($"CurrentScenarioAssets Count: {CurrentScenarioAssets.Count}");
     }
 
     private Bitmap? LoadImageFromSource(string imageSource)
@@ -290,16 +289,9 @@ if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected)
         {
             if (string.IsNullOrEmpty(imageSource)) return null;
 
-            // Remove leading slash if present
-            var cleanPath = imageSource.TrimStart('/');
-
-            // Get the project root directory
-            var projectDir = Path.GetFullPath(Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", ".."));
-
-            // Combine with the image path
-            var fullPath = Path.Combine(projectDir, cleanPath.Replace("/", "\\"));
+            var normalizedPath = imageSource.TrimStart('/', '\\');
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string fullPath = Path.Combine(basePath, normalizedPath);
 
             if (File.Exists(fullPath))
             {
@@ -308,11 +300,11 @@ if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected)
                     return new Bitmap(stream);
                 }
             }
-            Debug.WriteLine($"Image not found at: {fullPath}");
+            Console.WriteLine($"Image not found at: {fullPath}");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error loading image from {imageSource}: {ex.Message}");
+            Console.WriteLine($"Error loading image from {imageSource}: {ex.Message}");
         }
         return null;
     }
@@ -340,13 +332,13 @@ if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected)
             }
             else
             {
-                Debug.WriteLine($"Grid image not found at: {fullPath}");
+                Console.WriteLine($"Grid image not found at: {fullPath}");
                 GridImageFromBinding = null;
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error loading grid image: {ex.Message}");
+            Console.WriteLine($"Error loading grid image: {ex.Message}");
             GridImageFromBinding = null;
         }
     }
@@ -368,16 +360,16 @@ if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected)
         if (machine != null)
         {
             AssetsForSelectedPreset.Remove(machine);
-            Debug.WriteLine($"Machine {machineName} marked for removal from preset {SelectedPresetForConfiguration.Name}");
+            Console.WriteLine($"Machine {machineName} marked for removal from preset {SelectedPresetForConfiguration.Name}");
         }
         else
         {
-            Debug.WriteLine($"Machine {machineName} not found in the current configuration.");
+            Console.WriteLine($"Machine {machineName} not found in the current configuration.");
         }
     }
     partial void OnColorChanged(string value)
     {
-        Debug.WriteLine($"Color property changed to: {value}");
+        Console.WriteLine($"Color property changed to: {value}");
     }
     [RelayCommand]
     private void Delete(int machineId)
@@ -465,11 +457,11 @@ private void SaveConfiguration()
 {
     try
     {
-        Debug.WriteLine("=== Starting configuration save ===");
+        Console.WriteLine("=== Starting configuration save ===");
 
         if (SelectedPresetForConfiguration == null)
         {
-            Debug.WriteLine("Error: No preset selected for configuration.");
+            Console.WriteLine("Error: No preset selected for configuration.");
             Events.Notification.Invoke("No preset selected for configuration.", NotificationType.Error);
             return;
         }
@@ -477,7 +469,7 @@ private void SaveConfiguration()
         // Save or update machines in the database
         foreach (var machine in AssetsForSelectedPreset)
         {
-            Debug.WriteLine($"Saving machine: {machine.Name} (OriginalName: {machine.OriginalName}) in preset: {SelectedPresetForConfiguration.Name}");
+            Console.WriteLine($"Saving machine: {machine.Name} (OriginalName: {machine.OriginalName}) in preset: {SelectedPresetForConfiguration.Name}");
 
             bool success = _assetManager.UpdateMachineInPreset(
                 SelectedPresetForConfiguration.Id,
@@ -495,12 +487,12 @@ private void SaveConfiguration()
             );
             if (!success)
             {
-                Debug.WriteLine($"Failed to save machine: {machine.Name}");
+                Console.WriteLine($"Failed to save machine: {machine.Name}");
                 Events.Notification.Invoke($"Failed to save machine: {machine.Name}", NotificationType.Error);
             }
             else
             {
-                Debug.WriteLine($"Machine '{machine.Name}' saved successfully.");
+                Console.WriteLine($"Machine '{machine.Name}' saved successfully.");
                 machine.OriginalName = machine.Name; // Update OriginalName after successful save
             }
         }
@@ -512,18 +504,18 @@ private void SaveConfiguration()
 
         foreach (var machine in machinesToRemove)
         {
-            Debug.WriteLine($"Removing machine: {machine.Name} from preset: {SelectedPresetForConfiguration.Name}");
+            Console.WriteLine($"Removing machine: {machine.Name} from preset: {SelectedPresetForConfiguration.Name}");
 
             bool success = _assetManager.RemoveMachineFromPreset(SelectedPresetForConfiguration.Id, machine.Name);
             if (success)
             {
-                Debug.WriteLine($"Machine '{machine.Name}' removed from preset: {SelectedPresetForConfiguration.Name}");
+                Console.WriteLine($"Machine '{machine.Name}' removed from preset: {SelectedPresetForConfiguration.Name}");
                 SelectedPresetForConfiguration.MachineModels.Remove(machine);
             }
             else
             {
-                Debug.WriteLine($"Failed to remove machine '{machine.Name}' from preset: {SelectedPresetForConfiguration.Name}");
-                //Events.Notification.Invoke($"Failed to remove machine: {machine.Name}", NotificationType.Error);
+                Console.WriteLine($"Failed to remove machine '{machine.Name}' from preset: {SelectedPresetForConfiguration.Name}");
+                Events.Notification.Invoke($"Failed to remove machine: {machine.Name}", NotificationType.Error);
             }
         }
 
@@ -559,16 +551,16 @@ private void SaveConfiguration()
 foreach (var preset in AvailablePresets)
 {
     preset.IsPresetSelected = preset.Id == SelectedPresetForConfiguration.Id;
-    Debug.WriteLine($"Preset: {preset.Name}, IsPresetSelected: {preset.IsPresetSelected}");
+    Console.WriteLine($"Preset: {preset.Name}, IsPresetSelected: {preset.IsPresetSelected}");
 }
         //CurrentViewState = ViewState.PresetNavigation;
         NavigateTo("PresetNavigation");
-        Debug.WriteLine("=== Configuration save completed successfully ===");
+        Console.WriteLine("=== Configuration save completed successfully ===");
         Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
     }
     catch (Exception ex)
     {
-        Debug.WriteLine($"Error saving configuration: {ex.Message}");
+        Console.WriteLine($"Error saving configuration: {ex.Message}");
         Events.Notification.Invoke("Failed to save configuration!", NotificationType.Error);
     }
 }
@@ -582,7 +574,7 @@ foreach (var preset in AvailablePresets)
     // Refresh the presets list dynamically
     public void RefreshPresets()
     {
-        Debug.WriteLine("=== RefreshPresets called ===");
+        Console.WriteLine("=== RefreshPresets called ===");
 
         _assetManager.RefreshAssets();
 
@@ -613,13 +605,13 @@ foreach (var preset in AvailablePresets)
            })
        );
 
-        Debug.WriteLine($"Refreshed presets. Now have {AvailablePresets.Count} presets.");
+        Console.WriteLine($"Refreshed presets. Now have {AvailablePresets.Count} presets.");
         foreach (var preset in AvailablePresets)
         {
-            Debug.WriteLine($"Preset: {preset.Name}, Machines: {preset.MachineModels.Count}");
+            Console.WriteLine($"Preset: {preset.Name}, Machines: {preset.MachineModels.Count}");
             foreach (var machine in preset.MachineModels)
             {
-                Debug.WriteLine($"  - Machine: {machine.Name}");
+                Console.WriteLine($"  - Machine: {machine.Name}");
             }
         }
     }
@@ -632,7 +624,7 @@ foreach (var preset in AvailablePresets)
         var topLevel = TopLevel.GetTopLevel(view);
         if (topLevel == null)
         {
-            Debug.WriteLine("Unable to get TopLevel");
+            Console.WriteLine("Unable to get TopLevel");
             return;
         }
 
@@ -659,7 +651,7 @@ foreach (var preset in AvailablePresets)
                 // Get the project's Assets folder (source directory)
                 var projectDir = Path.GetFullPath(Path.Combine(
                     AppDomain.CurrentDomain.BaseDirectory,
-                    "..", "..", "..")); // Go up from bin/Debug/net9.0
+                    "..", "..", "..")); // Go up from bin/Console/net9.0
                 var assetsDir = Path.Combine(projectDir, "Assets");
                 Directory.CreateDirectory(assetsDir);
 
@@ -671,13 +663,13 @@ foreach (var preset in AvailablePresets)
                 // Store the path relative to project root
                 ImagePath = "/Assets/" + fileName;
 
-                Debug.WriteLine($"Image saved to project folder: {destinationPath}");
-                Debug.WriteLine($"ImagePath set to: {ImagePath}");
+                Console.WriteLine($"Image saved to project folder: {destinationPath}");
+                Console.WriteLine($"ImagePath set to: {ImagePath}");
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Image selection error: {ex.Message}");
+            Console.WriteLine($"Image selection error: {ex.Message}");
             Events.Notification.Invoke("Failed to select image", Enums.NotificationType.Error);
         }
     }
@@ -693,14 +685,14 @@ foreach (var preset in AvailablePresets)
             !double.TryParse(GasConsumption, out double gasConsumption) ||
             !double.TryParse(OilConsumption, out double oilConsumption))
         {
-            Debug.WriteLine("Invalid numeric input values");
+            Console.WriteLine("Invalid numeric input values");
             Events.Notification.Invoke("Invalid numeric input values.", NotificationType.Error);
             return;
         }
 
         if (string.IsNullOrWhiteSpace(MachineName))
         {
-            Debug.WriteLine("Machine name cannot be empty");
+            Console.WriteLine("Machine name cannot be empty");
             Events.Notification.Invoke("Machine name cannot be empty.", NotificationType.Error);
             return;
         }
@@ -709,7 +701,7 @@ foreach (var preset in AvailablePresets)
         var selectedPresetIds = GetSelectedPresetIds();
         if (!selectedPresetIds.Any())
         {
-            Debug.WriteLine("No presets selected for the machine.");
+            Console.WriteLine("No presets selected for the machine.");
             Events.Notification.Invoke("Please select at least one preset.", NotificationType.Error);
             return;
         }
@@ -732,11 +724,11 @@ foreach (var preset in AvailablePresets)
 
             if (success)
             {
-                Debug.WriteLine($"Successfully created new machine '{MachineName}' in PresetId {presetId}");
+                Console.WriteLine($"Successfully created new machine '{MachineName}' in PresetId {presetId}");
             }
             else
             {
-                Debug.WriteLine($"Failed to create new machine '{MachineName}' in PresetId {presetId}");
+                Console.WriteLine($"Failed to create new machine '{MachineName}' in PresetId {presetId}");
                 Events.Notification.Invoke($"Failed to create machine '{MachineName}' in preset.", NotificationType.Error);
             }
         }
@@ -760,7 +752,7 @@ foreach (var preset in AvailablePresets)
     {
         if (string.IsNullOrWhiteSpace(PresetName))
         {
-            Debug.WriteLine("Preset name cannot be empty.");
+            Console.WriteLine("Preset name cannot be empty.");
             Events.Notification.Invoke("Preset name cannot be empty.", Enums.NotificationType.Error);
             return;
         }
@@ -768,7 +760,7 @@ foreach (var preset in AvailablePresets)
         bool success = _assetManager.CreateNewPreset(PresetName);
         if (success)
         {
-            Debug.WriteLine($"Successfully created new preset '{PresetName}'");
+            Console.WriteLine($"Successfully created new preset '{PresetName}'");
             Events.Notification.Invoke($"Preset '{PresetName}' created successfully.", Enums.NotificationType.Confirmation);
             RefreshPresetList();
             AssetCreatedSuccessfully?.Invoke();
@@ -778,7 +770,7 @@ foreach (var preset in AvailablePresets)
         }
         else
         {
-            Debug.WriteLine("Failed to create new preset");
+            Console.WriteLine("Failed to create new preset");
             Events.Notification.Invoke("Failed to create new preset.", Enums.NotificationType.Error);
         }
         CurrentViewState = ViewState.PresetNavigation;
@@ -810,7 +802,7 @@ foreach (var preset in AvailablePresets)
             SelectedPreset = AvailablePresets[0];
         }
 
-        Debug.WriteLine($"Refreshed presets list. Now contains: {string.Join(", ", AvailablePresets.Select(p => p.Name))}");
+        Console.WriteLine($"Refreshed presets list. Now contains: {string.Join(", ", AvailablePresets.Select(p => p.Name))}");
     }
 
 
