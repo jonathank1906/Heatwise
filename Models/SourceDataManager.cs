@@ -24,7 +24,7 @@ public class SourceDataManager
             using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
-                Console.WriteLine("Database connection opened successfully");
+                Debug.WriteLine("Database connection opened successfully");
 
                 // Determine which columns to select based on the dataType
                 string timeColumn, valueColumn;
@@ -62,7 +62,7 @@ public class SourceDataManager
                 using (var cmd = new SqliteCommand(selectQuery, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
-                    Console.WriteLine($"Executing query for {dataType}...");
+                    Debug.WriteLine($"Executing query for {dataType}...");
                     int pointCount = 0;
 
                     while (reader.Read())
@@ -80,31 +80,31 @@ public class SourceDataManager
                                 // Display first 5 and last 5 points for verification
                                 if (pointCount <= 5 || pointCount >= data.Count - 5)
                                 {
-                                    Console.WriteLine($"Point {pointCount}: {timestamp} = {value}");
+                                    Debug.WriteLine($"Point {pointCount}: {timestamp} = {value}");
                                 }
                                 else if (pointCount == 6)
                                 {
-                                    Console.WriteLine($"... (showing first/last 5 points)");
+                                    Debug.WriteLine($"... (showing first/last 5 points)");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine($"Failed to parse timestamp: {dateStr}");
+                                Debug.WriteLine($"Failed to parse timestamp: {dateStr}");
                             }
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Error processing row: {ex.Message}");
+                            Debug.WriteLine($"Error processing row: {ex.Message}");
                         }
                     }
 
-                    Console.WriteLine($"Total points retrieved: {pointCount}");
+                    Debug.WriteLine($"Total points retrieved: {pointCount}");
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Database error: {ex.Message}");
+            Debug.WriteLine($"Database error: {ex.Message}");
         }
 
         return data;
@@ -132,7 +132,7 @@ public class SourceDataManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error saving setting '{key}': {ex.Message}");
+            Debug.WriteLine($"Error saving setting '{key}': {ex.Message}");
         }
     }
 
@@ -155,7 +155,7 @@ public class SourceDataManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error retrieving setting '{key}': {ex.Message}");
+            Debug.WriteLine($"Error retrieving setting '{key}': {ex.Message}");
             return null;
         }
     }

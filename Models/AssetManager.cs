@@ -54,7 +54,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Database error in AssetManager: {ex.Message}");
+            Debug.WriteLine($"Database error in AssetManager: {ex.Message}");
         }
     }
 
@@ -109,14 +109,14 @@ public class AssetManager
                             HeatProduction = Convert.ToDouble(machineReader["HeatProduction"]),
                             Color = machineReader["Color"].ToString() ?? "#FFFFFF"
                         };
-                        Console.WriteLine($"Loaded Image: {machine.ImageSource}");
+                        Debug.WriteLine($"Loaded Image: {machine.ImageSource}");
                         preset.MachineModels.Add(machine);
                     }
                 }
             }
         }
 
-        Console.WriteLine($"Loaded {Presets.Count} presets from database.");
+        Debug.WriteLine($"Loaded {Presets.Count} presets from database.");
     }
 
     private void LoadHeatingGridInfo(SqliteConnection conn)
@@ -134,8 +134,8 @@ public class AssetManager
                     Architecture = reader["Architecture"].ToString() ?? string.Empty,
                     Size = reader["Size"].ToString() ?? string.Empty
                 };
-                Console.WriteLine($"Loaded heating grid image: {GridInfo.ImageSource}");
-                Console.WriteLine($"Loaded heating grid: {GridInfo.Name}");
+                Debug.WriteLine($"Loaded heating grid image: {GridInfo.ImageSource}");
+                Debug.WriteLine($"Loaded heating grid: {GridInfo.Name}");
             }
         }
     }
@@ -144,7 +144,7 @@ public class AssetManager
     {
         if (scenarioIndex < 0 || scenarioIndex >= Presets.Count)
         {
-            Console.WriteLine($"Invalid scenario index: {scenarioIndex}");
+            Debug.WriteLine($"Invalid scenario index: {scenarioIndex}");
             return false;
         }
 
@@ -154,7 +154,7 @@ public class AssetManager
         CurrentAssets = preset.MachineModels.ToList();
 
         SelectedScenarioIndex = scenarioIndex;
-        Console.WriteLine($"Set scenario '{preset.Name}' with {CurrentAssets.Count} assets");
+        Debug.WriteLine($"Set scenario '{preset.Name}' with {CurrentAssets.Count} assets");
         return true;
     }
 
@@ -163,7 +163,7 @@ public class AssetManager
         var preset = Presets.FirstOrDefault(p => p.Name.Equals(scenarioName, StringComparison.OrdinalIgnoreCase));
         if (preset == null)
         {
-            Console.WriteLine($"Scenario '{scenarioName}' not found");
+            Debug.WriteLine($"Scenario '{scenarioName}' not found");
             return false;
         }
         return SetScenario(Presets.IndexOf(preset));
@@ -204,13 +204,13 @@ public class AssetManager
                     cmd.ExecuteNonQuery();
                 }
 
-                Console.WriteLine($"New machine '{name}' created in PresetId {presetId}");
+                Debug.WriteLine($"New machine '{name}' created in PresetId {presetId}");
                 return true;
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error creating machine: {ex.Message}");
+            Debug.WriteLine($"Error creating machine: {ex.Message}");
             return false;
         }
     }
@@ -266,7 +266,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error removing machine from preset: {ex.Message}");
+            Debug.WriteLine($"Error removing machine from preset: {ex.Message}");
             return false;
         }
     }
@@ -303,13 +303,13 @@ public class AssetManager
                 // Refresh the in-memory presets
                 RefreshAssets();
 
-                Console.WriteLine($"New preset created with ID: {newId}, Name: {presetName}");
+                Debug.WriteLine($"New preset created with ID: {newId}, Name: {presetName}");
                 return true;
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error creating preset: {ex.Message}");
+            Debug.WriteLine($"Error creating preset: {ex.Message}");
             return false;
         }
     }
@@ -337,7 +337,7 @@ public class AssetManager
                     int count = Convert.ToInt32(checkCmd.ExecuteScalar());
                     if (count > 0)
                     {
-                        Console.WriteLine($"Machine '{machine.Name}' already exists in PresetId {presetId}. Skipping insertion.");
+                        Debug.WriteLine($"Machine '{machine.Name}' already exists in PresetId {presetId}. Skipping insertion.");
                         return true;
                     }
                 }
@@ -369,7 +369,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error adding machine to preset: {ex.Message}");
+            Debug.WriteLine($"Error adding machine to preset: {ex.Message}");
             return false;
         }
     }
@@ -395,7 +395,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error checking preset membership: {ex.Message}");
+            Debug.WriteLine($"Error checking preset membership: {ex.Message}");
             return false;
         }
     }
@@ -438,7 +438,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error deleting preset: {ex.Message}");
+            Debug.WriteLine($"Error deleting preset: {ex.Message}");
         }
         return false;
     }
@@ -464,12 +464,12 @@ public class AssetManager
                     int rowsAffected = cmd.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
-                        Console.WriteLine($"Machine '{machineName}' deleted from PresetId {presetId}");
+                        Debug.WriteLine($"Machine '{machineName}' deleted from PresetId {presetId}");
                         return true;
                     }
                     else
                     {
-                        Console.WriteLine($"Machine '{machineName}' not found in PresetId {presetId}");
+                        Debug.WriteLine($"Machine '{machineName}' not found in PresetId {presetId}");
                         return false;
                     }
                 }
@@ -477,7 +477,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error deleting machine: {ex.Message}");
+            Debug.WriteLine($"Error deleting machine: {ex.Message}");
             return false;
         }
     }
@@ -535,12 +535,12 @@ public class AssetManager
                     int rowsAffected = cmd.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
-                        Console.WriteLine($"Machine '{newName}' updated in PresetId {presetId}");
+                        Debug.WriteLine($"Machine '{newName}' updated in PresetId {presetId}");
                         return true;
                     }
                     else
                     {
-                        Console.WriteLine($"Machine '{originalName}' not found in PresetId {presetId}");
+                        Debug.WriteLine($"Machine '{originalName}' not found in PresetId {presetId}");
                         return false;
                     }
                 }
@@ -548,7 +548,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error updating machine: {ex.Message}");
+            Debug.WriteLine($"Error updating machine: {ex.Message}");
             return false;
         }
     }
@@ -580,7 +580,7 @@ public class AssetManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error updating preset name: {ex.Message}");
+            Debug.WriteLine($"Error updating preset name: {ex.Message}");
         }
         return false;
     }
@@ -699,13 +699,13 @@ public partial class AssetModel : ObservableObject
 
         foreach (var preset in allPresets)
         {
-            Console.WriteLine($"[InitializePresetSelections] Checking Machine: {Name} against Preset: {preset.Name}");
-            Console.WriteLine($"[InitializePresetSelections] Machines in Preset: {string.Join(", ", preset.Machines)}");
+            Debug.WriteLine($"[InitializePresetSelections] Checking Machine: {Name} against Preset: {preset.Name}");
+            Debug.WriteLine($"[InitializePresetSelections] Machines in Preset: {string.Join(", ", preset.Machines)}");
 
             bool isSelected = preset.Machines.Any(machineName =>
                 string.Equals(machineName.Trim(), Name.Trim(), StringComparison.OrdinalIgnoreCase)); // Case-insensitive comparison
 
-            Console.WriteLine($"[InitializePresetSelections] Machine: {Name}, Preset: {preset.Name}, IsSelected: {isSelected}");
+            Debug.WriteLine($"[InitializePresetSelections] Machine: {Name}, Preset: {preset.Name}, IsSelected: {isSelected}");
             PresetSelections.Add(new PresetSelectionItem(preset.Name, isSelected));
         }
     }
