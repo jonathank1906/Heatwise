@@ -96,30 +96,30 @@ public partial class AssetManagerViewModel : ObservableObject
 
 
 
-    // Form properties
+    // Create - Form properties
     [ObservableProperty]
-    private string _machineName = string.Empty;
+    private string _machineName = "";
 
     [ObservableProperty]
     private string? _imagePath;
 
     [ObservableProperty]
-    private string _maxHeatOutput = "0";
+    private string _maxHeatOutput = "";
 
     [ObservableProperty]
-    private string _maxElectricityOutput = "0";
+    private string _maxElectricityOutput = "";
 
     [ObservableProperty]
-    private string _productionCost = "0";
+    private string _productionCost = "";
 
     [ObservableProperty]
-    private string _co2Emissions = "0";
+    private string _co2Emissions = "";
 
     [ObservableProperty]
-    private string _gasConsumption = "0";
+    private string _gasConsumption = "";
 
     [ObservableProperty]
-    private string _oilConsumption = "0";
+    private string _oilConsumption = "";
 
     [ObservableProperty]
     private string color;

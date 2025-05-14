@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:Sem2Proj.ViewModels"
     Width="600"
-    
     x:DataType="vm:AssetManagerViewModel">
 
     <Grid>
@@ -80,7 +79,7 @@
                         </StackPanel>
 
                         <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Machine Name:" />
+                            <TextBlock Foreground="{DynamicResource TextColor}" Text="Machine Name:" />
                             <TextBox
                                 Background="#3E3E3E"
                                 CaretBrush="White"
@@ -90,7 +89,7 @@
                         </StackPanel>
 
                         <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Max Heat Output (MW):" />
+                            <TextBlock Foreground="{DynamicResource TextColor}" Text="Max Heat Output (MW):" />
                             <TextBox
                                 Background="#3E3E3E"
                                 CaretBrush="White"
@@ -100,7 +99,7 @@
                         </StackPanel>
 
                         <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Max Electricity Output (MW):" />
+                            <TextBlock Foreground="{DynamicResource TextColor}" Text="Max Electricity Output (MW):" />
                             <TextBox
                                 Background="#3E3E3E"
                                 CaretBrush="White"
@@ -110,7 +109,7 @@
                         </StackPanel>
 
                         <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Production Cost (DKK/MWh):" />
+                            <TextBlock Foreground="{DynamicResource TextColor}" Text="Production Cost (DKK/MWh):" />
                             <TextBox
                                 Background="#3E3E3E"
                                 CaretBrush="White"
@@ -120,7 +119,7 @@
                         </StackPanel>
 
                         <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="CO₂ Emissions (kg/MWh):" />
+                            <TextBlock Foreground="{DynamicResource TextColor}" Text="CO₂ Emissions (kg/MWh):" />
                             <TextBox
                                 Background="#3E3E3E"
                                 CaretBrush="White"
@@ -130,7 +129,7 @@
                         </StackPanel>
 
                         <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Gas Consumption (units/hour):" />
+                            <TextBlock Foreground="{DynamicResource TextColor}" Text="Gas Consumption (units/hour):" />
                             <TextBox
                                 Background="#3E3E3E"
                                 CaretBrush="White"
@@ -140,7 +139,7 @@
                         </StackPanel>
 
                         <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Oil Consumption (units/hour):" />
+                            <TextBlock Foreground="{DynamicResource TextColor}" Text="Oil Consumption (units/hour):" />
                             <TextBox
                                 Background="#3E3E3E"
                                 CaretBrush="White"
@@ -150,25 +149,24 @@
                         </StackPanel>
 
                         <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Machine Image:" />
+                            <TextBlock Foreground="{DynamicResource TextColor}" Text="Machine Image:" />
                             <Button
                                 Padding="10,5"
                                 HorizontalAlignment="Left"
                                 Background="#3E3E42"
-                            
-                              Click="OnBrowseButtonClick"
+                                Click="OnBrowseButtonClick"
                                 Content="Browse Image"
                                 Foreground="White" />
                             <TextBlock
                                 Margin="0,5,0,0"
-                                Foreground="LightGray"
+                                Foreground="{DynamicResource TextColor}"
                                 Text="{Binding ImagePath, StringFormat='Selected: {0}'}" />
                         </StackPanel>
                         <Button
                             Width="200"
                             Height="60"
                             Background="#0078d7"
-                           Command="{Binding CreateMachineCommand}"
+                            Command="{Binding CreateMachineCommand}"
                             CornerRadius="10">
                             <TextBlock
                                 FontSize="18"
@@ -184,7 +182,7 @@
                 <ScrollViewer Padding="20">
                     <StackPanel Spacing="15">
                         <StackPanel Spacing="5">
-                            <TextBlock Foreground="White" Text="Preset Name:" />
+                            <TextBlock Foreground="{DynamicResource TextColor}" Text="Preset Name:" />
                             <TextBox
                                 Background="#3E3E3E"
                                 CaretBrush="White"
