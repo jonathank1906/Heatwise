@@ -2,23 +2,25 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Sem2Proj.ViewModels;
 using Sem2Proj.Interfaces;
+using System;
 
 
 namespace Sem2Proj.Views;
 
 public partial class LoginView : Window
 {
-    public LoginView(
-        AssetManagerViewModel assetManagerViewModel,
-        OptimizerViewModel optimizerViewModel,
-        SourceDataManagerViewModel sourceDataManagerViewModel,
-        IPopupService popupService)
+    public LoginView(Action callback)
     {
         InitializeComponent();
-        DataContext = new LoginViewModel(this, assetManagerViewModel, optimizerViewModel, sourceDataManagerViewModel, popupService);
+        var viewModel = new LoginViewModel(() =>
+        {
+            callback();
+            Close();
+        });
+        DataContext = viewModel;
     }
 
-     public LoginView() // <- you still keep this empty constructor too
+    public LoginView() // <- you still keep this empty constructor too
     {
         InitializeComponent();
     }

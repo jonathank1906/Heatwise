@@ -26,14 +26,16 @@ public partial class MainWindowViewModel : ObservableObject
         AssetManagerViewModel assetManagerViewModel,
         OptimizerViewModel optimizerViewModel,
         SourceDataManagerViewModel sourceDataManagerViewModel,
-        IPopupService popupService)
+        IPopupService popupService,
+        bool showHomeScreen)
     {
         AssetManagerViewModel = assetManagerViewModel;
         OptimizerViewModel = optimizerViewModel;
         SourceDataManagerViewModel = sourceDataManagerViewModel;
         PopupService = popupService;
 
-        ShowHome();
+        if (showHomeScreen) ShowHome();
+
         Notification.OnNewNotification += ShowNotification;
     }
 

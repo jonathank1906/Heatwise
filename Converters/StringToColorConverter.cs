@@ -8,7 +8,7 @@ namespace Sem2Proj.Converters
 {
     public class StringToColorConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is string colorString && !string.IsNullOrEmpty(colorString))
             {
@@ -35,7 +35,7 @@ namespace Sem2Proj.Converters
             return Colors.White;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is Color color)
             {

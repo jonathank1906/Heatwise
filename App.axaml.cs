@@ -14,7 +14,7 @@ namespace Sem2Proj;
 
 public partial class App : Application
 {
-     public static event Action? ThemeChanged;
+    public static event Action? ThemeChanged;
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -27,11 +27,10 @@ public partial class App : Application
             DisableAvaloniaDataAnnotationValidation();
 
             // Initialize the SettingsViewModel
-            var dataManager = new SourceDataManager();
             var settingsViewModel = new SettingsViewModel();
 
             // Apply the initial theme
-            UpdateTheme(settingsViewModel.IsDarkMode);
+            UpdateTheme(settingsViewModel.Light_Mode_On_Toggle);
 
             var loadingViewModel = new LoadingWindowViewModel();
             var loadingWindow = new LoadingWindow(loadingViewModel);
@@ -45,7 +44,7 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    public void UpdateTheme(bool isDarkMode)
+    public void UpdateTheme(bool Light_Mode_On_Toggle)
     {
         if (Application.Current == null) return;
 
@@ -69,16 +68,7 @@ public partial class App : Application
 
         try
         {
-            if (isDarkMode)
-            {
-                Current.Resources["BackgroundColor"] = themeColors["DarkBackgroundColor"];
-                Current.Resources["ForegroundColor"] = themeColors["DarkForegroundColor"];
-                Current.Resources["AccentColor"] = themeColors["DarkAccentColor"];
-                Current.Resources["TextColor"] = themeColors["DarkTextColor"];
-                Current.Resources["SecondaryBackground"] = themeColors["DarkSecondaryBackground"];
-                Current.Resources["BorderColor"] = themeColors["DarkBorderColor"];
-            }
-            else
+            if (Light_Mode_On_Toggle)
             {
                 Current.Resources["BackgroundColor"] = themeColors["LightBackgroundColor"];
                 Current.Resources["ForegroundColor"] = themeColors["LightForegroundColor"];
@@ -87,8 +77,18 @@ public partial class App : Application
                 Current.Resources["SecondaryBackground"] = themeColors["LightSecondaryBackground"];
                 Current.Resources["BorderColor"] = themeColors["LightBorderColor"];
             }
+            else
+            {
+                Current.Resources["BackgroundColor"] = themeColors["DarkBackgroundColor"];
+                Current.Resources["ForegroundColor"] = themeColors["DarkForegroundColor"];
+                Current.Resources["AccentColor"] = themeColors["DarkAccentColor"];
+                Current.Resources["TextColor"] = themeColors["DarkTextColor"];
+                Current.Resources["SecondaryBackground"] = themeColors["DarkSecondaryBackground"];
+                Current.Resources["BorderColor"] = themeColors["DarkBorderColor"];
+
+            }
             ThemeChanged?.Invoke();
-            Debug.WriteLine($"Theme updated to {(isDarkMode ? "Dark" : "Light")} mode");
+            Debug.WriteLine($"Theme updated to {(Light_Mode_On_Toggle ? "Light" : "Dark")} mode");
         }
         catch (Exception ex)
         {

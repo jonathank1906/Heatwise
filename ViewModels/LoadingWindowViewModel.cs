@@ -60,8 +60,6 @@ public partial class LoadingWindowViewModel : ViewModelBase
 
         var assetManager = new AssetManager();
         var sourceDataManager = new SourceDataManager();
-
-        // Create the PopupService first
         var popupService = new PopupService();
 
         var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager, popupService));
@@ -81,8 +79,19 @@ public partial class LoadingWindowViewModel : ViewModelBase
 
         await Task.Delay(50);
 
-        // Pass the popupService to MainWindowViewModel
-        var loginWindow = new LoginView(assetManagerViewModel, optimizerViewModel, sourceDataManagerViewModel, popupService);
+        // Testing - Not compatible with MVVM since it creates window inside of a VM, will rework this later
+        bool showHomeScreen = sourceDataManager.GetSetting("Home_Screen_On_Startup") == "On";
+        MainWindowViewModel mainVM = new(assetManagerViewModel, optimizerViewModel, sourceDataManagerViewModel, popupService, showHomeScreen);
+        MainWindow mainWindow = new()
+        {
+            DataContext = mainVM
+        };
+
+        var loginWindow = new LoginView(() =>
+        {
+            mainWindow.Show();
+            mainWindow.Activate();
+        });
         loginWindow.Show();
     }
 }

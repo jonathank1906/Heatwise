@@ -14,22 +14,40 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
     private SourceDataManager _dataManager = new SourceDataManager(); // Use a default instance
 
     [ObservableProperty]
-    private bool isDarkMode;
+    private bool light_Mode_On_Toggle;
 
+    [ObservableProperty]
+    private bool home_Screen_On_Startup_Toggle;
+
+    [ObservableProperty]
+    private bool developer_Mode_On_Toggle;
     public ICommand? CloseCommand { get; private set; }
 
     public SettingsViewModel()
     {
-        // Load the theme setting from the database
+        // Load settings
         var theme = _dataManager.GetSetting("Theme");
-        IsDarkMode = theme == "Dark"; // Default to dark mode if no setting exists
+        var homeToggle = _dataManager.GetSetting("Home_Screen_On_Startup");
+        var developerModeToggle = _dataManager.GetSetting("Developer_Mode");
+
+        // Set settings
+        Light_Mode_On_Toggle = theme != "Dark";
+        Home_Screen_On_Startup_Toggle = homeToggle != "Off";
+        Developer_Mode_On_Toggle = developerModeToggle != "Off";
     }
 
-    partial void OnIsDarkModeChanged(bool value)
+    partial void OnLight_Mode_On_ToggleChanged(bool value)
     {
-        // Save the theme setting to the database
-        _dataManager.SaveSetting("Theme", value ? "Dark" : "Light");
+        _dataManager.SaveSetting("Theme", value ? "Light" : "Dark");
         (Application.Current as App)?.UpdateTheme(value);
+    }
+    partial void OnHome_Screen_On_Startup_ToggleChanged(bool value)
+    {
+        _dataManager.SaveSetting("Home_Screen_On_Startup", value ? "On" : "Off");
+    }
+    partial void OnDeveloper_Mode_On_ToggleChanged(bool value)
+    {
+        _dataManager.SaveSetting("Developer_Mode", value ? "On" : "Off");
     }
 
     public void SetCloseAction(Action closeCallback)

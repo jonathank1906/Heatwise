@@ -91,7 +91,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource TextColor}"
-                    IsChecked="{Binding IsDarkMode}" />
+                    IsChecked="{Binding Light_Mode_On_Toggle}" />
             </DockPanel>
             <Border
                 Margin="0,20,0,20"
@@ -111,7 +111,8 @@
                     Margin="0,0,0,1"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextColor}" />
+                    Foreground="{DynamicResource TextColor}"
+                    IsChecked="{Binding Home_Screen_On_Startup_Toggle}" />
             </DockPanel>
             <Border
                 Margin="0,20,0,20"
@@ -131,7 +132,8 @@
                     Margin="0,0,0,1"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextColor}" />
+                    Foreground="{DynamicResource TextColor}"
+                    IsChecked="{Binding Developer_Mode_On_Toggle}" />
             </DockPanel>
             <TextBlock
                 Margin="0,0,0,0"
