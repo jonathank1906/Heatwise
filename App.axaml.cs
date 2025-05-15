@@ -9,6 +9,8 @@ using Avalonia.Styling;  // For ThemeVariant
 using Avalonia.Controls; // For FindResource
 using System.Diagnostics;
 using System;
+using Sem2Proj.Services;
+using System.Threading.Tasks;
 
 namespace Sem2Proj;
 
@@ -20,25 +22,56 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             DisableAvaloniaDataAnnotationValidation();
 
-            // Initialize the SettingsViewModel
-            var settingsViewModel = new SettingsViewModel();
+            // Fetch settings
+            SettingsViewModel settings = new();
 
             // Apply the initial theme
-            UpdateTheme(settingsViewModel.Light_Mode_On_Toggle);
+            UpdateTheme(settings.Light_Mode_On_Toggle);
 
-            var loadingViewModel = new LoadingWindowViewModel();
-            var loadingWindow = new LoadingWindow(loadingViewModel);
+            // Load the application separately
+            MainWindowViewModel mainVM = await StartupService.LoadApplicationAsync();
+            MainWindow mainWindow = new() { DataContext = mainVM };
 
-            loadingWindow.Topmost = true; // Switching 'Topmost' to true, to make the loading screen popup on top
-            loadingWindow.Show();
-            loadingWindow.Activate();  // This does not seem to work on macOS, but it's here just to be safe
-            loadingWindow.Topmost = false; // Switching 'Topmost' to false, so it's not on top when the main window appears
+            // Starting the application in Developer Mode or in Regular Mode
+            if (settings.Developer_Mode_On_Toggle)
+            {
+                mainWindow.Show();
+            }
+            else
+            {
+                LoadingWindowViewModel loadingViewModel = new();
+                LoadingWindow loadingWindow = new() { DataContext = loadingViewModel };
+                LoginViewModel loginViewModel = new();
+                LoginView loginView = new() { DataContext = loginViewModel };
+
+                loadingWindow.Topmost = true; // Switching 'Topmost' to true, to make the loading screen popup on top
+                loadingWindow.Show();
+                loadingWindow.Activate();  // This does not seem to work on macOS, but it's here just to be safe
+                loadingWindow.Topmost = false; // Switching 'Topmost' to false, so it's not on top when the main window appears
+                loadingViewModel.Finished += () =>
+                {
+                    desktop.MainWindow = loginView;
+                    loginView.Show();
+                    loginView.Activate();
+                    loadingWindow.Close();
+                };
+                await loadingViewModel.Start();
+
+                loginViewModel.Success += () =>
+                {
+
+                    desktop.MainWindow = mainWindow;
+                    mainWindow.Show();
+                    mainWindow.Activate();
+                    loginView.Close();
+                };
+            }
         }
 
         base.OnFrameworkInitializationCompleted();

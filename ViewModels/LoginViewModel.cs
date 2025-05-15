@@ -12,23 +12,20 @@ namespace Sem2Proj.ViewModels;
 
 public partial class LoginViewModel : ViewModelBase
 {
-    private Action _callback;
+    public event Action? Success;
 
     [ObservableProperty] private string username = "";
     [ObservableProperty] private string password = "";
     [ObservableProperty] private string errorMessage = "";
 
-    public LoginViewModel(Action callback)
-    {
-        _callback = callback;
-    }
+    public LoginViewModel() {}
 
     [RelayCommand]
     private async Task AttemptLogin()
     {
         if (Username == "1" && Password == "1")
         {
-            _callback();
+            Success?.Invoke();
         }
         else
         {

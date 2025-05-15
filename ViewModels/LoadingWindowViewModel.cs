@@ -21,6 +21,7 @@ namespace Sem2Proj.ViewModels;
 
 public partial class LoadingWindowViewModel : ViewModelBase
 {
+    public event Action? Finished;
     [ObservableProperty] private int progress;
     [ObservableProperty] private string loadingText = "Starting...";
     [ObservableProperty] private SystemDecorations systemDecorations = SystemDecorations.None;
@@ -53,19 +54,8 @@ public partial class LoadingWindowViewModel : ViewModelBase
         }
     }
 
-
-    public async Task LoadApplicationAsync()
+    public async Task Start()
     {
-        await Task.Yield();
-
-        var assetManager = new AssetManager();
-        var sourceDataManager = new SourceDataManager();
-        var popupService = new PopupService();
-
-        var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager, popupService));
-        var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager, new ResultDataManager()));
-        var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());
-
         for (int i = 0; i < messages.Count; i++)
         {
             var (message, steps, delay) = messages[i];
@@ -79,19 +69,6 @@ public partial class LoadingWindowViewModel : ViewModelBase
 
         await Task.Delay(50);
 
-        // Testing - Not compatible with MVVM since it creates window inside of a VM, will rework this later
-        bool showHomeScreen = sourceDataManager.GetSetting("Home_Screen_On_Startup") == "On";
-        MainWindowViewModel mainVM = new(assetManagerViewModel, optimizerViewModel, sourceDataManagerViewModel, popupService, showHomeScreen);
-        MainWindow mainWindow = new()
-        {
-            DataContext = mainVM
-        };
-
-        var loginWindow = new LoginView(() =>
-        {
-            mainWindow.Show();
-            mainWindow.Activate();
-        });
-        loginWindow.Show();
+        Finished?.Invoke();
     }
 }

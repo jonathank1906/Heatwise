@@ -9,18 +9,8 @@ namespace Sem2Proj.Views;
 
 public partial class LoginView : Window
 {
-    public LoginView(Action callback)
-    {
-        InitializeComponent();
-        var viewModel = new LoginViewModel(() =>
-        {
-            callback();
-            Close();
-        });
-        DataContext = viewModel;
-    }
 
-    public LoginView() // <- you still keep this empty constructor too
+    public LoginView()
     {
         InitializeComponent();
     }

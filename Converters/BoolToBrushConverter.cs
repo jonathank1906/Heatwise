@@ -10,7 +10,7 @@ public class BoolToBrushConverter : IValueConverter
     public IBrush TrueBrush { get; set; } = SolidColorBrush.Parse("Green");
     public IBrush FalseBrush { get; set; } = SolidColorBrush.Parse("Red");
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is bool boolValue)
         {
@@ -19,7 +19,7 @@ public class BoolToBrushConverter : IValueConverter
         return FalseBrush;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotSupportedException();
     }
