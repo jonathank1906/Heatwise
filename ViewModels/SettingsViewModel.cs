@@ -18,6 +18,8 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
 
     [ObservableProperty]
     private bool home_Screen_On_Startup_Toggle;
+    [ObservableProperty]
+    private bool is_Home_Screen_On_Startup_Toggle_Enabled = true;
 
     [ObservableProperty]
     private bool developer_Mode_On_Toggle;
@@ -51,7 +53,14 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
     {
         _dataManager.SaveSetting("Developer_Mode", value ? "On" : "Off");
         if (Developer_Mode_On_Toggle && Home_Screen_On_Startup_Toggle)
+        {
+            Is_Home_Screen_On_Startup_Toggle_Enabled = false;
             Home_Screen_On_Startup_Toggle = false;
+        }
+        if (Developer_Mode_On_Toggle)
+            Is_Home_Screen_On_Startup_Toggle_Enabled = false;
+        else
+            Is_Home_Screen_On_Startup_Toggle_Enabled = true;
     }
 
     public void SetCloseAction(Action closeCallback)

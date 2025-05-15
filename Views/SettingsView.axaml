@@ -112,7 +112,8 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource TextColor}"
-                    IsChecked="{Binding Home_Screen_On_Startup_Toggle}" />
+                    IsChecked="{Binding Home_Screen_On_Startup_Toggle}"
+                    IsEnabled="{Binding Is_Home_Screen_On_Startup_Toggle_Enabled}" />
             </DockPanel>
             <Border
                 Margin="0,20,0,20"
@@ -161,8 +162,8 @@
                 <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextColor}"
                     FontWeight="Bold"
+                    Foreground="{DynamicResource TextColor}"
                     Text="Restore Defaults" />
             </Button.Content>
         </Button>
