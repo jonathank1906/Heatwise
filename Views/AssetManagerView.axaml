@@ -118,7 +118,6 @@
                         FontSize="18"
                         FontWeight="Bold"
                         Foreground="{DynamicResource TextColor}"
-                        IsVisible="{Binding !ShowScenarioSelection}"
                         Text="{Binding SelectedScenario}" />
                 </StackPanel>
 
