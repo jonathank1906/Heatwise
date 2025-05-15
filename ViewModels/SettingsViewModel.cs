@@ -44,10 +44,14 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
     partial void OnHome_Screen_On_Startup_ToggleChanged(bool value)
     {
         _dataManager.SaveSetting("Home_Screen_On_Startup", value ? "On" : "Off");
+        if (Developer_Mode_On_Toggle && Home_Screen_On_Startup_Toggle)
+            Home_Screen_On_Startup_Toggle = false;
     }
     partial void OnDeveloper_Mode_On_ToggleChanged(bool value)
     {
         _dataManager.SaveSetting("Developer_Mode", value ? "On" : "Off");
+        if (Developer_Mode_On_Toggle && Home_Screen_On_Startup_Toggle)
+            Home_Screen_On_Startup_Toggle = false;
     }
 
     public void SetCloseAction(Action closeCallback)
