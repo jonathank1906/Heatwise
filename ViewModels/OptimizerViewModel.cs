@@ -187,6 +187,27 @@ public partial class OptimizerViewModel : ViewModelBase
     [RelayCommand]
     private void OptimizeAndPlot()
     {
+        // Check if the selected preset has any active machines
+        var activeMachines = _assetManager.GetActiveMachinesForCurrentPreset();
+
+        if (activeMachines == null || !activeMachines.Any() || activeMachines.All(m => m.HeatProduction <= 0))
+        {
+            // Clear all plots and reset state
+            OptimizationResults = null;
+            HeatDemandData = null;
+            HasOptimized = false;
+
+            // Clear all plots by invoking them with null data
+            PlotOptimizationResults?.Invoke(null, null);
+            PlotElectricityPrices?.Invoke(null);
+            PlotExpenses?.Invoke(null);
+            PlotEmissions?.Invoke(null);
+            PlotElectricityConsumption?.Invoke(null);
+            PlotElectricityProduction?.Invoke(null);
+            PlotFuelConsumption?.Invoke(null);
+
+            return;
+        }
         // Fetch all required data
         HeatDemandData = _sourceDataManager.GetData(SelectedDataType);
         HeatDemand = HeatDemandData.Sum(data => data.value);
@@ -213,7 +234,7 @@ public partial class OptimizerViewModel : ViewModelBase
 
         // Ensure the graph is updated based on the selected graph type
         HasOptimized = true;
-        SwitchGraph(SelectedGraphType); // Explicitly call SwitchGraph here
+        SwitchGraph(SelectedGraphType);
     }
 
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Sem2Proj.Interfaces;
 using System;
 using Avalonia.MicroCom;
+using Avalonia.Threading;
 
 
 namespace Sem2Proj.ViewModels;
@@ -20,18 +21,21 @@ public partial class LoginViewModel : ViewModelBase
 
     public LoginViewModel() {}
 
-    [RelayCommand]
-    private async Task AttemptLogin()
+   [RelayCommand]
+private void AttemptLogin()
+{
+    if (Username == "admin" && Password == "admin")
     {
-        if (Username == "1" && Password == "1")
-        {
-            Success?.Invoke();
-        }
-        else
-        {
-            ErrorMessage = "Invalid username or password.";
-            await Task.Delay(3000);
-            ErrorMessage = ""; 
-        }
+        Success?.Invoke();
     }
+    else
+    {
+        ErrorMessage = "Invalid username or password.";
+        // Start a timer to clear the message after 3 seconds
+        DispatcherTimer.RunOnce(() => 
+        {
+            ErrorMessage = "";
+        }, TimeSpan.FromSeconds(3));
+    }
+}
 }

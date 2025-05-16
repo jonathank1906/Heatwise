@@ -186,6 +186,7 @@ public partial class AssetManagerViewModel : ObservableObject
     {
         NavigateTo(presetName);
     }
+    
 
     [RelayCommand]
     public void NavigateTo(string destination)

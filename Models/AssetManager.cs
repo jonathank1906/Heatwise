@@ -240,6 +240,15 @@ public class AssetManager
             return false;
         }
     }
+    public List<AssetModel> GetActiveMachinesForCurrentPreset()
+    {
+        var currentPreset = Presets.FirstOrDefault(p => p.IsPresetSelected);
+        if (currentPreset == null) return new List<AssetModel>();
+
+        return currentPreset.MachineModels
+            .Where(m => m.IsActive)
+            .ToList();
+    }
 
     public void RefreshAssets()
     {

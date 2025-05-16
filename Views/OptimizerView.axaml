@@ -336,14 +336,6 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             IsVisible="{Binding HasOptimized}" />
-
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            FontSize="18"
-                            Foreground="{DynamicResource TextColor}"
-                            IsVisible="{Binding !HasOptimized}"
-                            Text="Click Optimize to get started" />
                     </Grid>
                 </Grid>
 
