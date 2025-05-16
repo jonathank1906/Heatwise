@@ -51,7 +51,7 @@ public class DataVisualization
         }
     }
 
-    public ScottPlot.Color GetCurrentThemeTextColor()
+    public ScottPlot.Color GetCurrentThemeAxesColor()
     {
         if (Application.Current == null)
         {
@@ -80,6 +80,37 @@ public class DataVisualization
 
         return new ScottPlot.Color(255, 255, 255); // Fallback to white
     }
+
+    public ScottPlot.Color GetCurrentThemeBackgroundColor()
+{
+    if (Application.Current == null)
+    {
+        Debug.WriteLine("Application.Current is null");
+        return new ScottPlot.Color(0, 0, 0); // Fallback to black
+    }
+    try
+    {
+        // Get the current background color from resources
+        if (Application.Current.Styles.TryGetResource("BackgroundColor", Application.Current.ActualThemeVariant, out var colorValue)
+            && colorValue is Avalonia.Media.Color avaloniaColor)
+        {
+            Debug.WriteLine($"[GetCurrentThemeBackgroundColor] Retrieved color: R={avaloniaColor.R}, G={avaloniaColor.G}, B={avaloniaColor.B}, A={avaloniaColor.A}");
+            return new ScottPlot.Color(
+                avaloniaColor.R,
+                avaloniaColor.G,
+                avaloniaColor.B,
+                avaloniaColor.A);
+        }
+    }
+    catch
+    {
+        // Fallback color if something goes wrong
+        Debug.WriteLine("Couldn't get BackgroundColor from resources");
+    }
+
+    return new ScottPlot.Color(0, 0, 0); // Fallback to black
+}
+
     public void PlotHeatProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
         var plt = optimizationPlot.Plot;
@@ -558,11 +589,11 @@ public class DataVisualization
         var bgColor = new Color("{DynamicResource BackgroundColor}");
         plt.FigureBackground.Color = bgColor;
         plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(GetCurrentThemeTextColor());
+        plt.Axes.Color(GetCurrentThemeAxesColor());
+        plt.Legend.BackgroundColor = GetCurrentThemeBackgroundColor();
+        plt.Legend.OutlineColor = GetCurrentThemeAxesColor();
+        plt.Legend.FontColor = GetCurrentThemeAxesColor();
         plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
         plt.Title(title);
         plt.XLabel(xLabel);
         plt.YLabel(yLabel);

@@ -176,7 +176,10 @@ public partial class OptimizerView : UserControl
         {
             // Reapply the theme color and refresh the plot
             var plt = OptimizationPlot.Plot;
-            plt.Axes.Color(_dataVisualization.GetCurrentThemeTextColor());
+            plt.Axes.Color(_dataVisualization.GetCurrentThemeAxesColor());
+            plt.Legend.BackgroundColor = _dataVisualization.GetCurrentThemeBackgroundColor();
+            plt.Legend.FontColor = _dataVisualization.GetCurrentThemeAxesColor();
+            plt.Legend.OutlineColor = _dataVisualization.GetCurrentThemeAxesColor();
             OptimizationPlot.Refresh();
         }
     }
