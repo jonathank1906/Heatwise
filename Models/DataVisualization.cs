@@ -83,20 +83,7 @@ public class DataVisualization
     public void PlotHeatProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
         var plt = optimizationPlot.Plot;
-        plt.Clear();
-        plt.Legend.ManualItems.Clear();
-        var bgColor = new Color("{DynamicResource BackgroundColor}");
-        plt.FigureBackground.Color = bgColor;
-        plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(GetCurrentThemeTextColor());
-        plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
-        plt.Title("Heat Production Optimization");
-        plt.XLabel("");
-        plt.YLabel("Heat (MW)");
-        plt.HideGrid();
+        InitializePlot(plt, "Heat Production Optimization", "", "Heat (MW)");
 
         // Process optimization results (stacked bars)
         var groupedResults = results
@@ -210,20 +197,7 @@ public class DataVisualization
     public void PlotElectricityPrice(AvaPlot optimizationPlot, List<double> prices)
     {
         var plt = optimizationPlot.Plot;
-        plt.Clear();
-        plt.Legend.ManualItems.Clear();
-        var bgColor = new Color("#1e1e1e");
-        plt.FigureBackground.Color = bgColor;
-        plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(new Color("#FFFFFF"));
-        plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
-        plt.Title("Electricity Prices");
-        plt.XLabel("");
-        plt.YLabel("Electricity Price (DKK/MWh)");
-        plt.HideGrid();
+        InitializePlot(plt, "Electricity Prices", "", "Electricity Price (DKK/MWh)");
 
         double[] xs = Enumerable.Range(0, prices.Count).Select(i => (double)i).ToArray();
         var plot = plt.Add.Scatter(xs, prices.ToArray());
@@ -286,20 +260,7 @@ public class DataVisualization
     public void PlotExpenses(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        plt.Clear();
-        plt.Legend.ManualItems.Clear();
-        var bgColor = new Color("#1e1e1e");
-        plt.FigureBackground.Color = bgColor;
-        plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(new Color("#FFFFFF"));
-        plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
-        plt.Title("Production Costs");
-        plt.XLabel("");
-        plt.YLabel("Cost (DKK)");
-        plt.HideGrid();
+        InitializePlot(plt, "Production Costs", "", "Cost (DKK)");
 
         // Group results by timestamp and calculate total production cost per timestamp
         var groupedResults = results
@@ -376,20 +337,7 @@ public class DataVisualization
     public void PlotEmissions(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        plt.Clear();
-        plt.Legend.ManualItems.Clear();
-        var bgColor = new Color("#1e1e1e");
-        plt.FigureBackground.Color = bgColor;
-        plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(new Color("#FFFFFF"));
-        plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
-        plt.Title("Emissions");
-        plt.XLabel("");
-        plt.YLabel("Emissions (kg CO2)");
-        plt.HideGrid();
+        InitializePlot(plt, "Emissions", "", "Emissions (kg CO2)");
 
         // Group results by timestamp and calculate total emissions per timestamp
         var groupedResults = results
@@ -466,20 +414,7 @@ public class DataVisualization
     public void PlotElectricityConsumption(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        plt.Clear();
-        plt.Legend.ManualItems.Clear();
-        var bgColor = new Color("#1e1e1e");
-        plt.FigureBackground.Color = bgColor;
-        plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(new Color("#FFFFFF"));
-        plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
-        plt.Title("Electricity Consumption");
-        plt.XLabel("");
-        plt.YLabel("Electricity (MWh)");
-        plt.HideGrid();
+        InitializePlot(plt, "Electricity Consumption", "", "Electricity (MWh)");
 
         // Group results by timestamp and calculate total electricity consumption per timestamp
         var groupedResults = results
@@ -522,20 +457,7 @@ public class DataVisualization
     public void PlotElectricityProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        plt.Clear();
-        plt.Legend.ManualItems.Clear();
-        var bgColor = new Color("#1e1e1e");
-        plt.FigureBackground.Color = bgColor;
-        plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(new Color("#FFFFFF"));
-        plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
-        plt.Title("Electricity Production");
-        plt.XLabel("");
-        plt.YLabel("Electricity (MWh)");
-        plt.HideGrid();
+        InitializePlot(plt, "Electricity Production", "", "Electricity (MWh)");
 
         // Group results by timestamp and calculate total electricity production per timestamp
         var groupedResults = results
@@ -578,20 +500,7 @@ public class DataVisualization
     public void PlotFuelConsumption(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         var plt = optimizationPlot.Plot;
-        plt.Clear();
-        plt.Legend.ManualItems.Clear();
-        var bgColor = new Color("#1e1e1e");
-        plt.FigureBackground.Color = bgColor;
-        plt.DataBackground.Color = bgColor;
-        plt.Axes.Color(new Color("#FFFFFF"));
-        plt.Legend.ShadowOffset = new(0, 0);
-        plt.Legend.BackgroundColor = new Color("#1e1e1e");
-        plt.Legend.OutlineColor = new Color("#1e1e1e");
-        plt.Legend.FontColor = Colors.White;
-        plt.Title("Fuel Consumption");
-        plt.XLabel("");
-        plt.YLabel("Fuel Consumption (MWh)");
-        plt.HideGrid();
+        InitializePlot(plt, "Fuel Consumption", "", "Fuel Consumption (MWh)");
 
         // Group results by timestamp and calculate total oil and gas consumption per timestamp
         var groupedResults = results
@@ -641,6 +550,25 @@ public class DataVisualization
         plt.Axes.Margins(bottom: 0.02, top: 0.1);
         optimizationPlot.Refresh();
     }
+
+    private void InitializePlot(Plot plt, string title, string xLabel, string yLabel)
+    {
+        plt.Clear();
+        plt.Legend.ManualItems.Clear();
+        var bgColor = new Color("{DynamicResource BackgroundColor}");
+        plt.FigureBackground.Color = bgColor;
+        plt.DataBackground.Color = bgColor;
+        plt.Axes.Color(GetCurrentThemeTextColor());
+        plt.Legend.ShadowOffset = new(0, 0);
+        plt.Legend.BackgroundColor = new Color("#1e1e1e");
+        plt.Legend.OutlineColor = new Color("#1e1e1e");
+        plt.Legend.FontColor = Colors.White;
+        plt.Title(title);
+        plt.XLabel(xLabel);
+        plt.YLabel(yLabel);
+        plt.HideGrid();
+    }
+
 
     public void SetXAxisTicks(Plot plt, List<DateTime> timestamps)
     {
