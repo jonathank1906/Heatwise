@@ -396,32 +396,6 @@ public partial class OptimizerView : UserControl
         _hasAutoOpenedWindow = false;
     }
 
-    private void UpdateHeatDemandVisibility(bool showHeatDemand)
-    {
-        if (_heatDemandPlot == null) return;
-
-        var plt = OptimizationPlot.Plot;
-        _heatDemandPlot.IsVisible = showHeatDemand;
-
-        var existingItem = plt.Legend.ManualItems.FirstOrDefault(x => x.LabelText == "Heat Demand");
-        if (existingItem != null)
-        {
-            plt.Legend.ManualItems.Remove(existingItem);
-        }
-
-        if (showHeatDemand)
-        {
-            plt.Legend.ManualItems.Add(new LegendItem
-            {
-                LabelText = "Heat Demand",
-                LineColor = Colors.Red,
-                LineWidth = 2
-            });
-        }
-
-        OptimizationPlot.Refresh();
-    }
-
     private void UpdateTooltipContent(string text)
     {
         if (_tooltipWindow == null || _tooltipWindow.IsClosed)

@@ -493,23 +493,6 @@
                             </StackPanel>
                         </Button>
 
-
-                        <Button Classes="toolbar" ToolTip.Tip="Toggle visibility">
-                            <Button.Flyout>
-                                <Flyout Placement="LeftEdgeAlignedTop">
-                                    <Panel Width="130" Height="100">
-                                        <CheckBox
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Content="Heat Demand"
-                                            IsChecked="{Binding ShowHeatDemand}" />
-                                    </Panel>
-                                </Flyout>
-                            </Button.Flyout>
-                            <PathIcon Data="{StaticResource Layers}" />
-                        </Button>
-
-
                         <Button
                             Classes="toolbar"
                             Command="{Binding ResetViewCommand}"
