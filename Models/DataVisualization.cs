@@ -26,7 +26,7 @@ public class DataVisualization
         // Get all machines from all presets
         var allMachines = _assetManager.Presets
             .SelectMany(preset => preset.MachineModels)
-            .GroupBy(machine => new { machine.Id, machine.Name }) // Group by both ID and Name for uniqueness
+            .GroupBy(machine => new { machine.PresetId, machine.Name }) // Group by both ID and Name for uniqueness
             .Select(group => group.First()) // Take the first machine in each group
             .ToList();
 
@@ -37,14 +37,14 @@ public class DataVisualization
             {
                 // Convert the color string from the database to a ScottPlot.Color object
                 var color = System.Drawing.ColorTranslator.FromHtml(machine.Color);
-                var uniqueKey = $"{machine.Name} (ID: {machine.Id})";
+                var uniqueKey = $"{machine.Name} (ID: {machine.PresetId})";
                 _machineColors[uniqueKey] = new ScottPlot.Color(color.R, color.G, color.B, color.A);
                 Debug.WriteLine($"[InitializeMachineColors] Machine: {uniqueKey}, Color: {machine.Color}");
             }
             catch
             {
                 // Fallback to a default color if parsing fails
-                var uniqueKey = $"{machine.Name} (ID: {machine.Id})";
+                var uniqueKey = $"{machine.Name} (ID: {machine.PresetId})";
                 _machineColors[uniqueKey] = ScottPlot.Colors.LightCyan;
                 Debug.WriteLine($"[InitializeMachineColors] Failed to parse color for machine {uniqueKey}. Using fallback color.");
             }

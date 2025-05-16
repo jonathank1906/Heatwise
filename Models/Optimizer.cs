@@ -148,7 +148,7 @@ public class Optimizer
                 ProductionCost = productionCost,
                 Emissions = allocation * asset.EmissionsPerMW,
                 Timestamp = timestamp,
-                PresetId = asset.Id,
+                PresetId = asset.PresetId,
                 ElectricityConsumption = electricityConsumption,
                 ElectricityProduction = electricityProduction,
                 OilConsumption = oilConsumption, // Added
