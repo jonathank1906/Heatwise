@@ -714,7 +714,7 @@ public partial class AssetManagerViewModel : ObservableObject
                 gasConsumption,
                 oilConsumption,
                 presetId,
-                Color // Pass the color property
+                Color
             );
 
             if (success)
@@ -773,7 +773,6 @@ public partial class AssetManagerViewModel : ObservableObject
 
     private void RefreshPresetList()
     {
-        // Refresh from AssetManager
         _assetManager.RefreshAssets();
 
         // Update local AvailablePresets
@@ -842,23 +841,41 @@ public partial class AssetManagerViewModel : ObservableObject
     [RelayCommand]
     private void FinishRenaming(Preset preset)
     {
-        if (preset == null) return;
+        if (preset == null || _isRenamingInProgress) return;
 
-        // Disable renaming mode
-        preset.IsRenaming = false;
-
-        // Save the new name to the database
-
-        var tempList = new ObservableCollection<Preset>(AvailablePresets);
-        AvailablePresets.Clear();
-        foreach (var item in tempList)
+        _isRenamingInProgress = true;
+        try
         {
-            AvailablePresets.Add(item); // Re-add items to force UI update
-        }
-        _assetManager.UpdatePresetName(preset.Id, preset.Name);
+            // Disable renaming mode
+            preset.IsRenaming = false;
 
-        Events.Notification.Invoke($"Preset renamed to '{preset.Name}' successfully.", NotificationType.Confirmation);
+            // Save the new name to the database
+            bool updateSuccess = _assetManager.UpdatePresetName(preset.Id, preset.Name);
+
+            if (updateSuccess)
+            {
+                // Force full UI refresh as in original code
+                var tempList = new ObservableCollection<Preset>(AvailablePresets);
+                AvailablePresets.Clear();
+                foreach (var item in tempList)
+                {
+                    AvailablePresets.Add(item); // Re-add items to force UI update
+                }
+
+                // Show notification only once
+                Events.Notification.Invoke(
+                    $"Preset renamed to '{preset.Name}' successfully.",
+                    NotificationType.Confirmation
+                );
+            }
+        }
+        finally
+        {
+            _isRenamingInProgress = false;
+        }
     }
+
+    private bool _isRenamingInProgress = false;
 }
 
 
