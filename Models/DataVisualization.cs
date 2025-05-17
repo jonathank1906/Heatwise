@@ -113,6 +113,7 @@ public class DataVisualization
 
     public void PlotHeatProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
+        optimizationPlot.UserInputProcessor.DoubleLeftClickBenchmark(false);
         var plt = optimizationPlot.Plot;
         InitializePlot(plt, "Heat Production Optimization", "", "Heat (MW)");
 
@@ -227,6 +228,7 @@ public class DataVisualization
 
     public void PlotElectricityPrice(AvaPlot optimizationPlot, List<double> prices)
     {
+        optimizationPlot.UserInputProcessor.DoubleLeftClickBenchmark(false);
         var plt = optimizationPlot.Plot;
         InitializePlot(plt, "Electricity Prices", "", "Electricity Price (DKK/MWh)");
 
@@ -367,6 +369,7 @@ public class DataVisualization
 
     public void PlotEmissions(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
+        optimizationPlot.UserInputProcessor.DoubleLeftClickBenchmark(false);
         var plt = optimizationPlot.Plot;
         InitializePlot(plt, "Emissions", "", "Emissions (kg CO2)");
 
@@ -444,6 +447,7 @@ public class DataVisualization
 
     public void PlotElectricityConsumption(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
+        optimizationPlot.UserInputProcessor.DoubleLeftClickBenchmark(false);
         var plt = optimizationPlot.Plot;
         InitializePlot(plt, "Electricity Consumption", "", "Electricity (MWh)");
 
@@ -487,6 +491,7 @@ public class DataVisualization
 
     public void PlotElectricityProduction(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
+        optimizationPlot.UserInputProcessor.DoubleLeftClickBenchmark(false);
         var plt = optimizationPlot.Plot;
         InitializePlot(plt, "Electricity Production", "", "Electricity (MWh)");
 
@@ -530,6 +535,7 @@ public class DataVisualization
 
     public void PlotFuelConsumption(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
+        optimizationPlot.UserInputProcessor.DoubleLeftClickBenchmark(false);
         var plt = optimizationPlot.Plot;
         InitializePlot(plt, "Fuel Consumption", "", "Fuel Consumption (MWh)");
 
