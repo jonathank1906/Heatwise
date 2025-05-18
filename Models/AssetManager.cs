@@ -39,7 +39,8 @@ public class AssetManager
             SetScenario(0);
         }
 
-        RestoreDefaultsCommand = new RelayCommand(() => {
+        RestoreDefaultsCommand = new RelayCommand(() =>
+        {
             RestoreDefaults();
         });
     }
@@ -636,118 +637,193 @@ public class AssetManager
         return false;
     }
 
-     public void RestoreDefaults()
+    public void RestoreDefaults()
     {
+        Debug.WriteLine("Starting RestoreDefaults...");
+
         using (var conn = new SqliteConnection(dbPath))
         {
+            Debug.WriteLine($"Using database file: {dbPath}");
             conn.Open();
+
+            // Temporarily disable foreign key enforcement
+            Debug.WriteLine("Disabling foreign key enforcement...");
+            using (var disableForeignKeysCmd = new SqliteCommand("PRAGMA foreign_keys = OFF;", conn))
+            {
+                disableForeignKeysCmd.ExecuteNonQuery();
+                Debug.WriteLine("Foreign key enforcement disabled.");
+            }
+
             using (var transaction = conn.BeginTransaction())
             {
-                // Delete all presets except 1 and 2
-                const string deletePresetsQuery = "DELETE FROM AM_Presets WHERE Id > 2";
-                using (var cmd = new SqliteCommand(deletePresetsQuery, conn))
+                try
                 {
-                    cmd.Transaction = transaction;
-                    cmd.ExecuteNonQuery();
-                }
-                
-
-                // Read CSV and restore default machine settings
-                string csvPath = "Data/PresetMachines_backup1.csv";
-                string[] lines = File.ReadAllLines(csvPath);
-                
-                // Skip header row if present
-                int startIndex = lines.Length > 0 && lines[0].StartsWith("Id,") ? 1 : 0;
-                
-                // Process each line
-                for (int i = startIndex; i < lines.Length; i++)
-                {
-                    string[] values = lines[i].Split(',');
-                    
-                    // Assuming CSV format: Id,PresetId,Name,ImageSource,MaxHeat,MaxElectricity,ProductionCosts,Emissions,GasConsumption,OilConsumption,IsActive,HeatProduction,Color
-                    if (values.Length < 12) // Check if the line has enough columns (Id + 11 properties)
+                    // Step 1: Clear the PresetMachines table to avoid foreign key violations
+                    Debug.WriteLine("Clearing PresetMachines table...");
+                    const string clearPresetMachinesQuery = "DELETE FROM PresetMachines";
+                    using (var cmd = new SqliteCommand(clearPresetMachinesQuery, conn))
                     {
-                        Debug.WriteLine($"Skipping malformed CSV line: {lines[i]}");
-                        continue; // Skip this line if it doesn't have enough values
+                        cmd.Transaction = transaction;
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        Debug.WriteLine($"PresetMachines table cleared. Rows affected: {rowsAffected}");
                     }
 
-                    // *** Read Machine ID first ***
-                    if (!int.TryParse(values[0], out int machineId))
+                    // Step 2: Delete all presets
+                    Debug.WriteLine("Clearing AM_Presets table...");
+                    const string deletePresetsQuery = "DELETE FROM AM_Presets";
+                    using (var cmd = new SqliteCommand(deletePresetsQuery, conn))
                     {
-                         Debug.WriteLine($"Skipping CSV line with invalid Machine Id: {lines[i]}");
-                         continue; // Skip if ID is not a valid integer
+                        cmd.Transaction = transaction;
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        Debug.WriteLine($"AM_Presets table cleared. Rows affected: {rowsAffected}");
                     }
 
-                    // *** Read other values, adjusting indices ***
-                    if (!int.TryParse(values[1], out int presetId))
+                    // Step 3: Recreate Scenario 1
+                    Debug.WriteLine("Inserting Scenario 1...");
+                    const string insertScenario1Query = "INSERT INTO AM_Presets (Id, Name) VALUES (1, 'Scenario 1')";
+                    using (var cmd = new SqliteCommand(insertScenario1Query, conn))
                     {
-                         Debug.WriteLine($"Skipping CSV line with invalid Preset Id for machine {machineId}: {lines[i]}");
-                         continue; // Skip if PresetId is not a valid integer
-                    }
-                    string name = values[2];
-                    string imageSource = values[3];
-                    if (!double.TryParse(values[4], out double maxHeat)) { Debug.WriteLine($"Invalid MaxHeat for machine {machineId}"); continue; }
-                    if (!double.TryParse(values[5], out double maxElectricity)) { Debug.WriteLine($"Invalid MaxElectricity for machine {machineId}"); continue; }
-                    if (!double.TryParse(values[6], out double productionCosts)) { Debug.WriteLine($"Invalid ProductionCosts for machine {machineId}"); continue; }
-                    if (!double.TryParse(values[7], out double emissions)) { Debug.WriteLine($"Invalid Emissions for machine {machineId}"); continue; }
-                    if (!double.TryParse(values[8], out double gasConsumption)) { Debug.WriteLine($"Invalid GasConsumption for machine {machineId}"); continue; }
-                    if (!double.TryParse(values[9], out double oilConsumption)) { Debug.WriteLine($"Invalid OilConsumption for machine {machineId}"); continue; }
-
-                    // Fix boolean parsing
-                    bool isActive = values[10] == "1" || (values[10].Length > 0 && values[10].ToLower() == "true");
-
-                     if (!double.TryParse(values[11], out double heatProduction)) { Debug.WriteLine($"Invalid HeatProduction for machine {machineId}"); continue; }
-                    string color = values[12]; // Assuming color is the last column
-                    
-                    // Update the machine in the database using the machine ID
-                    const string updateQuery = @"
-                        UPDATE PresetMachines
-                        SET PresetId = @presetId,  -- Update PresetId as well if needed
-                            Name = @name,
-                            ImageSource = @imageSource,
-                            MaxHeat = @maxHeat,
-                            MaxElectricity = @maxElectricity,
-                            ProductionCosts = @productionCosts,
-                            Emissions = @emissions,
-                            GasConsumption = @gasConsumption,
-                            OilConsumption = @oilConsumption,
-                            IsActive = @isActive,
-                            HeatProduction = @heatProduction,
-                            Color = @color
-                        WHERE Id = @machineId;"; 
-                    
-                    using (var cmd = new SqliteCommand(updateQuery, conn))
-                    {
-                        cmd.Transaction = transaction; // Ensure transaction is set
-
-                        // *** Use Machine ID parameter ***
-                        cmd.Parameters.AddWithValue("@machineId", machineId);
-                        cmd.Parameters.AddWithValue("@presetId", presetId); // Add PresetId parameter
-                        cmd.Parameters.AddWithValue("@name", name);
-                        cmd.Parameters.AddWithValue("@imageSource", imageSource);
-                        cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
-                        cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
-                        cmd.Parameters.AddWithValue("@productionCosts", productionCosts);
-                        cmd.Parameters.AddWithValue("@emissions", emissions);
-                        cmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
-                        cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
-                        cmd.Parameters.AddWithValue("@isActive", isActive);
-                        cmd.Parameters.AddWithValue("@heatProduction", heatProduction);
-                        cmd.Parameters.AddWithValue("@color", color);
-
-
+                        cmd.Transaction = transaction;
                         cmd.ExecuteNonQuery();
+                        Debug.WriteLine("Scenario 1 inserted.");
                     }
+
+                    // Step 4: Recreate Scenario 2
+                    Debug.WriteLine("Inserting Scenario 2...");
+                    const string insertScenario2Query = "INSERT INTO AM_Presets (Id, Name) VALUES (2, 'Scenario 2')";
+                    using (var cmd = new SqliteCommand(insertScenario2Query, conn))
+                    {
+                        cmd.Transaction = transaction;
+                        cmd.ExecuteNonQuery();
+                        Debug.WriteLine("Scenario 2 inserted.");
+                    }
+
+                    // Step 5: Read CSV and restore default machine settings
+                    Debug.WriteLine("Reading CSV file for PresetMachines...");
+                    string csvPath = "Data/PresetMachines_backup.csv";
+                    if (!File.Exists(csvPath))
+                    {
+                        Debug.WriteLine($"CSV file not found: {csvPath}");
+                        throw new FileNotFoundException($"CSV file not found: {csvPath}");
+                    }
+
+                    string[] lines = File.ReadAllLines(csvPath);
+                    Debug.WriteLine($"CSV file loaded. Total lines: {lines.Length}");
+
+                    // Skip header row if present
+                    int startIndex = lines.Length > 0 && lines[0].StartsWith("Id,") ? 1 : 0;
+
+                    // Process each line
+                    for (int i = startIndex; i < lines.Length; i++)
+                    {
+                        string[] values = lines[i].Split(',');
+
+                        // Validate the CSV line
+                        if (values.Length < 12)
+                        {
+                            Debug.WriteLine($"Skipping malformed CSV line: {lines[i]}");
+                            continue;
+                        }
+
+                        // Parse values from the CSV
+                        if (!int.TryParse(values[0], out int machineId))
+                        {
+                            Debug.WriteLine($"Skipping CSV line with invalid Machine Id: {lines[i]}");
+                            continue;
+                        }
+
+                        if (!int.TryParse(values[1], out int presetId))
+                        {
+                            Debug.WriteLine($"Skipping CSV line with invalid Preset Id for machine {machineId}: {lines[i]}");
+                            continue;
+                        }
+
+                        string name = values[2];
+                        string imageSource = values[3];
+                        if (!double.TryParse(values[4], out double maxHeat)) { Debug.WriteLine($"Invalid MaxHeat for machine {machineId}"); continue; }
+                        if (!double.TryParse(values[5], out double maxElectricity)) { Debug.WriteLine($"Invalid MaxElectricity for machine {machineId}"); continue; }
+                        if (!double.TryParse(values[6], out double productionCosts)) { Debug.WriteLine($"Invalid ProductionCosts for machine {machineId}"); continue; }
+                        if (!double.TryParse(values[7], out double emissions)) { Debug.WriteLine($"Invalid Emissions for machine {machineId}"); continue; }
+                        if (!double.TryParse(values[8], out double gasConsumption)) { Debug.WriteLine($"Invalid GasConsumption for machine {machineId}"); continue; }
+                        if (!double.TryParse(values[9], out double oilConsumption)) { Debug.WriteLine($"Invalid OilConsumption for machine {machineId}"); continue; }
+
+                        bool isActive = values[10] == "1" || (values[10].Length > 0 && values[10].ToLower() == "true");
+                        if (!double.TryParse(values[11], out double heatProduction)) { Debug.WriteLine($"Invalid HeatProduction for machine {machineId}"); continue; }
+                        string color = values[12];
+
+                        // Insert or update the machine in the database
+                        Debug.WriteLine($"Inserting or updating machine with Id: {machineId}, PresetId: {presetId}");
+                        const string insertMachineQuery = @"
+                        INSERT INTO PresetMachines (Id, PresetId, Name, ImageSource, MaxHeat, MaxElectricity, 
+                                                    ProductionCosts, Emissions, GasConsumption, OilConsumption, 
+                                                    IsActive, HeatProduction, Color)
+                        VALUES (@machineId, @presetId, @name, @imageSource, @maxHeat, @maxElectricity, 
+                                @productionCosts, @emissions, @gasConsumption, @oilConsumption, 
+                                @isActive, @heatProduction, @color)
+                        ON CONFLICT(Id) DO UPDATE SET
+                            PresetId = excluded.PresetId,
+                            Name = excluded.Name,
+                            ImageSource = excluded.ImageSource,
+                            MaxHeat = excluded.MaxHeat,
+                            MaxElectricity = excluded.MaxElectricity,
+                            ProductionCosts = excluded.ProductionCosts,
+                            Emissions = excluded.Emissions,
+                            GasConsumption = excluded.GasConsumption,
+                            OilConsumption = excluded.OilConsumption,
+                            IsActive = excluded.IsActive,
+                            HeatProduction = excluded.HeatProduction,
+                            Color = excluded.Color;";
+
+                        using (var cmd = new SqliteCommand(insertMachineQuery, conn))
+                        {
+                            cmd.Transaction = transaction;
+                            cmd.Parameters.AddWithValue("@machineId", machineId);
+                            cmd.Parameters.AddWithValue("@presetId", presetId);
+                            cmd.Parameters.AddWithValue("@name", name);
+                            cmd.Parameters.AddWithValue("@imageSource", imageSource);
+                            cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
+                            cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
+                            cmd.Parameters.AddWithValue("@productionCosts", productionCosts);
+                            cmd.Parameters.AddWithValue("@emissions", emissions);
+                            cmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
+                            cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
+                            cmd.Parameters.AddWithValue("@isActive", isActive);
+                            cmd.Parameters.AddWithValue("@heatProduction", heatProduction);
+                            cmd.Parameters.AddWithValue("@color", color);
+
+                            cmd.ExecuteNonQuery();
+                            Debug.WriteLine($"Machine with Id {machineId} inserted/updated successfully.");
+                        }
+                    }
+
+                    // Commit the transaction
+                    Debug.WriteLine("Committing transaction...");
+                    transaction.Commit();
+                    Debug.WriteLine("Transaction committed successfully.");
                 }
-                
-                transaction.Commit();
+                catch (Exception ex)
+                {
+                    // Rollback the transaction in case of an error
+                    Debug.WriteLine($"Error during RestoreDefaults: {ex.Message}");
+                    transaction.Rollback();
+                    Debug.WriteLine("Transaction rolled back.");
+                }
+            }
+
+            // Re-enable foreign key enforcement
+            Debug.WriteLine("Re-enabling foreign key enforcement...");
+            using (var enableForeignKeysCmd = new SqliteCommand("PRAGMA foreign_keys = ON;", conn))
+            {
+                enableForeignKeysCmd.ExecuteNonQuery();
+                Debug.WriteLine("Foreign key enforcement re-enabled.");
             }
         }
-        
-        // Refresh in-memory data
-        RefreshAssets();
-    }
 
+        // Refresh in-memory data
+        Debug.WriteLine("Refreshing in-memory data...");
+        RefreshAssets();
+        Debug.WriteLine("RestoreDefaults completed.");
+    }
 }
 
 

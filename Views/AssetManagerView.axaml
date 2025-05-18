@@ -271,6 +271,36 @@
                 </Button>
 
                 <Button
+                    Grid.Column="1"
+                    Width="200"
+                    Height="50"
+                    Margin="0,0,0,0"
+                    HorizontalAlignment="Center"
+                    Background="#FF4500"
+                    Command="{Binding RestoreDefaultsCommand}"
+                    CornerRadius="10"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Path
+                                Width="24"
+                                Height="24"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource Refresh}"
+                                Fill="White"
+                                Stretch="Uniform" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                Text="Restore Defaults" />
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <Button
                     Grid.Column="2"
                     Width="110"
                     Height="50"
