@@ -156,7 +156,8 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Background="{DynamicResource SecondaryBackground}"
-            FontWeight="Bold">
+            FontWeight="Bold"
+            Command="{Binding RestoreDefaultsCommand}">
             <Button.Content>
                 <TextBlock
                     HorizontalAlignment="Center"

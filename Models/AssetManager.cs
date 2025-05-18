@@ -8,7 +8,7 @@ using Avalonia.Media.Imaging;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
-
+using System.IO;
 
 namespace Sem2Proj.Models;
 
@@ -27,6 +27,8 @@ public class AssetManager
 
     public int SelectedScenarioIndex { get; private set; } = -1;
 
+    public ICommand RestoreDefaultsCommand { get; private set; }
+
     public AssetManager()
     {
         LoadAssetsAndPresetsFromDatabase();
@@ -35,6 +37,10 @@ public class AssetManager
         {
             SetScenario(0);
         }
+
+        RestoreDefaultsCommand = new RelayCommand(() => {
+            RestoreDefaults();
+        });
     }
 
     private void LoadAssetsAndPresetsFromDatabase()
@@ -583,6 +589,91 @@ public class AssetManager
             Debug.WriteLine($"Error updating preset name: {ex.Message}");
         }
         return false;
+    }
+
+    public void RestoreDefaults()
+    {
+        using (var conn = new SqliteConnection(dbPath))
+        {
+            conn.Open();
+            using (var transaction = conn.BeginTransaction())
+            {
+                // Delete all presets except 1 and 2
+                const string deletePresetsQuery = "DELETE FROM AM_Presets WHERE Id > 2";
+                using (var cmd = new SqliteCommand(deletePresetsQuery, conn))
+                {
+                    cmd.Transaction = transaction;
+                    cmd.ExecuteNonQuery();
+                }
+                
+
+                // Read CSV and restore default machine settings
+                string csvPath = "Data/PresetMachines_backup.csv";
+                string[] lines = File.ReadAllLines(csvPath);
+                
+                // Skip header row if present
+                int startIndex = lines[0].Contains("PresetId") ? 1 : 0;
+                
+                // Process each line
+                for (int i = startIndex; i < lines.Length; i++)
+                {
+                    string[] values = lines[i].Split(',');
+                    
+                    // Assuming CSV format: PresetId,Name,ImageSource,MaxHeat,MaxElectricity,ProductionCosts,Emissions,GasConsumption,OilConsumption,IsActive,HeatProduction,Color
+                    int presetId = int.Parse(values[0]);
+                    string name = values[1];
+                    string imageSource = values[2];
+                    double maxHeat = double.Parse(values[3]);
+                    double maxElectricity = double.Parse(values[4]);
+                    double productionCosts = double.Parse(values[5]);
+                    double emissions = double.Parse(values[6]);
+                    double gasConsumption = double.Parse(values[7]);
+                    double oilConsumption = double.Parse(values[8]);
+                    bool isActive = values[9] == "1" || values[9].ToLower() == "true";
+                    double heatProduction = double.Parse(values[10]);
+                    string color = values[11];
+                    
+                    // Update the machine in the database
+                    const string updateQuery = @"
+                        UPDATE PresetMachines
+                        SET ImageSource = @imageSource,
+                            MaxHeat = @maxHeat,
+                            MaxElectricity = @maxElectricity,
+                            ProductionCosts = @productionCosts,
+                            Emissions = @emissions,
+                            GasConsumption = @gasConsumption,
+                            OilConsumption = @oilConsumption,
+                            IsActive = @isActive,
+                            HeatProduction = @heatProduction,
+                            Color = @color
+                        WHERE PresetId = @presetId AND Name = @name";
+                    
+                    using (var cmd = new SqliteCommand(updateQuery, conn))
+                    {
+                        cmd.Transaction = transaction;
+                        cmd.Parameters.AddWithValue("@presetId", presetId);
+                        cmd.Parameters.AddWithValue("@name", name);
+                        cmd.Parameters.AddWithValue("@imageSource", imageSource);
+                        cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
+                        cmd.Parameters.AddWithValue("@maxElectricity", maxElectricity);
+                        cmd.Parameters.AddWithValue("@productionCosts", productionCosts);
+                        cmd.Parameters.AddWithValue("@emissions", emissions);
+                        cmd.Parameters.AddWithValue("@gasConsumption", gasConsumption);
+                        cmd.Parameters.AddWithValue("@oilConsumption", oilConsumption);
+                        cmd.Parameters.AddWithValue("@isActive", isActive);
+                        cmd.Parameters.AddWithValue("@heatProduction", heatProduction);
+                        cmd.Parameters.AddWithValue("@color", color);
+                        
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                
+                transaction.Commit();
+            }
+        }
+        
+        // Refresh in-memory data
+        RefreshAssets();
     }
 }
 

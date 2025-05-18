@@ -83,6 +83,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <!--  Default Top Bar (visible when not configuring)  -->
@@ -124,7 +125,7 @@
 
                 <!--  Configuration Mode Top Bar (visible when configuring)  -->
                 <StackPanel
-                    Grid.ColumnSpan="3"
+                    Grid.ColumnSpan="4"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}"
@@ -142,7 +143,7 @@
                         Text="{Binding SelectedScenario}" />
                 </StackPanel>
                 <TextBlock
-                    Grid.ColumnSpan="3"
+                    Grid.ColumnSpan="4"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="20"
@@ -152,7 +153,7 @@
                     Text="Create" />
 
                 <TextBlock
-                    Grid.ColumnSpan="3"
+                    Grid.ColumnSpan="4"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="20"
@@ -272,7 +273,7 @@
                 </Button>
 
                 <Button
-                    Grid.Column="2"
+                    Grid.Column="3"
                     Width="110"
                     Height="50"
                     Margin="5,0,0,0"
@@ -297,6 +298,37 @@
                                 FontWeight="Bold"
                                 Foreground="White"
                                 Text="Create" />
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <!-- Restore Defaults Button -->
+                <Button
+                    Grid.Column="1"
+                    Width="200"
+                    Height="50"
+                    Margin="0,0,0,0"
+                    HorizontalAlignment="Center"
+                    Background="#FF4500"
+                    Command="{Binding RestoreDefaultsCommand}"
+                    CornerRadius="10"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Path
+                                Width="24"
+                                Height="24"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource Refresh}"
+                                Fill="White"
+                                Stretch="Uniform" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                Text="Restore Defaults" />
                         </StackPanel>
                     </Button.Content>
                 </Button>

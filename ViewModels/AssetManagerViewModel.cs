@@ -865,6 +865,14 @@ foreach (var preset in AvailablePresets)
 
         Events.Notification.Invoke($"Preset renamed to '{preset.Name}' successfully.", NotificationType.Confirmation);
     }
+
+    [RelayCommand]
+    private void RestoreDefaults()
+    {
+        _assetManager.RestoreDefaults();
+        RefreshPresetList();
+        Events.Notification.Invoke("Defaults restored successfully!", NotificationType.Confirmation);
+    }
 }
 
 
