@@ -24,6 +24,7 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
     [ObservableProperty]
     private bool developer_Mode_On_Toggle;
     public ICommand? CloseCommand { get; private set; }
+    public ICommand RestoreDefaultsCommand { get; private set; }
 
     public SettingsViewModel()
     {
@@ -36,6 +37,8 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
         Light_Mode_On_Toggle = theme != "Dark";
         Home_Screen_On_Startup_Toggle = homeToggle != "Off";
         Developer_Mode_On_Toggle = developerModeToggle != "Off";
+
+        RestoreDefaultsCommand = new RelayCommand(RestoreDefaults);
     }
 
     partial void OnLight_Mode_On_ToggleChanged(bool value)
@@ -61,6 +64,13 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
             Is_Home_Screen_On_Startup_Toggle_Enabled = false;
         else
             Is_Home_Screen_On_Startup_Toggle_Enabled = true;
+    }
+
+    public void RestoreDefaults()
+    {
+        Light_Mode_On_Toggle = false; // Dark theme
+        Developer_Mode_On_Toggle = false; // Off
+        Home_Screen_On_Startup_Toggle = true; // On
     }
 
     public void SetCloseAction(Action closeCallback)

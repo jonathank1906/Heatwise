@@ -1,0 +1,8 @@
+Id,PresetId,Name,ImageSource,MaxHeat,ProductionCosts,Emissions,GasConsumption,OilConsumption,MaxElectricity,IsActive,HeatProduction,Color
+1,1,Gas Boiler 2,/Assets/Machines/GasBoiler.jpeg,3.0,560.0,130.0,0.7,0.0,0.0,1,3.0,#FF843B0C
+2,2,Gas Motor 1,/Assets/Machines/GasMotor.jpg,3.5,990.0,650.0,1.8,0.0,2.6,1,3.5,#FF006FC0
+3,1,Oil Boiler 1,/Assets/Machines/OilBoiler.jpeg,4.0,670.0,330.0,0.0,1.5,0.0,1,4.0,#FF767070
+4,2,Oil Boiler 1,/Assets/Machines/OilBoiler.jpeg,4.0,670.0,330.0,0.0,1.5,0.0,1,4.0,#FF767070
+5,2,Heat Pump 1,/Assets/Machines/HeatPump.jpg,6.0,60.0,100.0,0.0,0.0,-6.0,1,6.0,#FF32BE72
+6,1,Gas Boiler 1,/Assets/Machines/GasBoiler.jpeg,4.0,520.0,175.0,0.9,0.0,0.0,1,4.0,#FFBE9000
+7,2,Gas Boiler 1,/Assets/Machines/GasBoiler.jpeg,4.0,520.0,175.0,0.9,0.0,0.0,1,4.0,#FFBE9000
