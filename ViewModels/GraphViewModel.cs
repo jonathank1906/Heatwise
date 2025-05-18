@@ -8,7 +8,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using LiveChartsCore.Defaults;
 
-namespData Visualizationace Sem2Proj.ViewModels;
+namespace Sem2Proj.ViewModels;
 
 public partial class GraphViewModel : ViewModelBase
 {

@@ -608,35 +608,58 @@ public class AssetManager
                 
 
                 // Read CSV and restore default machine settings
-                string csvPath = "Data/PresetMachines_backup.csv";
+                string csvPath = "Data/PresetMachines_backup1.csv";
                 string[] lines = File.ReadAllLines(csvPath);
                 
                 // Skip header row if present
-                int startIndex = lines[0].Contains("PresetId") ? 1 : 0;
+                int startIndex = lines.Length > 0 && lines[0].StartsWith("Id,") ? 1 : 0;
                 
                 // Process each line
                 for (int i = startIndex; i < lines.Length; i++)
                 {
                     string[] values = lines[i].Split(',');
                     
-                    // Assuming CSV format: PresetId,Name,ImageSource,MaxHeat,MaxElectricity,ProductionCosts,Emissions,GasConsumption,OilConsumption,IsActive,HeatProduction,Color
-                    int presetId = int.Parse(values[0]);
-                    string name = values[1];
-                    string imageSource = values[2];
-                    double maxHeat = double.Parse(values[3]);
-                    double maxElectricity = double.Parse(values[4]);
-                    double productionCosts = double.Parse(values[5]);
-                    double emissions = double.Parse(values[6]);
-                    double gasConsumption = double.Parse(values[7]);
-                    double oilConsumption = double.Parse(values[8]);
-                    bool isActive = values[9] == "1" || values[9].ToLower() == "true";
-                    double heatProduction = double.Parse(values[10]);
-                    string color = values[11];
+                    // Assuming CSV format: Id,PresetId,Name,ImageSource,MaxHeat,MaxElectricity,ProductionCosts,Emissions,GasConsumption,OilConsumption,IsActive,HeatProduction,Color
+                    if (values.Length < 12) // Check if the line has enough columns (Id + 11 properties)
+                    {
+                        Debug.WriteLine($"Skipping malformed CSV line: {lines[i]}");
+                        continue; // Skip this line if it doesn't have enough values
+                    }
+
+                    // *** Read Machine ID first ***
+                    if (!int.TryParse(values[0], out int machineId))
+                    {
+                         Debug.WriteLine($"Skipping CSV line with invalid Machine Id: {lines[i]}");
+                         continue; // Skip if ID is not a valid integer
+                    }
+
+                    // *** Read other values, adjusting indices ***
+                    if (!int.TryParse(values[1], out int presetId))
+                    {
+                         Debug.WriteLine($"Skipping CSV line with invalid Preset Id for machine {machineId}: {lines[i]}");
+                         continue; // Skip if PresetId is not a valid integer
+                    }
+                    string name = values[2];
+                    string imageSource = values[3];
+                    if (!double.TryParse(values[4], out double maxHeat)) { Debug.WriteLine($"Invalid MaxHeat for machine {machineId}"); continue; }
+                    if (!double.TryParse(values[5], out double maxElectricity)) { Debug.WriteLine($"Invalid MaxElectricity for machine {machineId}"); continue; }
+                    if (!double.TryParse(values[6], out double productionCosts)) { Debug.WriteLine($"Invalid ProductionCosts for machine {machineId}"); continue; }
+                    if (!double.TryParse(values[7], out double emissions)) { Debug.WriteLine($"Invalid Emissions for machine {machineId}"); continue; }
+                    if (!double.TryParse(values[8], out double gasConsumption)) { Debug.WriteLine($"Invalid GasConsumption for machine {machineId}"); continue; }
+                    if (!double.TryParse(values[9], out double oilConsumption)) { Debug.WriteLine($"Invalid OilConsumption for machine {machineId}"); continue; }
+
+                    // Fix boolean parsing
+                    bool isActive = values[10] == "1" || (values[10].Length > 0 && values[10].ToLower() == "true");
+
+                     if (!double.TryParse(values[11], out double heatProduction)) { Debug.WriteLine($"Invalid HeatProduction for machine {machineId}"); continue; }
+                    string color = values[12]; // Assuming color is the last column
                     
-                    // Update the machine in the database
+                    // Update the machine in the database using the machine ID
                     const string updateQuery = @"
                         UPDATE PresetMachines
-                        SET ImageSource = @imageSource,
+                        SET PresetId = @presetId,  -- Update PresetId as well if needed
+                            Name = @name,
+                            ImageSource = @imageSource,
                             MaxHeat = @maxHeat,
                             MaxElectricity = @maxElectricity,
                             ProductionCosts = @productionCosts,
@@ -646,12 +669,15 @@ public class AssetManager
                             IsActive = @isActive,
                             HeatProduction = @heatProduction,
                             Color = @color
-                        WHERE PresetId = @presetId AND Name = @name";
+                        WHERE Id = @machineId;"; 
                     
                     using (var cmd = new SqliteCommand(updateQuery, conn))
                     {
-                        cmd.Transaction = transaction;
-                        cmd.Parameters.AddWithValue("@presetId", presetId);
+                        cmd.Transaction = transaction; // Ensure transaction is set
+
+                        // *** Use Machine ID parameter ***
+                        cmd.Parameters.AddWithValue("@machineId", machineId);
+                        cmd.Parameters.AddWithValue("@presetId", presetId); // Add PresetId parameter
                         cmd.Parameters.AddWithValue("@name", name);
                         cmd.Parameters.AddWithValue("@imageSource", imageSource);
                         cmd.Parameters.AddWithValue("@maxHeat", maxHeat);
@@ -663,7 +689,8 @@ public class AssetManager
                         cmd.Parameters.AddWithValue("@isActive", isActive);
                         cmd.Parameters.AddWithValue("@heatProduction", heatProduction);
                         cmd.Parameters.AddWithValue("@color", color);
-                        
+
+
                         cmd.ExecuteNonQuery();
                     }
                 }
