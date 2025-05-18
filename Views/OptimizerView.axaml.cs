@@ -25,7 +25,6 @@ public partial class OptimizerView : UserControl
     private ScottPlot.Plottables.Scatter? _heatDemandPlot;
     private ScottPlot.Plottables.Crosshair? _hoverCrosshair;
     private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
-    private List<HeatProductionResult>? _currentOptimizationResults;
     private List<HeatProductionResult>? _currentFilteredResults;
     private DataVisualization _dataVisualization;
     public AssetManager AssetManager { get; }
@@ -33,7 +32,6 @@ public partial class OptimizerView : UserControl
     {
         InitializeComponent();
         InitializeFlyoutEvents();
-         App.ThemeChanged += OnThemeChanged;
 
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
 
@@ -49,7 +47,6 @@ public partial class OptimizerView : UserControl
                 };
                 vm.PlotOptimizationResults = (results, demand) =>
                 {
-                    _currentOptimizationResults = results;
                     _currentFilteredResults = results;
                     _currentHeatDemandData = demand;
 
@@ -170,18 +167,6 @@ public partial class OptimizerView : UserControl
         };
     }
 
-    private void OnThemeChanged()
-    {
-        if (_dataVisualization != null && OptimizationPlot != null)
-        {
-            // Reapply the theme color and refresh the plot
-            var plt = OptimizationPlot.Plot;
-            plt.Axes.Color(_dataVisualization.GetCurrentThemeTextColor());
-            OptimizationPlot.Refresh();
-        }
-    }
-
-  
     private void PlotCrosshair(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
         var plt = OptimizationPlot.Plot;
