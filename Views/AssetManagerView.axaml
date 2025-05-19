@@ -71,7 +71,7 @@
     <Grid Background="{DynamicResource BackgroundColor}" RowDefinitions="Auto,Auto,*,Auto">
         <Button
             Grid.Row="3"
-            Width="160"
+            Width="170"
             Height="50"
             Margin="0,0,20,20"
             HorizontalAlignment="Right"

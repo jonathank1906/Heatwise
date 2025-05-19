@@ -6,6 +6,7 @@
     <Color x:Key="LightTextColor">#404146</Color>
     <Color x:Key="LightSecondaryBackground">#E4E4E7</Color>
     <Color x:Key="LightBorderColor">#E0E0E0</Color>
+    <Color x:Key="LightIconColor">#000000</Color>
     
     <!-- Dark Theme Colors -->
     <Color x:Key="DarkBackgroundColor">#1e1e1e</Color>
@@ -14,4 +15,5 @@
     <Color x:Key="DarkTextColor">#FFFFFF</Color>
     <Color x:Key="DarkSecondaryBackground">#252525</Color>
     <Color x:Key="DarkBorderColor">#3D3D3D</Color>
+    <Color x:Key="DarkIconColor">#FFFFFF</Color>
 </ResourceDictionary>

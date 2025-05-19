@@ -109,6 +109,7 @@ public partial class App : Application
                 Current.Resources["TextColor"] = themeColors["LightTextColor"];
                 Current.Resources["SecondaryBackground"] = themeColors["LightSecondaryBackground"];
                 Current.Resources["BorderColor"] = themeColors["LightBorderColor"];
+                Current.Resources["IconColor"] = themeColors["LightIconColor"];
             }
             else
             {
@@ -118,6 +119,7 @@ public partial class App : Application
                 Current.Resources["TextColor"] = themeColors["DarkTextColor"];
                 Current.Resources["SecondaryBackground"] = themeColors["DarkSecondaryBackground"];
                 Current.Resources["BorderColor"] = themeColors["DarkBorderColor"];
+                Current.Resources["IconColor"] = themeColors["DarkIconColor"];
 
             }
             ThemeChanged?.Invoke();
