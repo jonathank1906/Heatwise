@@ -68,7 +68,27 @@
     </UserControl.Styles>
 
 
-    <Grid Background="{DynamicResource BackgroundColor}" RowDefinitions="Auto,Auto,*">
+    <Grid Background="{DynamicResource BackgroundColor}" RowDefinitions="Auto,Auto,*,Auto">
+        <Button
+            Grid.Row="3"
+            Width="160"
+            Height="50"
+            Margin="0,0,20,20"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Background="#10000000"
+            Command="{Binding RestoreDefaultsCommand}"
+            CornerRadius="10"
+            IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
+            <Button.Content>
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource TextColor}"
+                    Text="Restore Defaults" />
+            </Button.Content>
+        </Button>
 
         <!--  Top Bar  -->
         <Border
@@ -231,7 +251,7 @@
                         Text="Cancel" />
                 </Button>
 
-                <!--  Cancel Button for Create View  -->
+                <!--  Back Button for Create View  -->
                 <Button
                     Grid.Column="2"
                     Width="85"
@@ -248,7 +268,7 @@
                         FontSize="18"
                         FontWeight="Bold"
                         Foreground="{DynamicResource TextColor}"
-                        Text="Cancel" />
+                        Text="Back" />
                 </Button>
 
                 <Button
@@ -270,35 +290,7 @@
                         Text="Back" />
                 </Button>
 
-                <Button
-                    Grid.Column="1"
-                    Width="200"
-                    Height="50"
-                    Margin="0,0,0,0"
-                    HorizontalAlignment="Center"
-                    Background="#FF4500"
-                    Command="{Binding RestoreDefaultsCommand}"
-                    CornerRadius="10"
-                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <Path
-                                Width="24"
-                                Height="24"
-                                Margin="0,0,8,0"
-                                VerticalAlignment="Center"
-                                Data="{StaticResource Refresh}"
-                                Fill="White"
-                                Stretch="Uniform" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="18"
-                                FontWeight="Bold"
-                                Foreground="White"
-                                Text="Restore Defaults" />
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
+
 
                 <Button
                     Grid.Column="2"

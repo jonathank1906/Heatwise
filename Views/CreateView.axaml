@@ -19,7 +19,7 @@
                     <Setter Property="Background" Value="#333333" />
                     <Setter Property="Foreground" Value="White" />
                     <Setter Property="FontWeight" Value="Normal" />
-                    <Setter Property="Padding" Value="15,10" />
+                    <Setter Property="Padding" Value="0,-10" />
                     <Setter Property="BorderThickness" Value="0" />
                 </Style>
 

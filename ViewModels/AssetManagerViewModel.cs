@@ -120,6 +120,30 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private string color;
 
+    private bool _isProductionUnitSelected = true;
+public bool IsProductionUnitSelected
+{
+    get => _isProductionUnitSelected;
+    set
+    {
+        _isProductionUnitSelected = value;
+        if (value) IsPresetSelected = false;
+        OnPropertyChanged();
+    }
+}
+
+private bool _isPresetSelected;
+public bool IsPresetSelected
+{
+    get => _isPresetSelected;
+    set
+    {
+        _isPresetSelected = value;
+        if (value) IsProductionUnitSelected = false;
+        OnPropertyChanged();
+    }
+}
+
     //----------------------------------------------------------------------------------------------
 
     public AssetManagerViewModel(AssetManager assetManager, IPopupService popupService)
