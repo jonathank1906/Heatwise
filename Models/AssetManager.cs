@@ -754,8 +754,8 @@ public class AssetManager
                         // Insert or update the machine in the database
                         Debug.WriteLine($"Inserting or updating machine with Id: {machineId}, PresetId: {presetId}");
                         const string insertMachineQuery = @"
-                        INSERT INTO PresetMachines (Id, PresetId, Name, ImageSource, MaxHeat, MaxElectricity, 
-                                                    ProductionCosts, Emissions, GasConsumption, OilConsumption, 
+                        INSERT INTO PresetMachines (Id, PresetId, Name, ImageSource, MaxHeat,  
+                                                    ProductionCosts, Emissions, GasConsumption, OilConsumption, MaxElectricity,
                                                     IsActive, HeatProduction, Color)
                         VALUES (@machineId, @presetId, @name, @imageSource, @maxHeat, @maxElectricity, 
                                 @productionCosts, @emissions, @gasConsumption, @oilConsumption, 
