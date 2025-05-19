@@ -82,31 +82,26 @@
             <Setter Property="FontSize" Value="23" />
         </Style>
 
-        <Style Selector="Button#homeButton &gt; PathIcon">
-            <Setter Property="Foreground" Value="#808080" />
+        <Style Selector="Button.close">
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border>
+                            <Border.Background>
+                                <!--  Transparent background for larger hitbox  -->
+                                <SolidColorBrush Opacity="0" Color="White" />
+                            </Border.Background>
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
-        <Style Selector="Button#homeButton:pointerover &gt; PathIcon">
-            <Setter Property="Foreground" Value="White" />
-        </Style>
-
-        <Style Selector="Button#testButton &gt; PathIcon">
-            <Setter Property="Foreground" Value="#808080" />
-        </Style>
-
-        <Style Selector="Button#testButton:pointerover &gt; PathIcon">
-            <Setter Property="Foreground" Value="White" />
-        </Style>
-
-        <Style Selector="Button.iconButton &gt; Path">
-            <Setter Property="Fill" Value="#808080" />
-            <Setter Property="Stretch" Value="Uniform" />
-            <Setter Property="Width" Value="20" />
-            <Setter Property="Height" Value="20" />
-        </Style>
-
-        <Style Selector="Button.iconButton:pointerover &gt; Path">
-            <Setter Property="Fill" Value="White" />
+        <!--  Button on hover  -->
+        <Style Selector="Button.close:pointerover">
+            <Setter Property="Opacity" Value="1" />
         </Style>
     </Window.Styles>
 
@@ -169,7 +164,10 @@
                     Orientation="Horizontal"
                     ZIndex="4">
                     <!--  Danfoss logo  -->
-                    <Viewbox Width="60" Height="60" Margin="15,-3,0,0">
+                    <Viewbox
+                        Width="60"
+                        Height="60"
+                        Margin="15,-3,0,0">
                         <Path Data="{StaticResource DanfossLogo}" Fill="{DynamicResource TextColor}" />
                     </Viewbox>
 
@@ -179,17 +177,19 @@
                         Width="30"
                         Height="30"
                         Margin="10,0,0,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Background="Transparent"
-                        BorderThickness="0"
+                        Classes="close"
                         Command="{Binding ShowHome}">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                            </Transitions>
+                        </Button.Transitions>
                         <PathIcon
                             Width="20"
                             Height="20"
-                            Data="{StaticResource Home}" />
+                            Data="{StaticResource Home}"
+                            Foreground="{DynamicResource TextColor}" />
                     </Button>
-
                     <Button
                         x:Name="settingsButton"
                         Width="30"
@@ -197,23 +197,18 @@
                         Margin="5,0,0,0"
                         Background="Transparent"
                         BorderThickness="0"
-                        Classes="iconButton gear-clockwise"
+                        Classes="close"
                         Command="{Binding ShowSettings}">
-                        <Button.Styles>
-                            <Style Selector="Button.gear-clockwise:pointerover &gt; Path">
-                                <Style.Animations>
-                                    <Animation IterationCount="1" Duration="0:0:0.4">
-                                        <KeyFrame Cue="0%">
-                                            <Setter Property="RotateTransform.Angle" Value="0" />
-                                        </KeyFrame>
-                                        <KeyFrame Cue="20%">
-                                            <Setter Property="RotateTransform.Angle" Value="30" />
-                                        </KeyFrame>
-                                    </Animation>
-                                </Style.Animations>
-                            </Style>
-                        </Button.Styles>
-                        <Path Data="{StaticResource Settings}" />
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                            </Transitions>
+                        </Button.Transitions>
+                        <PathIcon
+                            Width="20"
+                            Height="20"
+                            Data="{StaticResource Settings}"
+                            Foreground="{DynamicResource TextColor}" />
                     </Button>
 
 
