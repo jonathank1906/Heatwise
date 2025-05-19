@@ -110,6 +110,8 @@ public partial class App : Application
                 Current.Resources["SecondaryBackground"] = themeColors["LightSecondaryBackground"];
                 Current.Resources["BorderColor"] = themeColors["LightBorderColor"];
                 Current.Resources["IconColor"] = themeColors["LightIconColor"];
+                Current.Resources["GradientStartColor"] = themeColors["LightGradientStartColor"];
+                Current.Resources["GradientEndColor"] = themeColors["LightGradientEndColor"];
             }
             else
             {
@@ -120,6 +122,8 @@ public partial class App : Application
                 Current.Resources["SecondaryBackground"] = themeColors["DarkSecondaryBackground"];
                 Current.Resources["BorderColor"] = themeColors["DarkBorderColor"];
                 Current.Resources["IconColor"] = themeColors["DarkIconColor"];
+                Current.Resources["GradientStartColor"] = themeColors["DarkGradientStartColor"];
+                Current.Resources["GradientEndColor"] = themeColors["DarkGradientEndColor"];
 
             }
             ThemeChanged?.Invoke();
