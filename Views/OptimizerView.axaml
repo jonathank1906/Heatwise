@@ -422,23 +422,7 @@
                             <Button.Flyout>
                                 <Flyout Placement="LeftEdgeAlignedTop">
                                     <StackPanel Width="300" Spacing="5">
-                                        <Button Classes="toolbar" ToolTip.Tip="Help">
-                                            <Viewbox Width="25" Height="25">
-                                                <Path Data="{StaticResource QuestionMark}" Fill="{DynamicResource TextColor}" />
-                                            </Viewbox>
-                                            <Button.Flyout>
-                                                <Flyout Placement="LeftEdgeAlignedTop">
-                                                    <StackPanel Width="300" Spacing="5">
-                                                        <TextBlock
-                                                            Margin="5,5,5,0"
-                                                            FontSize="16"
-                                                            FontWeight="Bold"
-                                                            Text="Hold shift to select multiple days" />
-                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\Calendar.gif" />
-                                                    </StackPanel>
-                                                </Flyout>
-                                            </Button.Flyout>
-                                        </Button>
+                                        
                                         <TextBlock
                                             Margin="5,5,5,0"
                                             FontSize="16"
@@ -458,6 +442,24 @@
                                             HorizontalAlignment="Center"
                                             Click="SetDateRange_Click"
                                             Content="Apply" />
+
+                                        <Button Classes="toolbar" ToolTip.Tip="Help">
+                                            <Viewbox Width="25" Height="25">
+                                                <Path Data="{StaticResource QuestionMark}" Fill="{DynamicResource TextColor}" />
+                                            </Viewbox>
+                                            <Button.Flyout>
+                                                <Flyout Placement="LeftEdgeAlignedTop">
+                                                    <StackPanel Width="300" Spacing="5">
+                                                        <TextBlock
+                                                            Margin="5,5,5,0"
+                                                            FontSize="16"
+                                                            FontWeight="Bold"
+                                                            Text="Select a starting day and shift-click the endpoint to select multiple days" />
+                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\CalendarSelect5.gif" />
+                                                    </StackPanel>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                        </Button>
                                     </StackPanel>
                                 </Flyout>
                             </Button.Flyout>
