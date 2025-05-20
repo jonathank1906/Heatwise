@@ -85,7 +85,7 @@
                     FontSize="15"
                     FontWeight="Bold"
                     Foreground="{DynamicResource TextColor}"
-                    Text="Dark/Light Mode" />
+                    Text="Dark Mode" />
                 <ToggleSwitch
                     Margin="0,0,0,1"
                     HorizontalAlignment="Right"
@@ -165,7 +165,7 @@
                     VerticalAlignment="Center"
                     FontWeight="Bold"
                     Foreground="{DynamicResource TextColor}"
-                    Text="Restore Defaults" />
+                    Text="Restore Default Settings" />
             </Button.Content>
         </Button>
     </Grid>

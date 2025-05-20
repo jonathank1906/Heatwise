@@ -72,10 +72,6 @@ public partial class AssetManagerViewModel : ObservableObject
 
     public HeatingGrid? GridInfo => _assetManager.GridInfo;
 
-    [ObservableProperty]
-    private bool isHeatingGridVisible;
-
-
     // ---------------------------------------------------------------------------------------------
 
 
@@ -856,12 +852,6 @@ public bool IsPresetSelected
         {
             Events.Notification.Invoke($"Failed to delete preset '{preset.Name}'.", NotificationType.Error);
         }
-    }
-
-    [RelayCommand]
-    private void ToggleHeatingGridView()
-    {
-        IsHeatingGridVisible = !IsHeatingGridVisible;
     }
 
     [RelayCommand]

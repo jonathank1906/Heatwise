@@ -68,7 +68,7 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
 
     public void RestoreDefaults()
     {
-        Light_Mode_On_Toggle = false; // Dark theme
+        Light_Mode_On_Toggle = true; // Dark theme
         Developer_Mode_On_Toggle = false; // Off
         Home_Screen_On_Startup_Toggle = true; // On
     }

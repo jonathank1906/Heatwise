@@ -290,6 +290,7 @@
                             Margin="0,20,0,0"
                             HorizontalAlignment="Center"
                             Background="{DynamicResource BorderColor}"
+                              CornerRadius="10"
                             Command="{Binding OptimizeAndPlotCommand}">
                             <Button.Content>
                                 <TextBlock

@@ -116,33 +116,7 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <!--  Fixed Position ToggleSwitch (left-aligned with buttons)  -->
-        <PathIcon
-            Grid.Row="2"
-            Width="50"
-            Height="50"
-            Margin="170,0,0,75"
-            HorizontalAlignment="Left"
-            Data="{StaticResource DistrictHeating}"
-            Foreground="{DynamicResource TextColor}" />
-        <ToggleSwitch
-            Grid.Row="2"
-            Margin="10,0,0,20"
-            HorizontalAlignment="Left"
-            Foreground="{DynamicResource TextColor}"
-            IsChecked="{Binding IsHeatingGridVisible, Mode=TwoWay}">
-            <TextBlock
-                FontSize="18"
-                FontWeight="Bold"
-                Foreground="{DynamicResource TextColor}"
-                Text="View Heating Grid" />
-        </ToggleSwitch>
-
-        <!--  Heating Grid Info  -->
-        <StackPanel
-            Grid.Row="4"
-            Margin="10,0,0,20"
-            IsVisible="{Binding IsHeatingGridVisible}">
+        <StackPanel Grid.Row="4" Margin="10,0,0,20">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="550" />
@@ -150,7 +124,6 @@
                     <ColumnDefinition Width="300" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Heating Grid Image  -->
                 <Border
                     Grid.Column="0"
                     ClipToBounds="True"
@@ -162,55 +135,67 @@
                         Stretch="UniformToFill" />
                 </Border>
 
-                <!--  Heating Grid Info  -->
                 <Border
                     Grid.Column="2"
                     Background="{DynamicResource SecondaryBackground}"
                     CornerRadius="15">
-                    <StackPanel Margin="15">
-                        <TextBlock
-                            Margin="0,0,0,10"
-                            FontSize="18"
-                            FontWeight="Bold"
-                            Foreground="{DynamicResource TextColor}"
-                            Text="Grid Specifications" />
+                    <Grid>
+                        <PathIcon
+                            Width="50"
+                            Height="50"
+                            Margin="0,10,10,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Data="{StaticResource DistrictHeating}"
+                            Foreground="{DynamicResource TextColor}" />
 
-                        <StackPanel Margin="0,5">
+                        <StackPanel Margin="15">
                             <TextBlock
-                                FontSize="15"
-                                Foreground="#BFBFBF"
-                                FontWeight="SemiBold"
-                                Text="Architecture" />
-                            <TextBlock
-                                FontSize="16"
+                                Margin="0,0,0,10"
+                                FontSize="18"
+                                FontWeight="Bold"
                                 Foreground="{DynamicResource TextColor}"
-                                Text="{Binding GridInfo.Architecture}" />
-                        </StackPanel>
+                                Text="Grid Specifications" />
 
-                        <StackPanel Margin="0,5">
-                            <TextBlock
-                                FontSize="15"
-                                Foreground="#BFBFBF"
-                                FontWeight="SemiBold"
-                                Text="Size" />
-                            <TextBlock
-                                FontSize="16"
-                                Foreground="{DynamicResource TextColor}"
-                                Text="{Binding GridInfo.Size}" />
-                        </StackPanel>
+                            <StackPanel Margin="0,30,0,0">
+                                <StackPanel Margin="0,5">
+                                    <TextBlock
+                                        FontSize="15"
+                                        FontWeight="SemiBold"
+                                        Foreground="#BFBFBF"
+                                        Text="Architecture" />
+                                    <TextBlock
+                                        FontSize="16"
+                                        Foreground="{DynamicResource TextColor}"
+                                        Text="{Binding GridInfo.Architecture}" />
+                                </StackPanel>
 
-                        <StackPanel Margin="0,5">
-                            <TextBlock
-                                FontSize="15"
-                                Foreground="#BFBFBF"
-                                FontWeight="SemiBold"
-                                Text="Name" />
-                            <TextBlock
-                                FontSize="16"
-                                Foreground="{DynamicResource TextColor}"
-                                Text="{Binding GridInfo.Name}" />
+                                <StackPanel Margin="0,5">
+                                    <TextBlock
+                                        FontSize="15"
+                                        FontWeight="SemiBold"
+                                        Foreground="#BFBFBF"
+                                        Text="Size" />
+                                    <TextBlock
+                                        FontSize="16"
+                                        Foreground="{DynamicResource TextColor}"
+                                        Text="{Binding GridInfo.Size}" />
+                                </StackPanel>
+
+                                <StackPanel Margin="0,5">
+                                    <TextBlock
+                                        FontSize="15"
+                                        FontWeight="SemiBold"
+                                        Foreground="#BFBFBF"
+                                        Text="Name" />
+                                    <TextBlock
+                                        FontSize="16"
+                                        Foreground="{DynamicResource TextColor}"
+                                        Text="{Binding GridInfo.Name}" />
+                                </StackPanel>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </Border>
             </Grid>
         </StackPanel>

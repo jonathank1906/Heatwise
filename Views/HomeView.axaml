@@ -7,17 +7,14 @@
     Height="650"
     x:DataType="vm:HomeViewModel">
 
-    <!--  Styling  -->
     <UserControl.Styles>
         <Style Selector="Button.close">
             <Setter Property="Opacity" Value="0.5" />
             <Setter Property="Template">
-                <!--  Ignore the Theme Template  -->
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border>
                             <Border.Background>
-                                <!--  Adding a transparent background seems to make the 'hitbox' larger  -->
                                 <SolidColorBrush Opacity="0" Color="White" />
                             </Border.Background>
                             <ContentPresenter Content="{TemplateBinding Content}" />
@@ -27,29 +24,35 @@
             </Setter>
         </Style>
 
-        <!--  Button on hover  -->
         <Style Selector="Button.close:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
+
+         <Style Selector="Button.restore-defaults">
+        <Setter Property="Background" Value="{DynamicResource LightGrayBrush}" />
+    </Style>
+
+    <Style Selector="Button.restore-defaults:pointerover">
+        <Setter Property="Background" Value="{DynamicResource DarkGrayBrush}" />
+    </Style>
     </UserControl.Styles>
 
-    <!--  Main Content  -->
+
     <Grid ClipToBounds="True">
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
+            <RowDefinition Height="75" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!--  Title bar area  -->
-        <Grid Grid.Row="0" Background="Transparent">
+        <Grid Grid.Row="0">
             <Image
-                Width="45"
-                Height="45"
-                Margin="10,-10,0,0"
+                Width="55"
+                Height="55"
+                Margin="5,-15,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                Source="avares://Sem2Proj/Assets/Heat_Logo.png" />
+                Source="{SvgImage /Assets/Heat Logo.svg}" />
             <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Button
                     Canvas.Right="0"
@@ -72,7 +75,6 @@
             </Canvas>
         </Grid>
 
-        <!--  Main area  -->
         <ScrollViewer
             Grid.Row="1"
             HorizontalScrollBarVisibility="Disabled"
@@ -88,29 +90,22 @@
                     Foreground="{DynamicResource TextColor}"
                     Text="Welcome to Danboss" />
 
-
                 <TextBlock
                     FontSize="16"
                     Foreground="{DynamicResource TextColor}"
                     TextWrapping="Wrap">
-                    <Run Text="You will start in the Asset-Manager-Screen." />
-                    <Run Text="By clicking the scenarios, you can see your availabe machines and if desired create new ones." />
+                    <Run Text="You will begin in the Asset Manager screen." />
+                    <Run Text="By clicking the scenarios, you can see your available machines and if desired create new ones." />
                 </TextBlock>
-                <Panel>
-                    <Rectangle
-                        Width="406"
-                        Height="220"
-                        Fill="Gray" />
-                    <Image
-                        Width="400"
-                        Height="300"
-                        Margin="5"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Source="avares://Sem2Proj/Assets/HomePicture1.png"
-                        Stretch="Uniform" />
-                </Panel>
 
+                <Image
+                    Width="400"
+                    Height="300"
+                    Margin="5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Source="/Assets/HomePicture1.png"
+                    Stretch="Uniform" />
 
                 <TextBlock
                     FontSize="16"
@@ -120,20 +115,15 @@
                     <Run Text="Choose your desired specs in the menu to the left and confirm with the optimize button at the bottom." />
                     <Run Text="For more help, press the help button in the sections." />
                 </TextBlock>
-                <Panel>
-                    <Rectangle
-                        Width="406"
-                        Height="220"
-                        Fill="Gray" />
-                    <Image
-                        Width="400"
-                        Height="300"
-                        Margin="5"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Source="avares://Sem2Proj/Assets/HomePicture2.png"
-                        Stretch="Uniform" />
-                </Panel>
+
+                <Image
+                    Width="400"
+                    Height="300"
+                    Margin="5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Source="/Assets/HomePicture2.png"
+                    Stretch="Uniform" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

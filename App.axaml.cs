@@ -101,7 +101,7 @@ public partial class App : Application
 
         try
         {
-            if (Light_Mode_On_Toggle)
+            if (!Light_Mode_On_Toggle)
             {
                 Current.Resources["BackgroundColor"] = themeColors["LightBackgroundColor"];
                 Current.Resources["ForegroundColor"] = themeColors["LightForegroundColor"];
