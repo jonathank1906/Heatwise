@@ -6,7 +6,7 @@
     <Color x:Key="LightTextColor">#404146</Color>
     <Color x:Key="LightSecondaryBackground">#E4E4E7</Color>
     <Color x:Key="LightBorderColor">#E0E0E0</Color>
-    <Color x:Key="LightIconColor">#000000</Color>
+    <Color x:Key="LightIconColor">#cecece</Color>
     <Color x:Key="LightGradientStartColor">#d1d1d3</Color>
     <Color x:Key="LightGradientEndColor">#f3f3f4</Color>
 
@@ -17,7 +17,7 @@
     <Color x:Key="DarkTextColor">#FFFFFF</Color>
     <Color x:Key="DarkSecondaryBackground">#252525</Color>
     <Color x:Key="DarkBorderColor">#3D3D3D</Color>
-    <Color x:Key="DarkIconColor">#FFFFFF</Color>
+    <Color x:Key="DarkIconColor">#323232</Color>
     <Color x:Key="DarkGradientStartColor">#212222</Color>
     <Color x:Key="DarkGradientEndColor">#333333</Color>
 </ResourceDictionary>

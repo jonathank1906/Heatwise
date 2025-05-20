@@ -65,6 +65,27 @@
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="FontSize" Value="12" />
         </Style>
+
+        <Style Selector="Button.close">
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  Button on hover  -->
+        <Style Selector="Button.close:pointerover">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
     </UserControl.Styles>
 
 
@@ -76,7 +97,8 @@
             Margin="0,0,20,20"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
-            Background="#10000000"
+            Background="{DynamicResource IconColor}"
+            Classes="close"
             Command="{Binding RestoreDefaultsCommand}"
             CornerRadius="10"
             IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
@@ -180,6 +202,16 @@
                     IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=AssetDetails}"
                     Text="Preset Explorer" />
 
+                <TextBlock
+                    Grid.ColumnSpan="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource TextColor}"
+                    IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}"
+                    Text="Preset Explorer" />
+
                 <!--  Default Buttons  -->
                 <Button
                     Grid.Column="1"
@@ -187,7 +219,8 @@
                     Height="50"
                     Margin="5,0,8,0"
                     HorizontalAlignment="Center"
-                   
+                    Background="{DynamicResource IconColor}"
+                    Classes="close"
                     Command="{Binding ShowConfigurationCommand}"
                     CornerRadius="10"
                     IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=AssetDetails}">
@@ -221,6 +254,7 @@
                     Margin="5,0,8,0"
                     HorizontalAlignment="Center"
                     Background="#00B300"
+                    Classes="close"
                     Command="{Binding SaveConfigurationCommand}"
                     CornerRadius="10"
                     IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Configure}">
@@ -239,6 +273,8 @@
                     Margin="5,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
+                    Background="{DynamicResource IconColor}"
+                    Classes="close"
                     Command="{Binding NavigateToCommand}"
                     CommandParameter="Presets"
                     CornerRadius="10"
@@ -259,6 +295,8 @@
                     Margin="5,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
+                    Background="{DynamicResource IconColor}"
+                    Classes="close"
                     Command="{Binding NavigateToCommand}"
                     CommandParameter="PresetNavigation"
                     CornerRadius="10"
@@ -278,6 +316,8 @@
                     Margin="5,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
+                    Background="{DynamicResource IconColor}"
+                    Classes="close"
                     Command="{Binding NavigateToCommand}"
                     CommandParameter="Presets"
                     CornerRadius="10"
@@ -298,15 +338,16 @@
                     Height="50"
                     Margin="5,0,0,0"
                     HorizontalAlignment="Center"
-                    
+                    Background="{DynamicResource IconColor}"
+                    Classes="close"
                     Command="{Binding ShowSettingsCommand}"
                     CornerRadius="10"
                     IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <Path
-                                Width="24"
-                                Height="24"
+                                Width="22"
+                                Height="22"
                                 Margin="0,0,8,0"
                                 VerticalAlignment="Center"
                                 Data="{StaticResource Add}"

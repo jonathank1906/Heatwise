@@ -113,6 +113,27 @@
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="FontSize" Value="12" />
         </Style>
+
+        <Style Selector="Button.close">
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  Button on hover  -->
+        <Style Selector="Button.close:pointerover">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
     </UserControl.Styles>
 
     <Grid>
@@ -289,8 +310,8 @@
                             Height="50"
                             Margin="0,20,0,0"
                             HorizontalAlignment="Center"
-                            Background="{DynamicResource BorderColor}"
-                              CornerRadius="10"
+                            Background="{DynamicResource IconColor}"
+                            Classes="close"
                             Command="{Binding OptimizeAndPlotCommand}">
                             <Button.Content>
                                 <TextBlock
@@ -347,12 +368,17 @@
                     Background="{DynamicResource SecondaryBackground}"
                     BorderBrush="#3e3e3e">
                     <StackPanel
-                        Margin="0,10,0,0"
+                        Margin="0,20,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
-                        Spacing="10">
+                        Spacing="25">
 
-                        <Button Classes="toolbar" ToolTip.Tip="Change graph type">
+                        <Button
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            Classes="close"
+                            ToolTip.Tip="Change graph type">
                             <Button.Flyout>
                                 <Flyout Placement="LeftEdgeAlignedTop">
                                     <StackPanel Width="200" Spacing="5">
@@ -418,12 +444,15 @@
 
                         <Button
                             x:Name="CalendarButton"
-                            Classes="toolbar"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            Classes="close"
                             ToolTip.Tip="Calendar">
                             <Button.Flyout>
                                 <Flyout Placement="LeftEdgeAlignedTop">
                                     <StackPanel Width="300" Spacing="5">
-                                        <Button Classes="toolbar" ToolTip.Tip="Help">
+                                        <Button ToolTip.Tip="Help">
                                             <Viewbox Width="25" Height="25">
                                                 <Path Data="{StaticResource QuestionMark}" Fill="{DynamicResource TextColor}" />
                                             </Viewbox>
@@ -466,7 +495,10 @@
                         </Button>
 
                         <Button
-                            Classes="toolbar"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            Classes="close"
                             Command="{Binding ResetViewCommand}"
                             ToolTip.Tip="Restore view">
                             <PathIcon Data="{StaticResource Restore}" Foreground="{DynamicResource TextColor}" />
@@ -474,7 +506,10 @@
 
 
                         <Button
-                            Classes="toolbar"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            Classes="close"
                             Click="ToggleTooltip_Click"
                             ToolTip.Tip="Pointer">
                             <Viewbox Width="25" Height="25">
@@ -483,13 +518,21 @@
                         </Button>
 
                         <Button
-                            Classes="toolbar"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            Classes="close"
                             Click="OnExportButtonClick"
                             ToolTip.Tip="Export optimized results to a CSV file">
                             <PathIcon Data="{StaticResource Export}" Foreground="{DynamicResource TextColor}" />
                         </Button>
 
-                        <Button Classes="toolbar" ToolTip.Tip="Help">
+                        <Button
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            Classes="close"
+                            ToolTip.Tip="Help">
                             <Viewbox Width="25" Height="25">
                                 <Path Data="{StaticResource QuestionMark}" Fill="{DynamicResource TextColor}" />
                             </Viewbox>
