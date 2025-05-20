@@ -137,6 +137,7 @@
                     <Button
                         Padding="0,0"
                         HorizontalAlignment="Left"
+                        Classes="close"
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding NavigateToCommand}"
