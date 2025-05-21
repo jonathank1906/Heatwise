@@ -429,11 +429,6 @@
                                             Content="CO₂ Emissions"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.CO2Emissions}}" />
-
-                                        <RadioButton
-                                            Classes="fancy"
-                                            Content="Expenses and Profit"
-                                            GroupName="GraphTypeGroup" />
                                     </StackPanel>
                                 </Flyout>
                             </Button.Flyout>
@@ -464,7 +459,7 @@
                                                             FontSize="16"
                                                             FontWeight="Bold"
                                                             Text="Hold shift to select multiple days" />
-                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\Calendar.gif" />
+                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets/Calendar.gif"  />
                                                     </StackPanel>
                                                 </Flyout>
                                             </Button.Flyout>
