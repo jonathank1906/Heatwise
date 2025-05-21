@@ -606,6 +606,13 @@ public class AssetManager
                     cmd.ExecuteNonQuery();
                 }
                 
+                // Add a step to delete machines with ID > 7
+                const string deleteMachinesQuery = "DELETE FROM PresetMachines WHERE Id > 7";
+                using (var cmd = new SqliteCommand(deleteMachinesQuery, conn))
+                {
+                    cmd.Transaction = transaction; // Ensure this command is also part of the transaction
+                    cmd.ExecuteNonQuery();
+                }
 
                 // Read CSV and restore default machine settings
                 string csvPath = "Data/PresetMachines_backup1.csv";
