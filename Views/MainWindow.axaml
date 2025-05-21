@@ -165,6 +165,7 @@
                     ZIndex="4">
                     <!--  Danfoss logo  -->
                     <Viewbox
+                        Name="DanfossLogo"
                         Width="60"
                         Height="60"
                         Margin="15,-3,0,0">
@@ -173,10 +174,10 @@
 
                     <!--  Home button with PathIcon  -->
                     <Button
-                        x:Name="homeButton"
+                        Name="HomeButton"
                         Width="30"
                         Height="30"
-                        Margin="10,-5,0,0"
+                        Margin="10,0,0,0"
                         Classes="close"
                         Command="{Binding ShowHome}">
                         <Button.Transitions>
@@ -191,10 +192,10 @@
                             Foreground="{DynamicResource TextColor}" />
                     </Button>
                     <Button
-                        x:Name="settingsButton"
+                        Name="SettingsButton"
                         Width="30"
                         Height="30"
-                        Margin="5,-3,0,0"
+                        Margin="5,0,0,0"
                         Background="Transparent"
                         BorderThickness="0"
                         Classes="close"

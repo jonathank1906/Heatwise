@@ -28,15 +28,15 @@ public partial class MainWindow : AppWindow
             stackPanel.HorizontalAlignment = HorizontalAlignment.Right;
             stackPanel.Children.Clear();
 
-            var danfossLogo = this.FindControl<Image>("DanfossLogo");
-            var homeButton = this.FindControl<Button>("homeButton");
-            var settingsButton = this.FindControl<Button>("settingsButton");
+            var danfossLogo = this.FindControl<Viewbox>("DanfossLogo");
+            var homeButton = this.FindControl<Button>("HomeButton");
+            var settingsButton = this.FindControl<Button>("SettingsButton");
 
             if (danfossLogo != null && homeButton != null && settingsButton != null)
             {
                 stackPanel.Children.Add(homeButton);
                 stackPanel.Children.Add(settingsButton);
-                danfossLogo.Margin = new Thickness(0, 3, 3, 0);
+                danfossLogo.Margin = new Thickness(10, -3, 15, 0);
                 stackPanel.Children.Add(danfossLogo);
             }
         }
