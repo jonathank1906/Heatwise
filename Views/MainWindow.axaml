@@ -103,6 +103,10 @@
         <Style Selector="Button.close:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
+
+        <Style Selector="MenuFlyoutPresenter">
+            <Setter Property="Margin" Value="0,3,0,0" />
+        </Style>
     </Window.Styles>
 
 
@@ -211,8 +215,32 @@
                             Data="{StaticResource Settings}"
                             Foreground="{DynamicResource TextColor}" />
                     </Button>
-
-
+                    <Button
+                        Name="HelpSectionButton"
+                        Width="20"
+                        Height="20"
+                        Margin="5,0,0,0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Classes="close">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                            </Transitions>
+                        </Button.Transitions>
+                        <Button.Flyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Asset Manager" Command="{Binding ShowAMHelp}"/>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Optimizer" Command="{Binding ShowOPTHelp}"/>
+                            </MenuFlyout>
+                        </Button.Flyout>
+                        <PathIcon
+                            Width="17"
+                            Height="17"
+                            Data="{StaticResource QuestionMark}"
+                            Foreground="{DynamicResource TextColor}" />
+                    </Button>
                 </StackPanel>
 
                 <!--  Bottom Header / Menu Overlay  -->
@@ -273,8 +301,6 @@
             </Grid>
 
             <!--  Popup Overlay  -->
-            <!--  In MainWindow.xaml - keep your existing PopupOverlay section   ?????  -->
-            <!--  Popup Overlay section - corrected  ???  -->
             <Grid
                 Name="PopupOverlay"
                 Background="#D0000000"

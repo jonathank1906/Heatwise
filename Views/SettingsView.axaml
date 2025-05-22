@@ -27,29 +27,7 @@
             </Setter>
         </Style>
 
-        <!--  Button on hover  -->
-        <Style Selector="Button.hover:pointerover">
-            <Setter Property="Opacity" Value="1" />
-        </Style>
-
-        <Style Selector="Button.hover">
-            <Setter Property="Opacity" Value="0.7" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="5">
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding Content}" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--  Button on hover  -->
-        <Style Selector="Button.hover:pointerover">
+        <Style Selector="Button.close:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
     </UserControl.Styles>

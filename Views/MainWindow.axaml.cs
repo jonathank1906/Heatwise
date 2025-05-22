@@ -31,11 +31,13 @@ public partial class MainWindow : AppWindow
             var danfossLogo = this.FindControl<Viewbox>("DanfossLogo");
             var homeButton = this.FindControl<Button>("HomeButton");
             var settingsButton = this.FindControl<Button>("SettingsButton");
+            var helpButton = this.FindControl<Button>("HelpSectionButton");
 
-            if (danfossLogo != null && homeButton != null && settingsButton != null)
+            if (danfossLogo != null && homeButton != null && settingsButton != null && helpButton != null)
             {
                 stackPanel.Children.Add(homeButton);
                 stackPanel.Children.Add(settingsButton);
+                stackPanel.Children.Add(helpButton);
                 danfossLogo.Margin = new Thickness(10, -3, 15, 0);
                 stackPanel.Children.Add(danfossLogo);
             }
@@ -45,9 +47,9 @@ public partial class MainWindow : AppWindow
     private void Backdrop_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (DataContext is MainWindowViewModel vm)
-    {
-        vm.PopupService.ClosePopup();
-    }
+        {
+            vm.PopupService.ClosePopup();
+        }
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)

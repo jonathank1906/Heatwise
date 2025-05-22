@@ -45,6 +45,12 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     public void ShowSettings() => PopupService.ShowPopup<SettingsViewModel>();
 
+    [RelayCommand]
+    public void ShowAMHelp() => PopupService.ShowPopup<AMHelpViewModel>();
+
+    [RelayCommand]
+    public void ShowOPTHelp() => PopupService.ShowPopup<OPTHelpViewModel>();
+
     public void ShowNotification(string message, NotificationType type)
     {
         var notification = new NotificationViewModel(message, type, RemoveNotification);
