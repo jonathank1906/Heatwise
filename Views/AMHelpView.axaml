@@ -71,8 +71,54 @@
             Grid.Row="1"
             HorizontalScrollBarVisibility="Disabled"
             VerticalScrollBarVisibility="Auto">
-           
-           <TextBlock TextWrapping="Wrap" Text=".."/>
+            <StackPanel>
+                
+                <Image
+                    Width="500"
+                    Height="150"
+                    Margin="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Source="/Assets/AMHelp4.png"
+                    Stretch="Uniform"/>
+
+                <TextBlock Margin="0" VerticalAlignment="Top" xml:space="preserve" Grid.Column="1" FontSize="16" FontWeight="Bold">
+                The most powerful tool in the Asset Manager Tab
+                is the Preset Explorer. It allows you to:
+                </TextBlock>
+                
+
+           <Grid Grid.Row="3" ClipToBounds="True" ColumnDefinitions="80,Auto" RowDefinitions="Auto,Auto"  Margin="2">
+              
+              <TextBlock Margin="1" xml:space="preserve" Grid.Row="0" Grid.Column="1">
+                •observe or edit your different scanarios and...
+                </TextBlock>
+                
+              
+              <Image
+                    Width="100"
+                    Height="80"
+                    Margin="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Source="/Assets/AMHelp2.png"
+                    Stretch="Uniform" Grid.Row="0" Grid.Column="0"/>
+            </Grid>
+              <TextBlock Text=" " Grid.Row="3" Grid.Column="1" Margin="2"/>
+             
+           <Grid Grid.Row="4" ClipToBounds="True" ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto"  Margin="2">
+                <TextBlock Text="... create your own custom Scenarios" Grid.Row="0" Grid.Column="0" Margin="1,9"/>
+                
+                <Image
+                    Width="80"
+                    Height="80"
+                    Margin="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Source="/Assets/AMHelp3.png"
+                    Stretch="Uniform" Grid.Row="0" Grid.Column="1"/>
+            </Grid>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </UserControl>
