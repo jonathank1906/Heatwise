@@ -82,7 +82,7 @@
             <Setter Property="FontSize" Value="23" />
         </Style>
 
-        <Style Selector="Button.close">
+        <Style Selector="Button.fade">
             <Setter Property="Opacity" Value="0.5" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -100,7 +100,11 @@
         </Style>
 
         <!--  Button on hover  -->
-        <Style Selector="Button.close:pointerover">
+        <Style Selector="Button.fade:pointerover">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="Button.fade:flyout-open">
             <Setter Property="Opacity" Value="1" />
         </Style>
 
@@ -182,7 +186,7 @@
                         Width="30"
                         Height="30"
                         Margin="10,0,0,0"
-                        Classes="close"
+                        Classes="fade"
                         Command="{Binding ShowHome}">
                         <Button.Transitions>
                             <Transitions>
@@ -202,7 +206,7 @@
                         Margin="5,0,0,0"
                         Background="Transparent"
                         BorderThickness="0"
-                        Classes="close"
+                        Classes="fade"
                         Command="{Binding ShowSettings}">
                         <Button.Transitions>
                             <Transitions>
@@ -222,7 +226,7 @@
                         Margin="5,0,0,0"
                         Background="Transparent"
                         BorderThickness="0"
-                        Classes="close">
+                        Classes="fade">
                         <Button.Transitions>
                             <Transitions>
                                 <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
@@ -230,9 +234,9 @@
                         </Button.Transitions>
                         <Button.Flyout>
                             <MenuFlyout>
-                                <MenuItem Header="Asset Manager" Command="{Binding ShowAMHelp}"/>
+                                <MenuItem Command="{Binding ShowAMHelp}" Header="Asset Manager" />
                                 <MenuItem Header="-" />
-                                <MenuItem Header="Optimizer" Command="{Binding ShowOPTHelp}"/>
+                                <MenuItem Command="{Binding ShowOPTHelp}" Header="Optimizer" />
                             </MenuFlyout>
                         </Button.Flyout>
                         <PathIcon
