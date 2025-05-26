@@ -223,7 +223,7 @@
                         Name="HelpSectionButton"
                         Width="20"
                         Height="20"
-                        Margin="5,0,0,0"
+                        Margin="5,-3,0,0"
                         Background="Transparent"
                         BorderThickness="0"
                         Classes="fade">
@@ -246,6 +246,16 @@
                             Foreground="{DynamicResource TextColor}" />
                     </Button>
                 </StackPanel>
+
+                <Viewbox
+                    Grid.Row="0"
+                    Width="145"
+                    Height="23"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    ZIndex="4">
+                    <Image Source="{SvgImage /Assets/Heatwise Logo.svg}" />
+                </Viewbox>
 
                 <!--  Bottom Header / Menu Overlay  -->
                 <Border
