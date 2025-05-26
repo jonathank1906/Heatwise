@@ -19,13 +19,13 @@
                     <Setter Property="Background" Value="#333333" />
                     <Setter Property="Foreground" Value="White" />
                     <Setter Property="FontWeight" Value="Normal" />
-
                     <Setter Property="BorderThickness" Value="0" />
                     <Setter Property="Margin" Value="10,0" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TabItem">
                                 <Border
+                                    Padding="10,0"
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
@@ -48,10 +48,6 @@
                     <Setter Property="FontWeight" Value="Bold" />
                 </Style>
 
-                <Style Selector="TabControl /template/ TabStrip#HeaderPanel">
-                    <Setter Property="Background" Value="#333333" />
-                </Style>
-
                 <Style Selector="Button.close">
                     <Setter Property="Opacity" Value="0.7" />
                     <Setter Property="Template">
@@ -67,7 +63,6 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
-
 
                 <Style Selector="Button.close:pointerover">
                     <Setter Property="Opacity" Value="1" />
@@ -220,7 +215,7 @@
                 </ScrollViewer>
             </TabItem>
 
-     
+
             <TabItem
                 Background="{DynamicResource IconColor}"
                 Foreground="{DynamicResource TextColor}"
