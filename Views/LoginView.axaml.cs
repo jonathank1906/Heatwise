@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using Sem2Proj.ViewModels;
-using Sem2Proj.Interfaces;
+using Heatwise.ViewModels;
+using Heatwise.Interfaces;
 using System;
 
 
-namespace Sem2Proj.Views;
+namespace Heatwise.Views;
 
 public partial class LoginView : Window
 {

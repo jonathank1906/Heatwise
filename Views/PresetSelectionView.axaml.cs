@@ -1,10 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using Sem2Proj.ViewModels;
+using Heatwise.ViewModels;
 using Avalonia.Interactivity;
 using System.Diagnostics;
 
-namespace Sem2Proj.Views;
+namespace Heatwise.Views;
 
 public partial class PresetSelectionView : UserControl
 {

@@ -1,10 +1,10 @@
-using Sem2Proj.ViewModels;
-using Sem2Proj.Models;
+using Heatwise.ViewModels;
+using Heatwise.Models;
 using System.Threading.Tasks;
 using System;
-using Sem2Proj.Views;
+using Heatwise.Views;
 
-namespace Sem2Proj.Services;
+namespace Heatwise.Services;
 
 public class StartupService
 {

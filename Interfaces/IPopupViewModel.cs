@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Sem2Proj.Interfaces;
+namespace Heatwise.Interfaces;
 
 public interface IPopupService : INotifyPropertyChanged
 {

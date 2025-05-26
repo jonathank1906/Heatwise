@@ -1,6 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="Sem2Proj.Views.CalendarWindow"
+        x:Class="Heatwise.Views.CalendarWindow"
         Width="350"
         Height="450"
         SizeToContent="Height"

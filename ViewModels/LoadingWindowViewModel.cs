@@ -6,18 +6,18 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System;
 using System.IO;
-using Sem2Proj.Models;
+using Heatwise.Models;
 using System.Linq;
 using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia;
 using Avalonia.Media;
-using Sem2Proj.Interfaces;
-using Sem2Proj.Views;
+using Heatwise.Interfaces;
+using Heatwise.Views;
 
-using Sem2Proj.Services;
+using Heatwise.Services;
 
-namespace Sem2Proj.ViewModels;
+namespace Heatwise.ViewModels;
 
 public partial class LoadingWindowViewModel : ViewModelBase
 {

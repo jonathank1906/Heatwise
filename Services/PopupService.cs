@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Sem2Proj.Interfaces;
+using Heatwise.Interfaces;
 
-namespace Sem2Proj.Services;
+namespace Heatwise.Services;
 
 public partial class PopupService : ObservableObject, IPopupService
 {

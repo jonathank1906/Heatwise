@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using System;
 
-namespace Sem2Proj;
+namespace Heatwise;
 
 sealed class Program
 {

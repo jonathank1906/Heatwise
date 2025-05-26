@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace Sem2Proj.Views
+namespace Heatwise.Views
 {
     public partial class AMHelpView : UserControl
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Sem2Proj.Models;
+namespace Heatwise.Models;
 
 public class Optimizer
 {

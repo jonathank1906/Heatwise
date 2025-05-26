@@ -5,7 +5,7 @@ using Microsoft.Data.Sqlite;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Sem2Proj.Models;
+namespace Heatwise.Models;
 
 public class ResultDataManager
 {

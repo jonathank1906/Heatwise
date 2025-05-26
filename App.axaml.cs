@@ -2,17 +2,17 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using Sem2Proj.Views;
-using Sem2Proj.ViewModels;
+using Heatwise.Views;
+using Heatwise.ViewModels;
 using System.Linq;
 using Avalonia.Styling;  // For ThemeVariant
 using Avalonia.Controls; // For FindResource
 using System.Diagnostics;
 using System;
-using Sem2Proj.Services;
+using Heatwise.Services;
 using System.Threading.Tasks;
 
-namespace Sem2Proj;
+namespace Heatwise;
 
 public partial class App : Application
 {

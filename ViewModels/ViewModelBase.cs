@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Sem2Proj.ViewModels;
+namespace Heatwise.ViewModels;
 
 public class ViewModelBase : ObservableObject
 {

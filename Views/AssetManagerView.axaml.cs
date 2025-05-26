@@ -1,8 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Sem2Proj.ViewModels;
+using Heatwise.ViewModels;
 
-namespace Sem2Proj.Views;
+namespace Heatwise.Views;
 
 public partial class AssetManagerView : UserControl
 {

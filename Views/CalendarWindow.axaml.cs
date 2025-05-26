@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Sem2Proj.Views
+namespace Heatwise.Views
 {
     public partial class CalendarWindow : Window
     {

@@ -1,9 +1,9 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Sem2Proj.ViewModels;
+using Heatwise.ViewModels;
 
-namespace Sem2Proj;
+namespace Heatwise;
 
 public class ViewLocator : IDataTemplate
 {

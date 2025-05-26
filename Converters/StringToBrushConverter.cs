@@ -4,7 +4,7 @@ using Avalonia.Media;
 using System.Globalization;
 using System.Diagnostics;
 
-namespace Sem2Proj.Converters
+namespace Heatwise.Converters
 {
     public class StringToBrushConverter : IValueConverter
     {

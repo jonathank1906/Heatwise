@@ -3,11 +3,11 @@ using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Sem2Proj.Interfaces;
-using Sem2Proj.Models;
+using Heatwise.Interfaces;
+using Heatwise.Models;
 using Avalonia;
 
-namespace Sem2Proj.ViewModels;
+namespace Heatwise.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
 {

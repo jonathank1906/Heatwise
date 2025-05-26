@@ -2,15 +2,15 @@ using Avalonia.Controls;
 using ScottPlot;
 using System.Linq;
 using System.Collections.Generic;
-using Sem2Proj.ViewModels;
+using Heatwise.ViewModels;
 using Avalonia.Interactivity;
 using System;
-using Sem2Proj.Models;
+using Heatwise.Models;
 using Avalonia;
 using ScottPlot.Avalonia;
 using System.Diagnostics;
 
-namespace Sem2Proj.Views;
+namespace Heatwise.Views;
 
 public partial class OptimizerView : UserControl
 {

@@ -6,7 +6,7 @@ using System;
 using System.Diagnostics;
 using Avalonia;
 
-namespace Sem2Proj.Models;
+namespace Heatwise.Models;
 
 public class DataVisualization
 {

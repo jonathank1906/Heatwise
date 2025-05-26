@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace Sem2Proj.Converters;
+namespace Heatwise.Converters;
 
 
 public class InverseBooleanToVisibilityConverter : IValueConverter

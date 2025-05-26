@@ -1,9 +1,9 @@
 ﻿using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Sem2Proj.Enums;
+using Heatwise.Enums;
 
-namespace Sem2Proj.ViewModels;
+namespace Heatwise.ViewModels;
 
 public partial class NotificationViewModel : ViewModelBase
 {

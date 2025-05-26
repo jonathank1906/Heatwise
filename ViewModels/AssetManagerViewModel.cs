@@ -3,11 +3,11 @@ using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.IO;
-using Sem2Proj.Models;
+using Heatwise.Models;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
-using Sem2Proj.Interfaces;
-using Sem2Proj.Enums;
+using Heatwise.Interfaces;
+using Heatwise.Enums;
 using Avalonia.Controls;
 using System.Windows.Input;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 using System.Diagnostics;
 
-namespace Sem2Proj.ViewModels;
+namespace Heatwise.ViewModels;
 
 public partial class AssetManagerViewModel : ObservableObject
 {

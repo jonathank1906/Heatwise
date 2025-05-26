@@ -5,7 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using System;
 
-namespace Sem2Proj.Views
+namespace Heatwise.Views
 {
     public partial class TooltipWindow : Window
     {

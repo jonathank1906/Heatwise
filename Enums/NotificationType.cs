@@ -1,6 +1,6 @@
 using System;
 
-namespace Sem2Proj.Enums;
+namespace Heatwise.Enums;
 
 public enum NotificationType
 {

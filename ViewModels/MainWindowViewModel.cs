@@ -1,14 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Sem2Proj.Interfaces;
+using Heatwise.Interfaces;
 using Avalonia.Threading;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
-using Sem2Proj.Events;
-using Sem2Proj.Enums;
+using Heatwise.Events;
+using Heatwise.Enums;
 using System;
 
-namespace Sem2Proj.ViewModels;
+namespace Heatwise.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {

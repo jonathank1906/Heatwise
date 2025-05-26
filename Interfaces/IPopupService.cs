@@ -1,6 +1,6 @@
 using System;
 
-namespace Sem2Proj.Interfaces;
+namespace Heatwise.Interfaces;
 
 public interface IPopupViewModel
 {

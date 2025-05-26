@@ -5,8 +5,8 @@ using Avalonia;
 using Avalonia.Layout;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Sem2Proj.ViewModels;
-namespace Sem2Proj.Views;
+using Heatwise.ViewModels;
+namespace Heatwise.Views;
 
 public partial class MainWindow : AppWindow
 {

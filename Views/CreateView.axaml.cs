@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Sem2Proj.ViewModels;
+using Heatwise.ViewModels;
 using System.Diagnostics;
 
-namespace Sem2Proj.Views;
+namespace Heatwise.Views;
 
 public partial class CreateView : UserControl
 {

@@ -5,8 +5,8 @@ Overview:
  This class can be used to send notifications from anywhere in the code.
 
 Usage:
-    0. Add 'using Sem2Proj.Events;' [optional since you can use the full path Events.Notification when firing the event]
-    0.5 Add 'using Sem2Proj.Enums;' [optional since you can use the full path Enums.NotificationType when firing the event]
+    0. Add 'using Heatwise.Events;' [optional since you can use the full path Events.Notification when firing the event]
+    0.5 Add 'using Heatwise.Enums;' [optional since you can use the full path Enums.NotificationType when firing the event]
 
     1. Call Notification.Invoke("[Your message]", NotificationType.[Your Type]) to send a notification.
 
@@ -18,9 +18,9 @@ Types of Notifications:
  */
 
 using System;
-using Sem2Proj.Enums;
+using Heatwise.Enums;
 
-namespace Sem2Proj.Events;
+namespace Heatwise.Events;
 
 public static class Notification
 {

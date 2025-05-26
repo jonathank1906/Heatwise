@@ -2,9 +2,9 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Sem2Proj.Interfaces;
+using Heatwise.Interfaces;
 
-namespace Sem2Proj.ViewModels;
+namespace Heatwise.ViewModels;
 
 public partial class HomeViewModel : ViewModelBase, IPopupViewModel
 {

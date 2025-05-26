@@ -3,7 +3,7 @@ using Avalonia.Media;
 using System;
 using System.Globalization;
 
-namespace Sem2Proj.Converters;
+namespace Heatwise.Converters;
 
 public class BoolToBrushConverter : IValueConverter
 {

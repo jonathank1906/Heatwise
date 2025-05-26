@@ -1,13 +1,13 @@
 <UserControl
-    x:Class="Sem2Proj.Views.OptimizerView"
+    x:Class="Heatwise.Views.OptimizerView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
     xmlns:anim="https://github.com/whistyun/AnimatedImage.Avalonia"
-    xmlns:conv="clr-namespace:Sem2Proj.Converters"
+    xmlns:conv="clr-namespace:Heatwise.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="using:Sem2Proj.ViewModels"
+    xmlns:vm="using:Heatwise.ViewModels"
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:OptimizerViewModel"
@@ -459,7 +459,7 @@
                                                             FontSize="16"
                                                             FontWeight="Bold"
                                                             Text="Hold shift to select multiple days" />
-                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets/Calendar.gif"  />
+                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Heatwise/Assets/Calendar.gif"  />
                                                     </StackPanel>
                                                 </Flyout>
                                             </Button.Flyout>
@@ -539,7 +539,7 @@
                                             FontSize="16"
                                             FontWeight="Bold"
                                             Text="Scroll into the graph to zoom in and out" />
-                                        <Image anim:ImageBehavior.AnimatedSource="avares://Sem2Proj/Assets\Scrolling.gif" />
+                                        <Image anim:ImageBehavior.AnimatedSource="avares://Heatwise/Assets\Scrolling.gif" />
                                     </StackPanel>
                                 </Flyout>
                             </Button.Flyout>

@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sem2Proj.Models;
+using Heatwise.Models;
 using System.Diagnostics;
 using Avalonia.Controls;
 using System.Collections.ObjectModel;
 
 
-namespace Sem2Proj.ViewModels;
+namespace Heatwise.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {

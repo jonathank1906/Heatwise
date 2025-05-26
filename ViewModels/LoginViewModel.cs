@@ -1,15 +1,15 @@
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Sem2Proj.Views;
+using Heatwise.Views;
 using System.Threading.Tasks;
-using Sem2Proj.Interfaces;
+using Heatwise.Interfaces;
 using System;
 using Avalonia.MicroCom;
 using Avalonia.Threading;
 
 
-namespace Sem2Proj.ViewModels;
+namespace Heatwise.ViewModels;
 
 public partial class LoginViewModel : ViewModelBase
 {

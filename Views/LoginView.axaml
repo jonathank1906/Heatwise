@@ -1,11 +1,11 @@
 <Window
-    x:Class="Sem2Proj.Views.LoginView"
+    x:Class="Heatwise.Views.LoginView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sty="using:Avalonia.Styling"
-    xmlns:vm="using:Sem2Proj.ViewModels"
+    xmlns:vm="using:Heatwise.ViewModels"
     Title="Log in"
     Width="800"
     Height="500"

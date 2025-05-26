@@ -11,7 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.IO;
 
 
-namespace Sem2Proj.Models;
+namespace Heatwise.Models;
 
 public class AssetManager
 {
