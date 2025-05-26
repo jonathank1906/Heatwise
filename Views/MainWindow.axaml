@@ -110,11 +110,36 @@
 
         <Style Selector="MenuFlyoutPresenter">
             <Setter Property="Margin" Value="0,3,0,0" />
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackground}" />
+        </Style>
+
+        <Style Selector="MenuItem">
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
+            <Setter Property="Background" Value="{DynamicResource IconColor}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border
+                            Margin="5,2"
+                            Padding="15,8"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="5">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Header}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="MenuItem:pointerover">
+            <Setter Property="Opacity" Value="1" />
         </Style>
     </Window.Styles>
 
-
-    <!--  Panel acts as a container and the background  -->
     <Panel>
         <ExperimentalAcrylicBorder IsHitTestVisible="False">
             <ExperimentalAcrylicBorder.Material>
