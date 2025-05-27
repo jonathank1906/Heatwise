@@ -82,7 +82,6 @@
                                 IsVisible="{Binding IsRenaming, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                                 <TextBlock
                                     FontSize="18"
-                                    Foreground="White"
                                     Text="{Binding Name}" />
                             </Button>
                             <TextBox
@@ -105,20 +104,28 @@
                             Background="Transparent"
                             BorderThickness="0"
                             Classes="close">
+                            <Button.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                                </Transitions>
+                            </Button.Transitions>
                             <Button.Flyout>
-                                <Flyout Placement="Bottom">
-                                    <StackPanel>
-                                        <!--  Rename Option  -->
-                                        <Button Command="{Binding StartRenamingCommand}" CommandParameter="{Binding}">
-                                            <TextBlock Foreground="White" Text="Rename" />
-                                        </Button>
-
-                                        <!--  Delete Option  -->
-                                        <Button Command="{Binding DeletePresetCommand}" CommandParameter="{Binding}">
-                                            <TextBlock Foreground="Red" Text="Delete" />
-                                        </Button>
-                                    </StackPanel>
-                                </Flyout>
+                                <MenuFlyout>
+                                    <MenuItem Command="{Binding StartRenamingCommand}" CommandParameter="{Binding}">
+                                        <MenuItem.Header>
+                                            <TextBlock FontWeight="Bold" Text="Rename" />
+                                        </MenuItem.Header>
+                                    </MenuItem>
+                                    <MenuItem Header="-" />
+                                    <MenuItem Command="{Binding DeletePresetCommand}" CommandParameter="{Binding}">
+                                        <MenuItem.Header>
+                                            <TextBlock
+                                                FontWeight="Bold"
+                                                Foreground="Red"
+                                                Text="Delete" />
+                                        </MenuItem.Header>
+                                    </MenuItem>
+                                </MenuFlyout>
                             </Button.Flyout>
                             <Path
                                 Width="20"

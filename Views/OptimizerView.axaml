@@ -25,6 +25,7 @@
     <UserControl.Styles>
         <!--  Fancy RadioButton Style with circle indicator  -->
         <Style Selector="RadioButton.fancy">
+            <Setter Property="Foreground" Value="White" />
             <Setter Property="Background" Value="#2d2d2d" />
             <Setter Property="BorderBrush" Value="#3e3e3e" />
             <Setter Property="BorderThickness" Value="1" />
@@ -56,12 +57,14 @@
                                     StrokeThickness="2" />
                             </Border>
                             <!--  Content  -->
-                            <ContentPresenter VerticalAlignment="Center" Content="{TemplateBinding Content}" />
+                            <ContentPresenter
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Content}"
+                                Foreground="{TemplateBinding Foreground}" />
                         </DockPanel>
                     </Border>
                 </ControlTemplate>
             </Setter>
-
         </Style>
 
         <Style Selector="Button.pane">
@@ -126,6 +129,13 @@
                                 Content="{TemplateBinding Content}" />
                         </Border>
                     </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Transitions">
+                <Setter.Value>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.09" />
+                    </Transitions>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -459,7 +469,7 @@
                                                             FontSize="16"
                                                             FontWeight="Bold"
                                                             Text="Hold shift to select multiple days" />
-                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Heatwise/Assets/Calendar.gif"  />
+                                                        <Image anim:ImageBehavior.AnimatedSource="avares://Heatwise/Assets/Calendar.gif" />
                                                     </StackPanel>
                                                 </Flyout>
                                             </Button.Flyout>
@@ -498,7 +508,6 @@
                             ToolTip.Tip="Restore view">
                             <PathIcon Data="{StaticResource Restore}" Foreground="{DynamicResource TextColor}" />
                         </Button>
-
 
                         <Button
                             HorizontalAlignment="Center"
