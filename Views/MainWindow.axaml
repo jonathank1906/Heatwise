@@ -110,34 +110,6 @@
 
         <Style Selector="MenuFlyoutPresenter">
             <Setter Property="Margin" Value="0,3,0,0" />
-            <Setter Property="Background" Value="{DynamicResource SecondaryBackground}" />
-        </Style>
-
-        <Style Selector="MenuItem">
-            <Setter Property="Opacity" Value="0.7" />
-            <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
-            <Setter Property="Background" Value="{DynamicResource IconColor}" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="MenuItem">
-                        <Border
-                            Margin="5,2"
-                            Padding="15,8"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="5">
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding Header}" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style Selector="MenuItem:pointerover">
-            <Setter Property="Opacity" Value="1" />
         </Style>
     </Window.Styles>
 
@@ -288,7 +260,7 @@
                     Grid.Row="1"
                     Height="45"
                     VerticalAlignment="Top"
-                    ZIndex="1">
+                    ZIndex="2">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                             <GradientStop Offset="0" Color="#FF7043" />
@@ -299,7 +271,7 @@
                     </Border.Background>
                     <Border.Effect>
                         <DropShadowEffect
-                            BlurRadius="10"
+                            BlurRadius="5"
                             OffsetX="2"
                             OffsetY="2"
                             Opacity="0.6"

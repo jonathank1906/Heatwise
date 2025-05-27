@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System;
 using Heatwise.Services;
 using System.Threading.Tasks;
+using FluentAvalonia.Styling;
 
 namespace Heatwise;
 
@@ -80,6 +81,8 @@ public partial class App : Application
     public void UpdateTheme(bool Light_Mode_On_Toggle)
     {
         if (Application.Current == null) return;
+        
+        
 
         // Get the merged dictionaries
         var mergedDictionaries = Application.Current.Resources.MergedDictionaries;
@@ -112,6 +115,8 @@ public partial class App : Application
                 Current.Resources["IconColor"] = themeColors["LightIconColor"];
                 Current.Resources["GradientStartColor"] = themeColors["LightGradientStartColor"];
                 Current.Resources["GradientEndColor"] = themeColors["LightGradientEndColor"];
+
+                Application.Current.RequestedThemeVariant = ThemeVariant.Light;
             }
             else
             {
@@ -125,6 +130,7 @@ public partial class App : Application
                 Current.Resources["GradientStartColor"] = themeColors["DarkGradientStartColor"];
                 Current.Resources["GradientEndColor"] = themeColors["DarkGradientEndColor"];
 
+                Application.Current.RequestedThemeVariant = ThemeVariant.Dark;
             }
             ThemeChanged?.Invoke();
             Debug.WriteLine($"Theme updated to {(Light_Mode_On_Toggle ? "Light" : "Dark")} mode");
