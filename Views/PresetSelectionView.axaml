@@ -19,12 +19,10 @@
         <Style Selector="Button.close">
             <Setter Property="Opacity" Value="0.5" />
             <Setter Property="Template">
-                <!--  Ignore the Theme Template  -->
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border>
                             <Border.Background>
-                                <!--  Adding a transparent background seems to make the 'hitbox' larger  -->
                                 <SolidColorBrush Opacity="0" Color="White" />
                             </Border.Background>
                             <ContentPresenter Content="{TemplateBinding Content}" />
@@ -34,58 +32,113 @@
             </Setter>
         </Style>
 
-        <!--  Button on hover  -->
         <Style Selector="Button.close:pointerover">
             <Setter Property="Opacity" Value="1" />
+        </Style>
+
+
+        <Style Selector="Button.preset-button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Padding="16,0"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                            <ContentPresenter
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.preset-button:pointerover">
+            <Setter Property="Background" Value="{DynamicResource IconColor}" />
         </Style>
     </UserControl.Styles>
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <!--  Header  -->
             <RowDefinition Height="Auto" />
-            <!--  Presets list  -->
             <RowDefinition Height="Auto" />
-            <!--  Toggle Switch  -->
             <RowDefinition Height="*" />
-            <!--  Spacer  -->
             <RowDefinition Height="Auto" />
-            <!--  Heating Grid (only appears when toggled)  -->
         </Grid.RowDefinitions>
 
-        <!--  Presets List  -->
         <ItemsControl
             Grid.Row="1"
-            Margin="10,0,0,20"
+            Margin="0,0,0,20"
             ItemsSource="{Binding AvailablePresets}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <!--  Preset Name or Editable TextBox  -->
-                        <Grid Grid.Column="0">
+                    <StackPanel>
+                        <Grid>
                             <Button
-                                x:Name="PresetNameTextBlock"
-                                Width="200"
                                 Height="60"
-                                Margin="0,10,0,0"
-                                HorizontalAlignment="Left"
-                                Background="#0078d7"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                BorderThickness="0"
+                                Classes="preset-button"
                                 Command="{Binding NavigateToPresetCommand}"
                                 CommandParameter="{Binding Name}"
                                 CornerRadius="10"
+                                FontWeight="SemiBold"
                                 IsVisible="{Binding IsRenaming, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                                <TextBlock
-                                    FontSize="18"
-                                    Text="{Binding Name}" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Margin="0,5"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top"
+                                        FontSize="18"
+                                        Foreground="{DynamicResource TextColor}"
+                                        Text="{Binding Name}" />
+
+                                    <!--  Three dots button  -->
+                                    <Button
+                                        Grid.Column="1"
+                                        Width="36"
+                                        Height="36"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Classes="close">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Command="{Binding StartRenamingCommand}" CommandParameter="{Binding}">
+                                                    <MenuItem.Header>
+                                                        <TextBlock Text="Rename" />
+                                                    </MenuItem.Header>
+                                                </MenuItem>
+                                                <MenuItem Header="-" />
+                                                <MenuItem Command="{Binding DeletePresetCommand}" CommandParameter="{Binding}">
+                                                    <MenuItem.Header>
+                                                        <TextBlock Foreground="Red" Text="Delete" />
+                                                    </MenuItem.Header>
+                                                </MenuItem>
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                        <Path
+                                            Width="20"
+                                            Height="20"
+                                            Data="{StaticResource ThreeDotsIcon}"
+                                            Fill="{DynamicResource TextColor}"
+                                            Stretch="Uniform" />
+                                    </Button>
+                                </Grid>
                             </Button>
                             <TextBox
-                                x:Name="PresetNameTextBox"
+                                Margin="0"
                                 VerticalAlignment="Center"
                                 FontSize="18"
                                 IsVisible="{Binding IsRenaming, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -93,48 +146,12 @@
                                 LostFocus="OnRenameLostFocus"
                                 Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </Grid>
-
-                        <!--  Three-Dots Button  -->
-                        <Button
-                            Grid.Column="1"
-                            Width="40"
-                            Height="40"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Classes="close">
-                            <Button.Transitions>
-                                <Transitions>
-                                    <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
-                                </Transitions>
-                            </Button.Transitions>
-                            <Button.Flyout>
-                                <MenuFlyout>
-                                    <MenuItem Command="{Binding StartRenamingCommand}" CommandParameter="{Binding}">
-                                        <MenuItem.Header>
-                                            <TextBlock FontWeight="Bold" Text="Rename" />
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                    <MenuItem Header="-" />
-                                    <MenuItem Command="{Binding DeletePresetCommand}" CommandParameter="{Binding}">
-                                        <MenuItem.Header>
-                                            <TextBlock
-                                                FontWeight="Bold"
-                                                Foreground="Red"
-                                                Text="Delete" />
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                </MenuFlyout>
-                            </Button.Flyout>
-                            <Path
-                                Width="20"
-                                Height="20"
-                                Data="{StaticResource ThreeDotsIcon}"
-                                Fill="{DynamicResource TextColor}"
-                                Stretch="Uniform" />
-                        </Button>
-                    </Grid>
+                        <Border
+                            Margin="8,12,8,12"
+                            Background="{DynamicResource TextColor}"
+                            BorderThickness="0.01"
+                            Opacity="0.2" />
+                    </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
