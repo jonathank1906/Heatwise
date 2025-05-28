@@ -2,7 +2,7 @@ using System;
 
 namespace Heatwise.Interfaces;
 
-public interface IPopupViewModel
+public interface IPopupToolTipViewModel
 {
     bool IsDraggable { get; } // Indicates if the popup is draggable
     bool ShowBackdrop { get; } // Indicates if the popup should show a backdrop

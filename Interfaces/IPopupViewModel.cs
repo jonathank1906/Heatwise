@@ -5,7 +5,7 @@ namespace Heatwise.Interfaces;
 public interface IPopupService : INotifyPropertyChanged
 {
     bool IsPopupVisible { get; }
-    object? PopupContent { get; }
+    IPopupViewModel? PopupContent { get; }
 
     void ShowPopup<TViewModel>() where TViewModel : IPopupViewModel, new();
     void ShowPopup(IPopupViewModel viewModel);

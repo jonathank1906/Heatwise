@@ -21,6 +21,9 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
     [ObservableProperty]
     private bool is_Home_Screen_On_Startup_Toggle_Enabled = true;
 
+    public bool IsDraggable => false; // Set to true if the popup should be draggable
+    public bool ShowBackdrop => true; // Set to true if the popup should show a backdrop
+
     [ObservableProperty]
     private bool developer_Mode_On_Toggle;
     public ICommand? CloseCommand { get; private set; }

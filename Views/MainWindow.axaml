@@ -313,47 +313,50 @@
             </Grid>
 
             <!--  Popup Overlay  -->
-            <Grid
-                Name="PopupOverlay"
-                Background="#D0000000"
-                IsVisible="{Binding PopupService.IsPopupVisible, Mode=OneWay}"
-                Opacity="1"
-                ZIndex="100">
-
-                <!--  Backdrop  -->
-                <Border
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
+             <Grid
+                    Name="PopupOverlay"
+                    Panel.ZIndex="1000"
                     Background="Transparent"
-                    PointerPressed="Backdrop_PointerPressed" />
+                    IsVisible="{Binding PopupService.IsPopupVisible, Mode=OneWay}"
+                    Opacity="1"> 
+                    <!--  Increased Z-Index  -->
 
-                <!--  Content  -->
-                <ContentControl
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Content="{Binding PopupService.PopupContent, Mode=OneWay}">
-                    <ContentControl.Template>
-                        <ControlTemplate>
-                            <Border
-                                Background="{DynamicResource BackgroundColor}"
-                                BorderBrush="#FF444444"
-                                BorderThickness="1"
-                                CornerRadius="8">
+                    <!--  Backdrop - Only shown when ShowBackdrop is true  -->
+                    <Border
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Background="#D0000000"
+                        IsVisible="{Binding PopupService.PopupContent.ShowBackdrop, Mode=OneWay}"
+                        PointerPressed="Backdrop_PointerPressed" />
+
+                    <!--  Content  -->
+                    <ContentControl
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="{Binding PopupService.PopupContent, Mode=OneWay}"
+                       >
+                        <ContentControl.Template>
+                            <ControlTemplate>
                                 <Border
-                                    Padding="20,20,20,20"
-                                    Background="Transparent"
-                                    ClipToBounds="True"
+                                    Background="{DynamicResource BackgroundColor}"
+                                    BorderBrush="#FF444444"
+                                    BorderThickness="1"
                                     CornerRadius="8">
-                                    <ContentPresenter
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Content="{TemplateBinding Content}" />
+                                    <Border
+                                        Padding="20,20,20,20"
+                                        Background="Transparent"
+                                        ClipToBounds="True"
+                                        CornerRadius="8">
+                                        <ContentPresenter
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Content="{TemplateBinding Content}" />
+                                    </Border>
                                 </Border>
-                            </Border>
-                        </ControlTemplate>
-                    </ContentControl.Template>
-                </ContentControl>
-            </Grid>
+                            </ControlTemplate>
+                        </ContentControl.Template>
+                    </ContentControl>
+                </Grid>
             <!--  Notification Area  -->
             <ItemsControl
                 Margin="10"

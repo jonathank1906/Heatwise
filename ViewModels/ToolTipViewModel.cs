@@ -6,12 +6,12 @@ using Heatwise.Interfaces;
 
 namespace Heatwise.ViewModels;
 
-public partial class AMHelpViewModel : ViewModelBase, IPopupViewModel
+public partial class ToolTipViewModel : ViewModelBase, IPopupViewModel
 {
     public ICommand? CloseCommand { get; private set; }
-    public bool IsDraggable => false; // Set to true if the popup should be draggable
-    public bool ShowBackdrop => true; // Set to true if the popup should show a backdrop
-    public AMHelpViewModel()
+    public bool IsDraggable => true; // Set to true if the popup should be draggable
+    public bool ShowBackdrop => false; // Set to true if the popup should show a backdrop
+    public ToolTipViewModel()
     {
     }
     public void SetCloseAction(Action closeCallback)

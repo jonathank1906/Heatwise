@@ -20,6 +20,7 @@
 
     <UserControl.Resources>
         <conv:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+        <conv:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -390,50 +391,50 @@
                                             Text="Select Graph Type" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Heat Production"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.HeatProduction}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Production Costs"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ProductionCosts}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Electricity Prices"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityPrices}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Electricity Production"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityProduction}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Electricity Consumption"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityConsumption}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Fuel Consumption"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.FuelConsumption}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="CO₂ Emissions"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.CO2Emissions}}" />
@@ -534,6 +535,16 @@
                             VerticalAlignment="Center"
                             Background="Transparent"
                             Classes="close"
+                            Command="{Binding ShowToolTip}"
+                            ToolTip.Tip="Export optimized results to a CSV file">
+                            <PathIcon Data="{StaticResource Export}" Foreground="{DynamicResource TextColor}" />
+                        </Button>
+
+                        <Button
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            Classes="close"
                             ToolTip.Tip="Help">
                             <Viewbox Width="25" Height="25">
                                 <Path Data="{StaticResource QuestionMark}" Fill="{DynamicResource TextColor}" />
@@ -553,6 +564,52 @@
                         </Button>
                     </StackPanel>
                 </Border>
+                <Grid
+                    Name="PopupOverlay"
+                    Panel.ZIndex="1000"
+                    Background="Transparent"
+                    IsVisible="{Binding ToolTipService.IsPopupVisible, Mode=OneWay}"
+                    Opacity="1">
+                    <!--  Increased Z-Index  -->
+
+                    <!--  Backdrop - Only shown when ShowBackdrop is true  -->
+                    <Border
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Background="#D0000000"
+                        IsVisible="{Binding ToolTipService.PopupContent.ShowBackdrop, Mode=OneWay}"
+                        PointerPressed="Backdrop_PointerPressed" />
+
+                    <!--  Content  -->
+                    <ContentControl
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="{Binding ToolTipService.PopupContent, Mode=OneWay}"
+                        PointerMoved="Popup_PointerMoved"
+                        PointerPressed="Popup_PointerPressed"
+                        PointerReleased="Popup_PointerReleased">
+                        <ContentControl.Template>
+                            <ControlTemplate>
+                                <Border
+                                    Background="{DynamicResource BackgroundColor}"
+                                    BorderBrush="#FF444444"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                    <Border
+                                        Padding="20,20,20,20"
+                                        Background="Transparent"
+                                        ClipToBounds="True"
+                                        CornerRadius="8">
+                                        <ContentPresenter
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Content="{TemplateBinding Content}" />
+                                    </Border>
+                                </Border>
+                            </ControlTemplate>
+                        </ContentControl.Template>
+                    </ContentControl>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

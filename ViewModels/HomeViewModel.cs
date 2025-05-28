@@ -9,8 +9,10 @@ namespace Heatwise.ViewModels;
 public partial class HomeViewModel : ViewModelBase, IPopupViewModel
 {
     public ICommand? CloseCommand { get; private set; }
+    public bool IsDraggable => false; // Set to true if the popup should be draggable
+    public bool ShowBackdrop => true; // Set to true if the popup should show a backdrop
     public HomeViewModel()
-    {   
+    {
     }
     public void SetCloseAction(Action closeCallback)
     {

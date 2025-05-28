@@ -10,10 +10,16 @@ using Avalonia;
 using ScottPlot.Avalonia;
 using System.Diagnostics;
 
+using Avalonia.Input;
+
+using Heatwise.Interfaces;
+
 namespace Heatwise.Views;
 
 public partial class OptimizerView : UserControl
 {
+    private Point _dragStartPoint;
+    private bool _isDragging;
     private AvaPlot _plot;
     private bool _tooltipsEnabled = true;
     private Window? _mainWindow;
@@ -30,7 +36,8 @@ public partial class OptimizerView : UserControl
     private DataVisualization _dataVisualization;
     public AssetManager AssetManager { get; }
     public OptimizerView()
-    {
+    {   
+         PointerPressed += OnPointerPressed;
         InitializeComponent();
         InitializeFlyoutEvents();
         App.ThemeChanged += OnThemeChanged;
@@ -187,6 +194,70 @@ public partial class OptimizerView : UserControl
         };
     }
 
+    private void Popup_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+       
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                _dragStartPoint = e.GetPosition(this);
+                _isDragging = true;
+            }
+        
+    }
+
+    private void Popup_PointerMoved(object? sender, PointerEventArgs e)
+    {
+       
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                var currentPoint = e.GetPosition(this);
+                var offset = currentPoint - _dragStartPoint;
+
+                var popupOverlay = this.FindControl<Grid>("PopupOverlay");
+                if (popupOverlay != null)
+                {
+                    var currentMargin = popupOverlay.Margin;
+                    popupOverlay.Margin = new Thickness(
+                        currentMargin.Left + offset.X,
+                        currentMargin.Top + offset.Y,
+                        currentMargin.Right - offset.X,
+                        currentMargin.Bottom - offset.Y
+                    );
+                }
+
+                _dragStartPoint = currentPoint;
+            }
+        
+    }
+
+    private void Popup_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        _isDragging = false;
+    }
+
+    private void Backdrop_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+        {
+            vm.PopupService.ClosePopup();
+        }
+    }
+
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            BeginMoveDrag(e);
+        }
+    }
+    private void BeginMoveDrag(PointerPressedEventArgs e)
+    {
+        var window = TopLevel.GetTopLevel(this) as Window;
+        if (window != null)
+        {
+            window.BeginMoveDrag(e);
+        }
+    }
     private void ClearPlotAndEmptyCalendar()
     {
         // Clear the plot
