@@ -463,9 +463,15 @@ public class AssetManager
             {
                 conn.Open();
 
-                // Delete preset associations first
-                const string deleteAssociationsQuery = "DELETE FROM AM_PresetAssets WHERE PresetId = @presetId";
-                using (var cmd = new SqliteCommand(deleteAssociationsQuery, conn))
+                // Temporarily disable foreign key enforcement
+                using (var disableFKCmd = new SqliteCommand("PRAGMA foreign_keys = OFF;", conn))
+                {
+                    disableFKCmd.ExecuteNonQuery();
+                }
+
+                // Delete all machines associated with this preset
+                const string deleteMachinesQuery = "DELETE FROM PresetMachines WHERE PresetId = @presetId";
+                using (var cmd = new SqliteCommand(deleteMachinesQuery, conn))
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     cmd.ExecuteNonQuery();
@@ -477,6 +483,7 @@ public class AssetManager
                 {
                     cmd.Parameters.AddWithValue("@presetId", presetId);
                     int rowsAffected = cmd.ExecuteNonQuery();
+
                     if (rowsAffected > 0)
                     {
                         // Update in-memory collection
@@ -485,16 +492,23 @@ public class AssetManager
                         {
                             Presets.Remove(preset);
                         }
-                        return true;
                     }
                 }
+
+                // Re-enable foreign key enforcement
+                using (var enableFKCmd = new SqliteCommand("PRAGMA foreign_keys = ON;", conn))
+                {
+                    enableFKCmd.ExecuteNonQuery();
+                }
+
+                return true;
             }
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error deleting preset: {ex.Message}");
+            return false;
         }
-        return false;
     }
 
     public bool DeleteMachineFromPreset(int presetId, string machineName)
