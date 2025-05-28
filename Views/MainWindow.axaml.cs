@@ -6,16 +6,62 @@ using Avalonia.Layout;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Heatwise.ViewModels;
+using Heatwise.Interfaces;
 namespace Heatwise.Views;
 
 public partial class MainWindow : AppWindow
 {
+     private Point _dragStartPoint;
+    private bool _isDragging;
+
     public MainWindow()
     {
         InitializeComponent();
         PointerPressed += OnPointerPressed;
         TitleBar.ExtendsContentIntoTitleBar = true;
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+    }
+
+private void Popup_PointerPressed(object? sender, PointerPressedEventArgs e)
+{
+    if (DataContext is MainWindowViewModel vm && vm.PopupService.PopupContent is IPopupViewModel popup && popup.IsDraggable)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            _dragStartPoint = e.GetPosition(this);
+            _isDragging = true;
+        }
+    }
+}
+
+private void Popup_PointerMoved(object? sender, PointerEventArgs e)
+{
+    if (_isDragging && DataContext is MainWindowViewModel vm && vm.PopupService.PopupContent is IPopupViewModel popup && popup.IsDraggable)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            var currentPoint = e.GetPosition(this);
+            var offset = currentPoint - _dragStartPoint;
+
+            var popupOverlay = this.FindControl<Grid>("PopupOverlay");
+            if (popupOverlay != null)
+            {
+                var currentMargin = popupOverlay.Margin;
+                popupOverlay.Margin = new Thickness(
+                    currentMargin.Left + offset.X,
+                    currentMargin.Top + offset.Y,
+                    currentMargin.Right - offset.X,
+                    currentMargin.Bottom - offset.Y
+                );
+            }
+
+            _dragStartPoint = currentPoint;
+        }
+    }
+}
+    private void Popup_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        _isDragging = false;
     }
 
     protected override void OnLoaded(RoutedEventArgs e)

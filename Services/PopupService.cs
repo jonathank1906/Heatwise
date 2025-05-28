@@ -9,7 +9,7 @@ public partial class PopupService : ObservableObject, IPopupService
     private bool _isPopupVisible;
 
     [ObservableProperty]
-    private object? _popupContent;
+    private IPopupViewModel? _popupContent; // Change type from object? to IPopupViewModel?
 
     public void ShowPopup<TViewModel>() where TViewModel : IPopupViewModel, new()
     {

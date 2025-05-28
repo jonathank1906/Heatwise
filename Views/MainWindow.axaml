@@ -2,6 +2,7 @@
     x:Class="Heatwise.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:Heatwise.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Heatwise.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -22,6 +23,11 @@
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
     mc:Ignorable="d">
+
+    <Window.Resources>
+
+        <conv:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
+    </Window.Resources>
 
     <Window.Styles>
         <!--  Style for TabItem  -->
@@ -325,13 +331,16 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Background="Transparent"
+                    IsVisible="{Binding PopupService.PopupContent.ShowBackdrop, Mode=OneWay}"
                     PointerPressed="Backdrop_PointerPressed" />
 
                 <!--  Content  -->
                 <ContentControl
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Content="{Binding PopupService.PopupContent, Mode=OneWay}">
+                    Content="{Binding PopupService.PopupContent, Mode=OneWay}"
+                    PointerMoved="Popup_PointerMoved"
+                    PointerPressed="Popup_PointerPressed">
                     <ContentControl.Template>
                         <ControlTemplate>
                             <Border
