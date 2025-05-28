@@ -9,7 +9,7 @@ namespace Heatwise.ViewModels;
 public partial class OPTHelpViewModel : ViewModelBase, IPopupViewModel
 {
     public ICommand? CloseCommand { get; private set; }
-       public bool IsDraggable => true; // Set to true if the popup should be draggable
+    public bool IsDraggable => true; // Set to true if the popup should be draggable
     public bool ShowBackdrop => false; // Set to true if the popup should show a backdrop
     public OPTHelpViewModel()
     {

@@ -321,7 +321,7 @@
             <!--  Popup Overlay  -->
             <Grid
                 Name="PopupOverlay"
-                Background="#D0000000"
+            
                 IsVisible="{Binding PopupService.IsPopupVisible, Mode=OneWay}"
                 Opacity="1"
                 ZIndex="100">
@@ -330,7 +330,7 @@
                 <Border
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
-                    Background="Transparent"
+                     Background="#D0000000"
                     IsVisible="{Binding PopupService.PopupContent.ShowBackdrop, Mode=OneWay}"
                     PointerPressed="Backdrop_PointerPressed" />
 
