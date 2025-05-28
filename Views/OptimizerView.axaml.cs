@@ -37,136 +37,136 @@ public partial class OptimizerView : UserControl
 
         _plot = this.Find<AvaPlot>("OptimizationPlot")!;
 
-       DataContextChanged += (sender, e) =>
-{
-    if (DataContext is OptimizerViewModel vm)
-    {
-        _dataVisualization = new DataVisualization(vm.AssetManager);
-        vm.UpdateXAxisTicks += (timestamps) =>
-        {
-            _dataVisualization.SetXAxisTicks(OptimizationPlot.Plot, timestamps);
-            OptimizationPlot.Refresh();
-        };
+        DataContextChanged += (sender, e) =>
+ {
+     if (DataContext is OptimizerViewModel vm)
+     {
+         _dataVisualization = new DataVisualization(vm.AssetManager);
+         vm.UpdateXAxisTicks += (timestamps) =>
+         {
+             _dataVisualization.SetXAxisTicks(OptimizationPlot.Plot, timestamps);
+             OptimizationPlot.Refresh();
+         };
 
-        // Helper method to check if all machines have zero output
-        bool AllMachinesHaveZeroOutput(List<HeatProductionResult> results)
-        {
-            if (results == null) return true;
-            
-            return results
-                .Where(r => r.AssetName != "Interval Summary")
-                .All(r => r.HeatProduced <= 0);
-        }
+         // Helper method to check if all machines have zero output
+         bool AllMachinesHaveZeroOutput(List<HeatProductionResult> results)
+         {
+             if (results == null) return true;
 
-        vm.PlotOptimizationResults = (results, demand) =>
-        {
-            if (results == null || demand == null || AllMachinesHaveZeroOutput(results))
-            {
-                ClearPlotAndEmptyCalendar();
-                return;
-            }
+             return results
+                 .Where(r => r.AssetName != "Interval Summary")
+                 .All(r => r.HeatProduced <= 0);
+         }
 
-            _currentOptimizationResults = results;
-            _currentFilteredResults = results;
-            _currentHeatDemandData = demand;
+         vm.PlotOptimizationResults = (results, demand) =>
+         {
+             if (results == null || demand == null || AllMachinesHaveZeroOutput(results))
+             {
+                 ClearPlotAndEmptyCalendar();
+                 return;
+             }
 
-            // Initialize calendar dates
-            if (this.FindControl<Calendar>("OptimizationCalendar") is Calendar calendar)
-            {
-                InitializeCalendarWithDates(calendar, demand.Select(d => d.timestamp).ToList());
-            }
+             _currentOptimizationResults = results;
+             _currentFilteredResults = results;
+             _currentHeatDemandData = demand;
 
-            _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
-            PlotCrosshair(results, demand);
-        };
+             // Initialize calendar dates
+             if (this.FindControl<Calendar>("OptimizationCalendar") is Calendar calendar)
+             {
+                 InitializeCalendarWithDates(calendar, demand.Select(d => d.timestamp).ToList());
+             }
 
-        vm.PlotElectricityPrices = (prices) =>
-        {
-            if (prices == null)
-            {
-                ClearPlotAndEmptyCalendar();
-                return;
-            }
+             _dataVisualization.PlotHeatProduction(OptimizationPlot, results, demand);
+             PlotCrosshair(results, demand);
+         };
 
-            var priceValues = prices.Select(p => p.price).ToList();
-            _dataVisualization.PlotElectricityPrice(OptimizationPlot, priceValues);
+         vm.PlotElectricityPrices = (prices) =>
+         {
+             if (prices == null)
+             {
+                 ClearPlotAndEmptyCalendar();
+                 return;
+             }
 
-            var dummyResults = prices.Select(p => new HeatProductionResult { Timestamp = p.timestamp }).ToList();
-            var dummyDemand = prices.Select(p => (p.timestamp, p.price)).ToList();
-            PlotCrosshair(dummyResults, dummyDemand);
-        };
+             var priceValues = prices.Select(p => p.price).ToList();
+             _dataVisualization.PlotElectricityPrice(OptimizationPlot, priceValues);
 
-        vm.PlotExpenses = (results) =>
-        {
-            if (results == null)
-            {
-                ClearPlotAndEmptyCalendar();
-                return;
-            }
+             var dummyResults = prices.Select(p => new HeatProductionResult { Timestamp = p.timestamp }).ToList();
+             var dummyDemand = prices.Select(p => (p.timestamp, p.price)).ToList();
+             PlotCrosshair(dummyResults, dummyDemand);
+         };
 
-            _currentFilteredResults = results;
-            var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
-            _dataVisualization.PlotExpenses(OptimizationPlot, results);
-            PlotCrosshair(results, dummyDemand);
-        };
+         vm.PlotExpenses = (results) =>
+         {
+             if (results == null)
+             {
+                 ClearPlotAndEmptyCalendar();
+                 return;
+             }
 
-        vm.PlotEmissions = (results) =>
-        {
-            if (results == null)
-            {
-                ClearPlotAndEmptyCalendar();
-                return;
-            }
+             _currentFilteredResults = results;
+             var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
+             _dataVisualization.PlotExpenses(OptimizationPlot, results);
+             PlotCrosshair(results, dummyDemand);
+         };
 
-            _currentFilteredResults = results;
-            var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
-            _dataVisualization.PlotEmissions(OptimizationPlot, results);
-            PlotCrosshair(results, dummyDemand);
-        };
+         vm.PlotEmissions = (results) =>
+         {
+             if (results == null)
+             {
+                 ClearPlotAndEmptyCalendar();
+                 return;
+             }
 
-        vm.PlotElectricityConsumption = (results) =>
-        {
-            if (results == null)
-            {
-                ClearPlotAndEmptyCalendar();
-                return;
-            }
+             _currentFilteredResults = results;
+             var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
+             _dataVisualization.PlotEmissions(OptimizationPlot, results);
+             PlotCrosshair(results, dummyDemand);
+         };
 
-            _currentFilteredResults = results;
-            var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
-            _dataVisualization.PlotElectricityConsumption(OptimizationPlot, results);
-            PlotCrosshair(results, dummyDemand);
-        };
+         vm.PlotElectricityConsumption = (results) =>
+         {
+             if (results == null)
+             {
+                 ClearPlotAndEmptyCalendar();
+                 return;
+             }
 
-        vm.PlotElectricityProduction = (results) =>
-        {
-            if (results == null)
-            {
-                ClearPlotAndEmptyCalendar();
-                return;
-            }
+             _currentFilteredResults = results;
+             var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
+             _dataVisualization.PlotElectricityConsumption(OptimizationPlot, results);
+             PlotCrosshair(results, dummyDemand);
+         };
 
-            _currentFilteredResults = results;
-            var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
-            _dataVisualization.PlotElectricityProduction(OptimizationPlot, results);
-            PlotCrosshair(results, dummyDemand);
-        };
+         vm.PlotElectricityProduction = (results) =>
+         {
+             if (results == null)
+             {
+                 ClearPlotAndEmptyCalendar();
+                 return;
+             }
 
-        vm.PlotFuelConsumption = (results) =>
-        {
-            if (results == null)
-            {
-                ClearPlotAndEmptyCalendar();
-                return;
-            }
+             _currentFilteredResults = results;
+             var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
+             _dataVisualization.PlotElectricityProduction(OptimizationPlot, results);
+             PlotCrosshair(results, dummyDemand);
+         };
 
-            _currentFilteredResults = results;
-            var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
-            _dataVisualization.PlotFuelConsumption(OptimizationPlot, results);
-            PlotCrosshair(results, dummyDemand);
-        };
-    }
-};
+         vm.PlotFuelConsumption = (results) =>
+         {
+             if (results == null)
+             {
+                 ClearPlotAndEmptyCalendar();
+                 return;
+             }
+
+             _currentFilteredResults = results;
+             var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
+             _dataVisualization.PlotFuelConsumption(OptimizationPlot, results);
+             PlotCrosshair(results, dummyDemand);
+         };
+     }
+ };
 
         this.AttachedToVisualTree += (s, e) =>
         {
@@ -188,67 +188,67 @@ public partial class OptimizerView : UserControl
     }
 
     private void ClearPlotAndEmptyCalendar()
-{
-    // Clear the plot
-    OptimizationPlot.Plot.Clear();
-    OptimizationPlot.Refresh();
-
-    // Completely empty the calendar
-    if (this.FindControl<Calendar>("OptimizationCalendar") is Calendar calendar)
     {
+        // Clear the plot
+        OptimizationPlot.Plot.Clear();
+        OptimizationPlot.Refresh();
+
+        // Completely empty the calendar
+        if (this.FindControl<Calendar>("OptimizationCalendar") is Calendar calendar)
+        {
+            calendar.SelectedDates.Clear();
+            calendar.BlackoutDates.Clear();
+            calendar.DisplayDateStart = null;
+            calendar.DisplayDateEnd = null;
+            calendar.DisplayDate = DateTime.Today;
+        }
+
+        // Clear state variables
+        _currentOptimizationResults = null;
+        _currentFilteredResults = null;
+        _currentHeatDemandData = null;
+    }
+
+    private void InitializeCalendarWithDates(Calendar? calendar, List<DateTime> dates)
+    {
+        if (calendar == null && this.FindControl<Calendar>("OptimizationCalendar") is Calendar defaultCalendar)
+        {
+            calendar = defaultCalendar;
+        }
+
+        if (calendar == null) return;
+
         calendar.SelectedDates.Clear();
         calendar.BlackoutDates.Clear();
-        calendar.DisplayDateStart = null;
-        calendar.DisplayDateEnd = null;
-        calendar.DisplayDate = DateTime.Today;
-    }
 
-    // Clear state variables
-    _currentOptimizationResults = null;
-    _currentFilteredResults = null;
-    _currentHeatDemandData = null;
-}
-
-private void InitializeCalendarWithDates(Calendar? calendar, List<DateTime> dates)
-{
-    if (calendar == null && this.FindControl<Calendar>("OptimizationCalendar") is Calendar defaultCalendar)
-    {
-        calendar = defaultCalendar;
-    }
-
-    if (calendar == null) return;
-
-    calendar.SelectedDates.Clear();
-    calendar.BlackoutDates.Clear();
-
-    if (dates.Any())
-    {
-        calendar.DisplayDate = dates.First();
-        
-        var allDates = dates.Select(d => d.Date).Distinct().ToList();
-        var minDate = allDates.Min();
-        var maxDate = allDates.Max();
-
-        calendar.DisplayDateStart = minDate;
-        calendar.DisplayDateEnd = maxDate;
-
-        // Blackout dates that don't have data
-        var date = minDate;
-        while (date <= maxDate)
+        if (dates.Any())
         {
-            if (!allDates.Contains(date))
+            calendar.DisplayDate = dates.First();
+
+            var allDates = dates.Select(d => d.Date).Distinct().ToList();
+            var minDate = allDates.Min();
+            var maxDate = allDates.Max();
+
+            calendar.DisplayDateStart = minDate;
+            calendar.DisplayDateEnd = maxDate;
+
+            // Blackout dates that don't have data
+            var date = minDate;
+            while (date <= maxDate)
             {
-                calendar.BlackoutDates.Add(new CalendarDateRange(date));
+                if (!allDates.Contains(date))
+                {
+                    calendar.BlackoutDates.Add(new CalendarDateRange(date));
+                }
+                date = date.AddDays(1);
             }
-            date = date.AddDays(1);
+        }
+        else
+        {
+            calendar.DisplayDateStart = null;
+            calendar.DisplayDateEnd = null;
         }
     }
-    else
-    {
-        calendar.DisplayDateStart = null;
-        calendar.DisplayDateEnd = null;
-    }
-}
 
     private void OnThemeChanged()
     {

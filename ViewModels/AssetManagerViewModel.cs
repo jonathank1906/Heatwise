@@ -26,7 +26,7 @@ public partial class AssetManagerViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<AssetModel> assetsForSelectedPreset = new();
-    // ------------------------------------------------------------------------------
+
     [ObservableProperty]
     private ObservableCollection<AssetModel> _machineModels = new();
 
@@ -41,7 +41,6 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private ICommand? _parentDeleteMachineCommand;
 
-    private Flyout? _calendarFlyout;
     private readonly IPopupService _popupService;
     [ObservableProperty]
     private ObservableCollection<AssetModel> _currentScenarioAssets = new();
@@ -117,30 +116,29 @@ public partial class AssetManagerViewModel : ObservableObject
     private string color;
 
     private bool _isProductionUnitSelected = true;
-public bool IsProductionUnitSelected
-{
-    get => _isProductionUnitSelected;
-    set
+    public bool IsProductionUnitSelected
     {
-        _isProductionUnitSelected = value;
-        if (value) IsPresetSelected = false;
-        OnPropertyChanged();
+        get => _isProductionUnitSelected;
+        set
+        {
+            _isProductionUnitSelected = value;
+            if (value) IsPresetSelected = false;
+            OnPropertyChanged();
+        }
     }
-}
 
-private bool _isPresetSelected;
-public bool IsPresetSelected
-{
-    get => _isPresetSelected;
-    set
+    private bool _isPresetSelected;
+    public bool IsPresetSelected
     {
-        _isPresetSelected = value;
-        if (value) IsProductionUnitSelected = false;
-        OnPropertyChanged();
+        get => _isPresetSelected;
+        set
+        {
+            _isPresetSelected = value;
+            if (value) IsProductionUnitSelected = false;
+            OnPropertyChanged();
+        }
     }
-}
 
-    //----------------------------------------------------------------------------------------------
 
     public AssetManagerViewModel(AssetManager assetManager, IPopupService popupService)
     {
@@ -907,8 +905,8 @@ public bool IsPresetSelected
     }
 
     private bool _isRenamingInProgress = false;
-    
-     [RelayCommand]
+
+    [RelayCommand]
     private void RestoreDefaults()
     {
         _assetManager.RestoreDefaults();
