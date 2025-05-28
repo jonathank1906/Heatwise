@@ -23,11 +23,11 @@
     </UserControl.Resources>
 
     <UserControl.Styles>
-        <!--  Fancy RadioButton Style with circle indicator  -->
         <Style Selector="RadioButton.fancy">
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Background" Value="#2d2d2d" />
-            <Setter Property="BorderBrush" Value="#3e3e3e" />
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
+            <Setter Property="Background" Value="{DynamicResource IconColor}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SecondaryBackground}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Margin" Value="0,5" />
             <Setter Property="CornerRadius" Value="8" />
@@ -41,11 +41,10 @@
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}">
                         <DockPanel>
-                            <!--  Radio button circle  -->
                             <Border
                                 Width="20"
-                                Height="20"
-                                Margin="5,0,10,0"
+                                Height="35"
+                                Margin="8,0,10,0"
                                 VerticalAlignment="Center"
                                 DockPanel.Dock="Left">
                                 <Ellipse
@@ -56,7 +55,6 @@
                                     Stroke="#7e7e7e"
                                     StrokeThickness="2" />
                             </Border>
-                            <!--  Content  -->
                             <ContentPresenter
                                 VerticalAlignment="Center"
                                 Content="{TemplateBinding Content}"
@@ -70,12 +68,10 @@
         <Style Selector="Button.pane">
             <Setter Property="Opacity" Value="0.5" />
             <Setter Property="Template">
-                <!--  Ignore the Theme Template  -->
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border>
                             <Border.Background>
-                                <!--  Adding a transparent background seems to make the 'hitbox' larger  -->
                                 <SolidColorBrush Opacity="0" Color="White" />
                             </Border.Background>
                             <ContentPresenter Content="{TemplateBinding Content}" />
@@ -85,23 +81,20 @@
             </Setter>
         </Style>
 
-        <!--  Button on hover  -->
         <Style Selector="Button.pane:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
 
         <Style Selector="RadioButton.fancy:pointerover">
-            <Setter Property="Background" Value="#3a3a3a" />
             <Setter Property="BorderBrush" Value="#4e4e4e" />
         </Style>
 
         <Style Selector="RadioButton.fancy:checked">
             <Setter Property="Background" Value="#1a3a5a" />
-            <!--  Darker blue background  -->
+            <Setter Property="Foreground" Value="White" />
             <Setter Property="BorderBrush" Value="#0078d7" />
         </Style>
 
-        <!--  Style for the checked radio mark  -->
         <Style Selector="RadioButton.fancy:checked /template/ Ellipse#radioMark">
             <Setter Property="Fill" Value="#0078d7" />
             <Setter Property="Stroke" Value="#005a9e" />
@@ -140,7 +133,6 @@
             </Setter>
         </Style>
 
-        <!--  Button on hover  -->
         <Style Selector="Button.close:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
@@ -258,10 +250,10 @@
                         </ItemsControl>
 
                         <Border
-                            Height="1"
                             Margin="0,10,0,10"
-                            Background="#CCCCCC"
-                            Opacity="0.5" />
+                            Background="{DynamicResource TextColor}"
+                            BorderThickness="0.01"
+                            Opacity="0.2" />
                         <StackPanel Orientation="Horizontal">
                             <TextBlock
                                 FontSize="18"
@@ -285,12 +277,11 @@
                             Content="Winter"
                             GroupName="SeasonGroup"
                             IsChecked="{Binding IsWinterSelected}" />
-
                         <Border
-                            Height="1"
                             Margin="0,10,0,10"
-                            Background="#CCCCCC"
-                            Opacity="0.5" />
+                            Background="{DynamicResource TextColor}"
+                            BorderThickness="0.01"
+                            Opacity="0.2" />
                         <StackPanel Orientation="Horizontal">
                             <TextBlock
                                 FontSize="18"
@@ -400,42 +391,49 @@
 
                                         <RadioButton
                                             Classes="fancy"
+                                            Width="200"
                                             Content="Heat Production"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.HeatProduction}}" />
 
                                         <RadioButton
                                             Classes="fancy"
+                                            Width="200"
                                             Content="Production Costs"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ProductionCosts}}" />
 
                                         <RadioButton
                                             Classes="fancy"
+                                            Width="200"
                                             Content="Electricity Prices"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityPrices}}" />
 
                                         <RadioButton
                                             Classes="fancy"
+                                            Width="200"
                                             Content="Electricity Production"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityProduction}}" />
 
                                         <RadioButton
                                             Classes="fancy"
+                                            Width="200"
                                             Content="Electricity Consumption"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityConsumption}}" />
 
                                         <RadioButton
                                             Classes="fancy"
+                                            Width="200"
                                             Content="Fuel Consumption"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.FuelConsumption}}" />
 
                                         <RadioButton
                                             Classes="fancy"
+                                            Width="200"
                                             Content="CO₂ Emissions"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.CO2Emissions}}" />
