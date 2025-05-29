@@ -8,5 +8,11 @@ namespace Heatwise.Views
         {
             InitializeComponent();
         }
+        
+        public void UpdateContent(string text)
+        {
+            var textBlock = this.FindControl<TextBlock>("TooltipText");
+            textBlock!.Text = text;
+        }
     }
 }

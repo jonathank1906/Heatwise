@@ -8,7 +8,7 @@ namespace Heatwise.ViewModels;
 
 public partial class ToolTipViewModel : ViewModelBase, IPopupViewModel
 {
-   public ICommand? CloseCommand { get; private set; }
+    public ICommand? CloseCommand { get; private set; }
     public bool IsDraggable => true; // Set to true if the popup should be draggable
     public bool ShowBackdrop => false; // Set to true if the popup should show a backdrop
     public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Custom : PopupStartupLocation.Center;
@@ -19,4 +19,8 @@ public partial class ToolTipViewModel : ViewModelBase, IPopupViewModel
     {
         CloseCommand = new RelayCommand(() => closeCallback());
     }
+
+    [ObservableProperty]
+    private string tooltipText = string.Empty;
+
 }

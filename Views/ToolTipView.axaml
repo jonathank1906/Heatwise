@@ -3,7 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:Heatwise.ViewModels"
-  Width="300"
+    Width="300"
     Height="300"
     x:DataType="vm:ToolTipViewModel">
 
@@ -23,49 +23,54 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
         <Style Selector="Button.close:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
     </UserControl.Styles>
 
+    <Grid>
+        <!-- Transparent background with reduced opacity -->
+        <Border
+            Background="#1e1e1e"
+            BorderBrush="#444"
+            BorderThickness="1"
+            CornerRadius="5"
+            Opacity="0.8" />
 
-    <Grid ClipToBounds="True">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+        <!-- Content area with full opacity -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" /> <!-- Title bar area -->
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        </Grid.RowDefinitions>
+            <!-- Title bar with close button -->
+            <Grid Grid.Row="0" Background="Transparent">
+                <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Button
+                        Canvas.Right="0"
+                        Width="46"
+                        Height="30"
+                        Padding="10,0,10,0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Classes="close"
+                        Command="{Binding CloseCommand}">
+                        <PathIcon
+                            Width="12"
+                            Height="12"
+                            Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                            Foreground="White" />
+                    </Button>
+                </Canvas>
+            </Grid>
 
-        <Grid Grid.Row="0">
             <TextBlock
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                FontSize="24"
-                FontWeight="Bold"
-                Foreground="{DynamicResource TextColor}"
-                Text="Asset Manager Help" />
-            <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Button
-                    Canvas.Right="0"
-                    Width="25"
-                    Height="25"
-                    BorderThickness="0"
-                    Classes="close"
-                    Command="{Binding CloseCommand}">
-                    <Button.Transitions>
-                        <Transitions>
-                            <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
-                        </Transitions>
-                    </Button.Transitions>
-                    <PathIcon
-                        Width="15"
-                        Height="15"
-                        Data="{StaticResource Close}"
-                        Foreground="{DynamicResource TextColor}" />
-                </Button>
-            </Canvas>
+                Grid.Row="1"
+                Margin="10"
+                Foreground="White"
+                TextWrapping="Wrap"
+                Text="{Binding TooltipText}" />
         </Grid>
-
-        
     </Grid>
 </UserControl>
