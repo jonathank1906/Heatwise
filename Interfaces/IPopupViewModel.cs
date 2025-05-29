@@ -7,11 +7,11 @@ public interface IPopupService : INotifyPropertyChanged
 {
     bool IsPopupVisible { get; }
     IPopupViewModel? PopupContent { get; }
-    Thickness PopupMargin { get; } 
-    public bool IsDraggable => true; // Set to true if the popup should be draggable
-    public bool ShowBackdrop => false; // Set to true if the popup should show a backdrop
+    Thickness PopupMargin { get; }
+    public bool IsDraggable => true;
+    public bool ShowBackdrop => false;
 
-     public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Custom : PopupStartupLocation.Center;
+    public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Custom : PopupStartupLocation.Center;
 
     void SetPopupMargin(Thickness margin);
     void ShowPopup<TViewModel>() where TViewModel : IPopupViewModel, new();

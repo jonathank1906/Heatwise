@@ -25,9 +25,7 @@
     mc:Ignorable="d">
 
     <Window.Resources>
-
         <conv:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
-        <conv:PopupStartupLocationToMarginConverter x:Key="PopupStartupLocationToMarginConverter" />
     </Window.Resources>
 
     <Window.Styles>

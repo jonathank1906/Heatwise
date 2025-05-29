@@ -45,7 +45,7 @@ public partial class PopupService : ObservableObject, IPopupService
             case PopupStartupLocation.Center:
                 return new Thickness(0);
             case PopupStartupLocation.Custom:
-                return new Thickness(200, 200, 0, 0); // Example custom
+                return new Thickness(-550, -200, 0, 0); // Example custom
             default:
                 return new Thickness(0);
         }

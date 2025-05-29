@@ -11,7 +11,7 @@ public partial class AMHelpViewModel : ViewModelBase, IPopupViewModel
     public ICommand? CloseCommand { get; private set; }
     public bool IsDraggable => true; // Set to true if the popup should be draggable
     public bool ShowBackdrop => true; // Set to true if the popup should show a backdrop
-     public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Custom : PopupStartupLocation.Center;
+    public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Center : PopupStartupLocation.Custom;
     public AMHelpViewModel()
     {
     }
