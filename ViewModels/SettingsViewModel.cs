@@ -25,9 +25,9 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
     private bool developer_Mode_On_Toggle;
     public ICommand? CloseCommand { get; private set; }
     public ICommand RestoreDefaultsCommand { get; private set; }
-    public bool IsDraggable => true;
+    public bool IsDraggable => false;
     public bool ShowBackdrop => true;
-    public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Center : PopupStartupLocation.Custom;
+    public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Custom : PopupStartupLocation.Center;
 
     public SettingsViewModel()
     {

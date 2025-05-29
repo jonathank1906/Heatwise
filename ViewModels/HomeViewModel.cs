@@ -8,9 +8,9 @@ namespace Heatwise.ViewModels;
 public partial class HomeViewModel : ViewModelBase, IPopupViewModel
 {
     public ICommand? CloseCommand { get; private set; }
-    public bool IsDraggable => true; 
+    public bool IsDraggable => false; 
     public bool ShowBackdrop => true; 
-    public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Center : PopupStartupLocation.Custom;
+    public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Custom : PopupStartupLocation.Center;
     public HomeViewModel()
     {
     }
