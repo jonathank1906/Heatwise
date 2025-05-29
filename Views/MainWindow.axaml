@@ -2,6 +2,7 @@
     x:Class="Heatwise.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:Heatwise.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Heatwise.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -22,6 +23,10 @@
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
     mc:Ignorable="d">
+
+    <Window.Resources>
+        <conv:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
+    </Window.Resources>
 
     <Window.Styles>
         <!--  Style for TabItem  -->
@@ -315,7 +320,6 @@
             <!--  Popup Overlay  -->
             <Grid
                 Name="PopupOverlay"
-                Background="#D0000000"
                 IsVisible="{Binding PopupService.IsPopupVisible, Mode=OneWay}"
                 Opacity="1"
                 ZIndex="100">
@@ -324,31 +328,29 @@
                 <Border
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
-                    Background="Transparent"
+                    Background="#D0000000"
+                    IsVisible="{Binding PopupService.PopupContent.ShowBackdrop, Mode=OneWay}"
                     PointerPressed="Backdrop_PointerPressed" />
 
-                <!--  Content  -->
+                <!--  Popup  -->
                 <ContentControl
+                    Margin="{Binding PopupService.PopupMargin}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Content="{Binding PopupService.PopupContent, Mode=OneWay}">
+                    Content="{Binding PopupService.PopupContent, Mode=OneWay}"
+                    PointerMoved="Popup_PointerMoved"
+                    PointerPressed="Popup_PointerPressed">
                     <ContentControl.Template>
                         <ControlTemplate>
                             <Border
-                                Background="{DynamicResource BackgroundColor}"
-                                BorderBrush="#FF444444"
-                                BorderThickness="1"
+                                Padding="20,20,20,20"
+                                Background="Transparent"
+                                ClipToBounds="True"
                                 CornerRadius="8">
-                                <Border
-                                    Padding="20,20,20,20"
-                                    Background="Transparent"
-                                    ClipToBounds="True"
-                                    CornerRadius="8">
-                                    <ContentPresenter
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Content="{TemplateBinding Content}" />
-                                </Border>
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Content="{TemplateBinding Content}" />
                             </Border>
                         </ControlTemplate>
                     </ContentControl.Template>

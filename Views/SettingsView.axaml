@@ -53,141 +53,146 @@
         </Style>
     </UserControl.Styles>
 
-    <!--  Main Content  -->
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="45" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Border
+        Padding="20"
+        Background="{DynamicResource BackgroundColor}"
+        BorderBrush="#FF444444"
+        BorderThickness="1"
+        CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="45" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <!--  Title bar area  -->
-        <Grid Grid.Row="0" Background="Transparent">
-            <TextBlock
-                HorizontalAlignment="Left"
+            <!--  Title bar area  -->
+            <Grid Grid.Row="0" Background="Transparent">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource TextColor}"
+                    Text="Settings" />
+
+                <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Button
+                        Canvas.Right="0"
+                        Width="25"
+                        Height="25"
+                        BorderThickness="0"
+                        Classes="close"
+                        Command="{Binding CloseCommand}">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                            </Transitions>
+                        </Button.Transitions>
+                        <PathIcon
+                            Width="15"
+                            Height="15"
+                            Data="{StaticResource Close}"
+                            Foreground="{DynamicResource TextColor}" />
+                    </Button>
+                </Canvas>
+            </Grid>
+
+            <!--  Main area  -->
+            <StackPanel Grid.Row="1" VerticalAlignment="Center">
+
+                <DockPanel LastChildFill="True">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left"
+                        FontSize="15"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource TextColor}"
+                        Text="Dark Mode" />
+                    <ToggleSwitch
+                        Margin="0,0,0,1"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextColor}"
+                        IsChecked="{Binding Light_Mode_On_Toggle}" />
+                </DockPanel>
+                <Border
+                    Margin="0,20,0,20"
+                    Background="{DynamicResource TextColor}"
+                    BorderThickness="0.01"
+                    Opacity="0.2" />
+
+
+                <DockPanel LastChildFill="True">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="15"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource TextColor}"
+                        Text="Show Home Screen on Startup" />
+                    <ToggleSwitch
+                        Margin="0,0,0,1"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextColor}"
+                        IsChecked="{Binding Home_Screen_On_Startup_Toggle}"
+                        IsEnabled="{Binding Is_Home_Screen_On_Startup_Toggle_Enabled}" />
+                </DockPanel>
+                <Border
+                    Margin="0,20,0,20"
+                    Background="{DynamicResource TextColor}"
+                    BorderThickness="0.01"
+                    Opacity="0.2" />
+
+
+                <DockPanel LastChildFill="True">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="15"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource TextColor}"
+                        Text="Developer Mode" />
+                    <ToggleSwitch
+                        Margin="0,0,0,1"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextColor}"
+                        IsChecked="{Binding Developer_Mode_On_Toggle}" />
+                </DockPanel>
+                <TextBlock
+                    Margin="0,0,0,0"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextColor}"
+                    Text="Disables loading, login and home screens on startup" />
+                <Border
+                    Margin="0,20,0,20"
+                    Background="{DynamicResource TextColor}"
+                    BorderThickness="0.01"
+                    Opacity="0.2" />
+            </StackPanel>
+
+            <Button
+                Grid.Row="4"
+                Width="400"
+                Height="40"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                FontSize="24"
-                FontWeight="Bold"
-                Foreground="{DynamicResource TextColor}"
-                Text="Settings" />
-
-            <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Button
-                    Canvas.Right="0"
-                    Width="25"
-                    Height="25"
-                    BorderThickness="0"
-                    Classes="close"
-                    Command="{Binding CloseCommand}">
-                    <Button.Transitions>
-                        <Transitions>
-                            <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
-                        </Transitions>
-                    </Button.Transitions>
-                    <PathIcon
-                        Width="15"
-                        Height="15"
-                        Data="{StaticResource Close}"
-                        Foreground="{DynamicResource TextColor}" />
-                </Button>
-            </Canvas>
+                Background="{DynamicResource IconColor}"
+                Classes="hover"
+                Command="{Binding RestoreDefaultsCommand}"
+                FontWeight="Bold">
+                <Button.Content>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource TextColor}"
+                        Text="Restore Default Settings" />
+                </Button.Content>
+            </Button>
         </Grid>
-
-        <!--  Main area  -->
-        <StackPanel Grid.Row="1" VerticalAlignment="Center">
-
-            <DockPanel LastChildFill="True">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    DockPanel.Dock="Left"
-                    FontSize="15"
-                    FontWeight="Bold"
-                    Foreground="{DynamicResource TextColor}"
-                    Text="Dark Mode" />
-                <ToggleSwitch
-                    Margin="0,0,0,1"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextColor}"
-                    IsChecked="{Binding Light_Mode_On_Toggle}" />
-            </DockPanel>
-            <Border
-                Margin="0,20,0,20"
-                Background="{DynamicResource TextColor}"
-                BorderThickness="0.01"
-                Opacity="0.2" />
-
-
-            <DockPanel LastChildFill="True">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontSize="15"
-                    FontWeight="Bold"
-                    Foreground="{DynamicResource TextColor}"
-                    Text="Show Home Screen on Startup" />
-                <ToggleSwitch
-                    Margin="0,0,0,1"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextColor}"
-                    IsChecked="{Binding Home_Screen_On_Startup_Toggle}"
-                    IsEnabled="{Binding Is_Home_Screen_On_Startup_Toggle_Enabled}" />
-            </DockPanel>
-            <Border
-                Margin="0,20,0,20"
-                Background="{DynamicResource TextColor}"
-                BorderThickness="0.01"
-                Opacity="0.2" />
-
-
-            <DockPanel LastChildFill="True">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontSize="15"
-                    FontWeight="Bold"
-                    Foreground="{DynamicResource TextColor}"
-                    Text="Developer Mode" />
-                <ToggleSwitch
-                    Margin="0,0,0,1"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextColor}"
-                    IsChecked="{Binding Developer_Mode_On_Toggle}" />
-            </DockPanel>
-            <TextBlock
-                Margin="0,0,0,0"
-                VerticalAlignment="Center"
-                FontSize="12"
-                Foreground="{DynamicResource TextColor}"
-                Text="Disables loading, login and home screens on startup" />
-            <Border
-                Margin="0,20,0,20"
-                Background="{DynamicResource TextColor}"
-                BorderThickness="0.01"
-                Opacity="0.2" />
-        </StackPanel>
-
-        <Button
-            Grid.Row="4"
-            Width="450"
-            Height="40"
-            Padding="10,10,10,10"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Background="{DynamicResource IconColor}"
-            Classes="hover"
-            Command="{Binding RestoreDefaultsCommand}"
-            FontWeight="Bold">
-            <Button.Content>
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    FontWeight="Bold"
-                    Foreground="{DynamicResource TextColor}"
-                    Text="Restore Default Settings" />
-            </Button.Content>
-        </Button>
-    </Grid>
+    </Border>
 </UserControl>

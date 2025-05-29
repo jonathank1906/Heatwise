@@ -19,7 +19,7 @@ public partial class OptimizerView : UserControl
     private Window? _mainWindow;
     private CalendarWindow? _calendarWindow;
     private Flyout? _calendarFlyout;
-    private TooltipWindow? _tooltipWindow;
+    private ToolTipView? _tooltipWindow;
     private bool _hasAutoOpenedWindow = false;
     private string? _lastTooltipContent;
     private ScottPlot.Plottables.Scatter? _heatDemandPlot;
@@ -173,7 +173,7 @@ public partial class OptimizerView : UserControl
             _mainWindow = TopLevel.GetTopLevel(this) as Window;
             if (_mainWindow != null)
             {
-                _mainWindow.PropertyChanged += MainWindow_PropertyChanged;
+                // _mainWindow.PropertyChanged += MainWindow_PropertyChanged;
             }
         };
 
@@ -181,7 +181,7 @@ public partial class OptimizerView : UserControl
         {
             if (_mainWindow != null)
             {
-                _mainWindow.PropertyChanged -= MainWindow_PropertyChanged;
+                // _mainWindow.PropertyChanged -= MainWindow_PropertyChanged;
                 _mainWindow = null;
             }
         };
@@ -406,7 +406,7 @@ public partial class OptimizerView : UserControl
                 _hoverCrosshair.IsVisible = true;
                 _lastTooltipContent = tooltip;
 
-                if (!_hasAutoOpenedWindow && (_tooltipWindow == null || _tooltipWindow.IsClosed))
+                if (!_hasAutoOpenedWindow && (_tooltipWindow == null))
                 {
                     ShowTooltipWindow();
                     _hasAutoOpenedWindow = true;
@@ -423,41 +423,62 @@ public partial class OptimizerView : UserControl
         };
     }
 
-    private void MainWindow_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-    {
-        if (e.Property == Window.WindowStateProperty)
-        {
-            if (_mainWindow?.WindowState == WindowState.Minimized)
-            {
-                _tooltipWindow?.MinimizeWithMainWindow();
-                _calendarWindow?.MinimizeWithMainWindow();
-            }
-            else
-            {
-                _tooltipWindow?.RestoreWithMainWindow();
-                _calendarWindow?.RestoreWithMainWindow();
-            }
-        }
-    }
+    // private void MainWindow_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    // {
+    //     if (e.Property == Window.WindowStateProperty)
+    //     {
+    //         if (_mainWindow?.WindowState == WindowState.Minimized)
+    //         {
+    //             _tooltipWindow?.MinimizeWithMainWindow();
+    //             _calendarWindow?.MinimizeWithMainWindow();
+    //         }
+    //         else
+    //         {
+    //             _tooltipWindow?.RestoreWithMainWindow();
+    //             _calendarWindow?.RestoreWithMainWindow();
+    //         }
+    //     }
+    // }
 
     private void InitializeTooltipWindow()
     {
-        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        if (_tooltipWindow == null)
         {
-            _tooltipWindow = new TooltipWindow();
-            _tooltipWindow.Position = new PixelPoint(100, 100);
-            _tooltipWindow.WindowClosed += (s, e) =>
+            if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService != null)
             {
-                _tooltipWindow = null;
-                _tooltipsEnabled = false;
-                if (_hoverCrosshair != null)
+                // Store reference to the popup service
+                var popupService = viewModel.PopupService;
+
+                // Show the popup
+                popupService.ShowPopup<ToolTipViewModel>();
+
+                // Subscribe to property changes
+                popupService.PropertyChanged += (sender, e) =>
                 {
-                    _hoverCrosshair.IsVisible = false;
-                    OptimizationPlot.Refresh();
-                }
-            };
-            _tooltipWindow.Show();
-            _tooltipsEnabled = true;
+                    if (e.PropertyName == nameof(popupService.IsPopupVisible))
+                    {
+                        if (!popupService.IsPopupVisible)
+                        {
+                            // Hide crosshair when popup closes
+                            _tooltipsEnabled = false;
+                            if (_hoverCrosshair != null)
+                            {
+                                _hoverCrosshair.IsVisible = false;
+                                OptimizationPlot.Refresh();
+                            }
+                        }
+                        else
+                        {
+                            // Show crosshair when popup opens
+                            _tooltipsEnabled = true;
+                        }
+                    }
+                };
+            }
+            else
+            {
+                Debug.WriteLine("PopupService is not available in the DataContext.");
+            }
         }
     }
 
@@ -469,38 +490,43 @@ public partial class OptimizerView : UserControl
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         base.OnUnloaded(e);
-        _tooltipWindow?.Close();
+        // _tooltipWindow?.Close();
         _tooltipWindow = null;
         _calendarWindow?.Close();
         _calendarWindow = null;
         _hasAutoOpenedWindow = false;
     }
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        if (DataContext is OptimizerViewModel viewModel &&
+            viewModel.PopupService?.IsPopupVisible == true)
+        {
+            viewModel.PopupService.ClosePopup();
+        }
 
+        base.OnDetachedFromVisualTree(e);
+    }
     private void UpdateTooltipContent(string text)
     {
-        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService.PopupContent is ToolTipViewModel tooltipViewModel)
         {
-            return;
+            tooltipViewModel.TooltipText = text;
         }
-        _tooltipWindow?.UpdateContent(text);
     }
 
     private void ToggleTooltip_Click(object sender, RoutedEventArgs e)
     {
         var viewModel = DataContext as OptimizerViewModel;
-        if (viewModel == null || !viewModel.HasOptimized)
-        {
-            return;
-        }
+        if (viewModel == null || !viewModel.HasOptimized) return;
 
-        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        if (viewModel.PopupService?.IsPopupVisible != true)
         {
             ShowTooltipWindow();
             _tooltipsEnabled = true;
         }
         else
         {
-            _tooltipWindow.Close();
+            viewModel.PopupService.ClosePopup();
             _tooltipsEnabled = false;
             if (_hoverCrosshair != null)
             {

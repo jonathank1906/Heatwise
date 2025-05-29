@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Heatwise.Interfaces;
+using Avalonia;
 
 namespace Heatwise.Services;
 
@@ -9,7 +10,10 @@ public partial class PopupService : ObservableObject, IPopupService
     private bool _isPopupVisible;
 
     [ObservableProperty]
-    private object? _popupContent;
+    private IPopupViewModel? _popupContent;
+
+    [ObservableProperty]
+    private Thickness _popupMargin = new(0);
 
     public void ShowPopup<TViewModel>() where TViewModel : IPopupViewModel, new()
     {
@@ -20,6 +24,10 @@ public partial class PopupService : ObservableObject, IPopupService
     public void ShowPopup(IPopupViewModel viewModel)
     {
         viewModel.SetCloseAction(ClosePopup);
+
+        // Set margin based on StartupLocation
+        PopupMargin = GetMarginForStartupLocation(viewModel.StartupLocation);
+
         PopupContent = viewModel;
         IsPopupVisible = true;
     }
@@ -29,4 +37,23 @@ public partial class PopupService : ObservableObject, IPopupService
         IsPopupVisible = false;
         PopupContent = null;
     }
+
+    private Thickness GetMarginForStartupLocation(PopupStartupLocation location)
+    {
+        switch (location)
+        {
+            case PopupStartupLocation.Center:
+                return new Thickness(0);
+            case PopupStartupLocation.Custom:
+                return new Thickness(-550, -200, 0, 0); // Example custom
+            default:
+                return new Thickness(0);
+        }
+    }
+
+    public void SetPopupMargin(Thickness margin)
+    {
+        PopupMargin = margin;
+    }
+
 }

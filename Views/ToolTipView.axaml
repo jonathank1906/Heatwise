@@ -1,0 +1,82 @@
+<UserControl
+    x:Class="Heatwise.Views.ToolTipView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Heatwise.ViewModels"
+    Width="250"
+    Height="200"
+    x:DataType="vm:ToolTipViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="Button.close">
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Template">
+                <!--  Ignore the Theme Template  -->
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border>
+                            <Border.Background>
+                                <!--  Adding a transparent background seems to make the 'hitbox' larger  -->
+                                <SolidColorBrush Opacity="0" Color="White" />
+                            </Border.Background>
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.close:pointerover">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border
+        Padding="10"
+        Background="{DynamicResource BackgroundColor}"
+        BorderBrush="#FF444444"
+        BorderThickness="1"
+        CornerRadius="8">
+        <Grid>
+
+
+            <!--  Content area with full opacity  -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" /> 
+                    <!--  Title bar area  -->
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!--  Title bar with close button  -->
+                <Grid Grid.Row="0" Background="Transparent">
+                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Button
+                            Canvas.Right="0"
+                            Width="46"
+                            Height="30"
+                            Padding="10,0,10,0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Classes="close"
+                            Command="{Binding CloseCommand}">
+                            <PathIcon
+                                Width="12"
+                                Height="12"
+                                Data="{StaticResource Close}"
+                                Foreground="{DynamicResource TextColor}" />
+                        </Button>
+                    </Canvas>
+                </Grid>
+
+                <TextBlock
+                    Grid.Row="1"
+                    Margin="10"
+                    Foreground="{DynamicResource TextColor}"
+                    FontSize="16"
+                    Text="{Binding TooltipText}"
+                    TextWrapping="Wrap" />
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

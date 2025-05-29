@@ -29,131 +29,137 @@
         </Style>
     </UserControl.Styles>
 
+    <Border
+        Padding="20"
+        Background="{DynamicResource BackgroundColor}"
+        BorderBrush="#FF444444"
+        BorderThickness="1"
+        CornerRadius="8">
+        <Grid ClipToBounds="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="45" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-    <Grid ClipToBounds="True">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="45" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-        <Grid Grid.Row="0">
-            <TextBlock
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                FontSize="24"
-                FontWeight="Bold"
-                Foreground="{DynamicResource TextColor}"
-                Text="Asset Manager Help" />
-            <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Button
-                    Canvas.Right="0"
-                    Width="25"
-                    Height="25"
-                    BorderThickness="0"
-                    Classes="close"
-                    Command="{Binding CloseCommand}">
-                    <Button.Transitions>
-                        <Transitions>
-                            <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
-                        </Transitions>
-                    </Button.Transitions>
-                    <PathIcon
-                        Width="15"
-                        Height="15"
-                        Data="{StaticResource Close}"
-                        Foreground="{DynamicResource TextColor}" />
-                </Button>
-            </Canvas>
-        </Grid>
-
-        <ScrollViewer
-            Grid.Row="1"
-            HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-
-                <Image
-                    Width="500"
-                    Height="150"
-                    Margin="0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Bottom"
-                    Source="/Assets/AMHelp4.png"
-                    Stretch="Uniform" />
-
+            <Grid Grid.Row="0">
                 <TextBlock
-                    Grid.Column="1"
-                    Margin="0"
-                    VerticalAlignment="Top"
-                    xml:space="preserve"
-                    FontSize="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    FontSize="24"
                     FontWeight="Bold"
-                    Foreground="{DynamicResource TextColor}">
+                    Foreground="{DynamicResource TextColor}"
+                    Text="Asset Manager Help" />
+                <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Button
+                        Canvas.Right="0"
+                        Width="25"
+                        Height="25"
+                        BorderThickness="0"
+                        Classes="close"
+                        Command="{Binding CloseCommand}">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                            </Transitions>
+                        </Button.Transitions>
+                        <PathIcon
+                            Width="15"
+                            Height="15"
+                            Data="{StaticResource Close}"
+                            Foreground="{DynamicResource TextColor}" />
+                    </Button>
+                </Canvas>
+            </Grid>
+
+            <ScrollViewer
+                Grid.Row="1"
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+
+                    <Image
+                        Width="500"
+                        Height="150"
+                        Margin="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Source="/Assets/AMHelp4.png"
+                        Stretch="Uniform" />
+
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="0"
+                        VerticalAlignment="Top"
+                        xml:space="preserve"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource TextColor}">
                 The most powerful tool in the Asset Manager Tab
                 is the Preset Explorer. It allows you to:
                 </TextBlock>
 
 
-                <Grid
-                    Grid.Row="3"
-                    Margin="2"
-                    ClipToBounds="True"
-                    ColumnDefinitions="80,Auto"
-                    RowDefinitions="Auto,Auto">
+                    <Grid
+                        Grid.Row="3"
+                        Margin="2"
+                        ClipToBounds="True"
+                        ColumnDefinitions="80,Auto"
+                        RowDefinitions="Auto,Auto">
 
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Margin="1"
-                        xml:space="preserve"
-                        Foreground="{DynamicResource TextColor}">
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="1"
+                            xml:space="preserve"
+                            Foreground="{DynamicResource TextColor}">
                 •observe or edit your different scanarios and...
                 </TextBlock>
 
 
-                    <Image
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Width="100"
-                        Height="80"
-                        Margin="1"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Source="/Assets/AMHelp2.png"
-                        Stretch="Uniform" />
-                </Grid>
-                <TextBlock
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    Margin="2"
-                    Text=" " />
-
-                <Grid
-                    Grid.Row="4"
-                    Margin="2"
-                    ClipToBounds="True"
-                    ColumnDefinitions="Auto,Auto"
-                    RowDefinitions="Auto,Auto">
+                        <Image
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Width="100"
+                            Height="80"
+                            Margin="1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Source="/Assets/AMHelp2.png"
+                            Stretch="Uniform" />
+                    </Grid>
                     <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Margin="1,9"
-                        Foreground="{DynamicResource TextColor}"
-                        Text="... create your own custom Scenarios" />
-
-                    <Image
-                        Grid.Row="0"
+                        Grid.Row="3"
                         Grid.Column="1"
-                        Width="80"
-                        Height="80"
                         Margin="2"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Source="/Assets/AMHelp3.png"
-                        Stretch="Uniform" />
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+                        Text=" " />
+
+                    <Grid
+                        Grid.Row="4"
+                        Margin="2"
+                        ClipToBounds="True"
+                        ColumnDefinitions="Auto,Auto"
+                        RowDefinitions="Auto,Auto">
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="1,9"
+                            Foreground="{DynamicResource TextColor}"
+                            Text="... create your own custom Scenarios" />
+
+                        <Image
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Width="80"
+                            Height="80"
+                            Margin="2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Source="/Assets/AMHelp3.png"
+                            Stretch="Uniform" />
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
 </UserControl>

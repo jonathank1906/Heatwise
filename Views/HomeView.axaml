@@ -40,94 +40,100 @@
         </Style>
     </UserControl.Styles>
 
+    <Border
+        Background="{DynamicResource BackgroundColor}"
+        BorderBrush="#FF444444"
+        BorderThickness="1"
+        CornerRadius="8"
+        Padding="20">
+        <Grid ClipToBounds="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-    <Grid ClipToBounds="True">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="75" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Image
+                    Width="55"
+                    Height="55"
+                    Margin="5,-15,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Source="{SvgImage /Assets/Heat Logo.svg}" />
+                <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Button
+                        Canvas.Right="0"
+                        Width="25"
+                        Height="25"
+                        BorderThickness="0"
+                        Classes="close"
+                        Command="{Binding CloseCommand}">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                            </Transitions>
+                        </Button.Transitions>
+                        <PathIcon
+                            Width="15"
+                            Height="15"
+                            Data="{StaticResource Close}"
+                            Foreground="{DynamicResource TextColor}" />
+                    </Button>
+                </Canvas>
+            </Grid>
 
-        <Grid Grid.Row="0">
-            <Image
-                Width="55"
-                Height="55"
-                Margin="5,-15,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Source="{SvgImage /Assets/Heat Logo.svg}" />
-            <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Button
-                    Canvas.Right="0"
-                    Width="25"
-                    Height="25"
-                    BorderThickness="0"
-                    Classes="close"
-                    Command="{Binding CloseCommand}">
-                    <Button.Transitions>
-                        <Transitions>
-                            <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
-                        </Transitions>
-                    </Button.Transitions>
-                    <PathIcon
-                        Width="15"
-                        Height="15"
-                        Data="{StaticResource Close}"
-                        Foreground="{DynamicResource TextColor}" />
-                </Button>
-            </Canvas>
-        </Grid>
-
-        <ScrollViewer
-            Grid.Row="1"
-            HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollBarVisibility="Auto">
-            <StackPanel
+            <ScrollViewer
                 Grid.Row="1"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Spacing="5">
-                <TextBlock
-                    FontSize="20"
-                    FontWeight="Bold"
-                    Foreground="{DynamicResource TextColor}"
-                    Text="Welcome" />
-
-                <TextBlock
-                    FontSize="16"
-                    Foreground="{DynamicResource TextColor}"
-                    TextWrapping="Wrap">
-                    <Run Text="You will begin in the Asset Manager screen." />
-                    <Run Text="By clicking the scenarios, you can see your available machines and if desired create new ones." />
-                </TextBlock>
-
-                <Image
-                    Width="400"
-                    Height="300"
-                    Margin="5"
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+                <StackPanel
+                    Grid.Row="1"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Source="/Assets/HomePicture1.png"
-                    Stretch="Uniform" />
+                    VerticalAlignment="Top"
+                    Spacing="5">
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource TextColor}"
+                        Text="Welcome" />
 
-                <TextBlock
-                    FontSize="16"
-                    Foreground="{DynamicResource TextColor}"
-                    TextWrapping="Wrap">
-                    <Run Text="In the red header bar you can choose the Optimizer tool, this is where the magic happens." />
-                    <Run Text="Choose your desired specs in the menu to the left and confirm with the optimize button at the bottom." />
-                    <Run Text="For more help, press the help button in the sections." />
-                </TextBlock>
+                    <TextBlock
+                        FontSize="16"
+                        Foreground="{DynamicResource TextColor}"
+                        TextWrapping="Wrap">
+                        <Run Text="You will begin in the Asset Manager screen." />
+                        <Run Text="By clicking the scenarios, you can see your available machines and if desired create new ones." />
+                    </TextBlock>
 
-                <Image
-                    Width="400"
-                    Height="300"
-                    Margin="5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Source="/Assets/HomePicture2.png"
-                    Stretch="Uniform" />
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+                    <Image
+                        Width="400"
+                        Height="300"
+                        Margin="5"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Source="/Assets/HomePicture1.png"
+                        Stretch="Uniform" />
+
+                    <TextBlock
+                        FontSize="16"
+                        Foreground="{DynamicResource TextColor}"
+                        TextWrapping="Wrap">
+                        <Run Text="In the red header bar you can choose the Optimizer tool, this is where the magic happens." />
+                        <Run Text="Choose your desired specs in the menu to the left and confirm with the optimize button at the bottom." />
+                        <Run Text="For more help, press the help button in the sections." />
+                    </TextBlock>
+
+                    <Image
+                        Width="400"
+                        Height="300"
+                        Margin="5"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Source="/Assets/HomePicture2.png"
+                        Stretch="Uniform" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
 </UserControl>
