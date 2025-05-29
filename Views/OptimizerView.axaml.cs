@@ -173,7 +173,7 @@ public partial class OptimizerView : UserControl
             _mainWindow = TopLevel.GetTopLevel(this) as Window;
             if (_mainWindow != null)
             {
-               // _mainWindow.PropertyChanged += MainWindow_PropertyChanged;
+                // _mainWindow.PropertyChanged += MainWindow_PropertyChanged;
             }
         };
 
@@ -181,7 +181,7 @@ public partial class OptimizerView : UserControl
         {
             if (_mainWindow != null)
             {
-               // _mainWindow.PropertyChanged -= MainWindow_PropertyChanged;
+                // _mainWindow.PropertyChanged -= MainWindow_PropertyChanged;
                 _mainWindow = null;
             }
         };
@@ -440,47 +440,47 @@ public partial class OptimizerView : UserControl
     //     }
     // }
 
-private void InitializeTooltipWindow()
-{
-    if (_tooltipWindow == null)
+    private void InitializeTooltipWindow()
     {
-        if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService != null)
+        if (_tooltipWindow == null)
         {
-            // Store reference to the popup service
-            var popupService = viewModel.PopupService;
-            
-            // Show the popup
-            popupService.ShowPopup<ToolTipViewModel>();
-            
-            // Subscribe to property changes
-            popupService.PropertyChanged += (sender, e) =>
+            if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService != null)
             {
-                if (e.PropertyName == nameof(popupService.IsPopupVisible))
+                // Store reference to the popup service
+                var popupService = viewModel.PopupService;
+
+                // Show the popup
+                popupService.ShowPopup<ToolTipViewModel>();
+
+                // Subscribe to property changes
+                popupService.PropertyChanged += (sender, e) =>
                 {
-                    if (!popupService.IsPopupVisible)
+                    if (e.PropertyName == nameof(popupService.IsPopupVisible))
                     {
-                        // Hide crosshair when popup closes
-                        _tooltipsEnabled = false;
-                        if (_hoverCrosshair != null)
+                        if (!popupService.IsPopupVisible)
                         {
-                            _hoverCrosshair.IsVisible = false;
-                            OptimizationPlot.Refresh();
+                            // Hide crosshair when popup closes
+                            _tooltipsEnabled = false;
+                            if (_hoverCrosshair != null)
+                            {
+                                _hoverCrosshair.IsVisible = false;
+                                OptimizationPlot.Refresh();
+                            }
+                        }
+                        else
+                        {
+                            // Show crosshair when popup opens
+                            _tooltipsEnabled = true;
                         }
                     }
-                    else
-                    {
-                        // Show crosshair when popup opens
-                        _tooltipsEnabled = true;
-                    }
-                }
-            };
-        }
-        else
-        {
-            Debug.WriteLine("PopupService is not available in the DataContext.");
+                };
+            }
+            else
+            {
+                Debug.WriteLine("PopupService is not available in the DataContext.");
+            }
         }
     }
-}
 
     private void ShowTooltipWindow()
     {
@@ -490,13 +490,22 @@ private void InitializeTooltipWindow()
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         base.OnUnloaded(e);
-       // _tooltipWindow?.Close();
+        // _tooltipWindow?.Close();
         _tooltipWindow = null;
         _calendarWindow?.Close();
         _calendarWindow = null;
         _hasAutoOpenedWindow = false;
     }
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        if (DataContext is OptimizerViewModel viewModel &&
+            viewModel.PopupService?.IsPopupVisible == true)
+        {
+            viewModel.PopupService.ClosePopup();
+        }
 
+        base.OnDetachedFromVisualTree(e);
+    }
     private void UpdateTooltipContent(string text)
     {
         if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService.PopupContent is ToolTipViewModel tooltipViewModel)
@@ -505,27 +514,27 @@ private void InitializeTooltipWindow()
         }
     }
 
-   private void ToggleTooltip_Click(object sender, RoutedEventArgs e)
-{
-    var viewModel = DataContext as OptimizerViewModel;
-    if (viewModel == null || !viewModel.HasOptimized) return;
+    private void ToggleTooltip_Click(object sender, RoutedEventArgs e)
+    {
+        var viewModel = DataContext as OptimizerViewModel;
+        if (viewModel == null || !viewModel.HasOptimized) return;
 
-    if (viewModel.PopupService?.IsPopupVisible != true)
-    {
-        ShowTooltipWindow();
-        _tooltipsEnabled = true;
-    }
-    else
-    {
-        viewModel.PopupService.ClosePopup();
-        _tooltipsEnabled = false;
-        if (_hoverCrosshair != null)
+        if (viewModel.PopupService?.IsPopupVisible != true)
         {
-            _hoverCrosshair.IsVisible = false;
-            OptimizationPlot.Refresh();
+            ShowTooltipWindow();
+            _tooltipsEnabled = true;
+        }
+        else
+        {
+            viewModel.PopupService.ClosePopup();
+            _tooltipsEnabled = false;
+            if (_hoverCrosshair != null)
+            {
+                _hoverCrosshair.IsVisible = false;
+                OptimizationPlot.Refresh();
+            }
         }
     }
-}
 
     // Calendar
     // -------------------------------------------------
