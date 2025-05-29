@@ -44,7 +44,7 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private ICommand? _parentDeleteMachineCommand;
 
-  
+
     [ObservableProperty]
     private ObservableCollection<AssetModel> _currentScenarioAssets = new();
     private readonly AssetManager _assetManager;
@@ -288,9 +288,16 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             if (string.IsNullOrEmpty(imageSource)) return null;
 
-            var normalizedPath = imageSource.TrimStart('/', '\\');
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string fullPath = Path.Combine(basePath, normalizedPath);
+            // Remove leading slash if present
+            var cleanPath = imageSource.TrimStart('/');
+
+            // Get the project root directory
+            var projectDir = Path.GetFullPath(Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "..", "..", ".."));
+
+            // Combine with the image path
+            var fullPath = Path.Combine(projectDir, cleanPath.Replace("/", "\\"));
 
             if (File.Exists(fullPath))
             {
