@@ -43,17 +43,14 @@ private void Popup_PointerMoved(object? sender, PointerEventArgs e)
             var currentPoint = e.GetPosition(this);
             var offset = currentPoint - _dragStartPoint;
 
-            var popupOverlay = this.FindControl<Grid>("PopupOverlay");
-            if (popupOverlay != null)
-            {
-                var currentMargin = popupOverlay.Margin;
-                popupOverlay.Margin = new Thickness(
-                    currentMargin.Left + offset.X,
-                    currentMargin.Top + offset.Y,
-                    currentMargin.Right - offset.X,
-                    currentMargin.Bottom - offset.Y
-                );
-            }
+            // Use the SetPopupMargin method
+            var currentMargin = vm.PopupService.PopupMargin;
+            vm.PopupService.SetPopupMargin(new Thickness(
+                currentMargin.Left + offset.X,
+                currentMargin.Top + offset.Y,
+                currentMargin.Right - offset.X,
+                currentMargin.Bottom - offset.Y
+            ));
 
             _dragStartPoint = currentPoint;
         }

@@ -27,6 +27,7 @@
     <Window.Resources>
 
         <conv:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
+        <conv:PopupStartupLocationToMarginConverter x:Key="PopupStartupLocationToMarginConverter" />
     </Window.Resources>
 
     <Window.Styles>
@@ -321,7 +322,6 @@
             <!--  Popup Overlay  -->
             <Grid
                 Name="PopupOverlay"
-            
                 IsVisible="{Binding PopupService.IsPopupVisible, Mode=OneWay}"
                 Opacity="1"
                 ZIndex="100">
@@ -330,12 +330,13 @@
                 <Border
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
-                     Background="#D0000000"
+                    Background="#D0000000"
                     IsVisible="{Binding PopupService.PopupContent.ShowBackdrop, Mode=OneWay}"
                     PointerPressed="Backdrop_PointerPressed" />
 
                 <!--  Content  -->
                 <ContentControl
+                    Margin="{Binding PopupService.PopupMargin}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Content="{Binding PopupService.PopupContent, Mode=OneWay}"
