@@ -332,7 +332,7 @@
                     IsVisible="{Binding PopupService.PopupContent.ShowBackdrop, Mode=OneWay}"
                     PointerPressed="Backdrop_PointerPressed" />
 
-                <!--  Content  -->
+                <!--  Popup  -->
                 <ContentControl
                     Margin="{Binding PopupService.PopupMargin}"
                     HorizontalAlignment="Center"
@@ -343,20 +343,14 @@
                     <ContentControl.Template>
                         <ControlTemplate>
                             <Border
-                                Background="{DynamicResource BackgroundColor}"
-                                BorderBrush="#FF444444"
-                                BorderThickness="1"
+                                Padding="20,20,20,20"
+                                Background="Transparent"
+                                ClipToBounds="True"
                                 CornerRadius="8">
-                                <Border
-                                    Padding="20,20,20,20"
-                                    Background="Transparent"
-                                    ClipToBounds="True"
-                                    CornerRadius="8">
-                                    <ContentPresenter
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Content="{TemplateBinding Content}" />
-                                </Border>
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Content="{TemplateBinding Content}" />
                             </Border>
                         </ControlTemplate>
                     </ContentControl.Template>

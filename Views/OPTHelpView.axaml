@@ -29,104 +29,109 @@
         </Style>
     </UserControl.Styles>
 
+    <Border
+        Padding="20"
+        Background="{DynamicResource BackgroundColor}"
+        BorderBrush="#FF444444"
+        BorderThickness="1"
+        CornerRadius="8">
+        <Grid ClipToBounds="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="45" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-    <Grid ClipToBounds="True">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="45" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource TextColor}"
+                    Text="Optimizer Help" />
+                <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Button
+                        Canvas.Right="0"
+                        Width="25"
+                        Height="25"
+                        BorderThickness="0"
+                        Classes="close"
+                        Command="{Binding CloseCommand}">
+                        <Button.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                            </Transitions>
+                        </Button.Transitions>
+                        <PathIcon
+                            Width="15"
+                            Height="15"
+                            Data="{StaticResource Close}"
+                            Foreground="{DynamicResource TextColor}" />
+                    </Button>
+                </Canvas>
+            </Grid>
 
-        <Grid Grid.Row="0">
-            <TextBlock
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                FontSize="24"
-                FontWeight="Bold"
-                Foreground="{DynamicResource TextColor}"
-                Text="Optimizer Help" />
-            <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Button
-                    Canvas.Right="0"
-                    Width="25"
-                    Height="25"
-                    BorderThickness="0"
-                    Classes="close"
-                    Command="{Binding CloseCommand}">
-                    <Button.Transitions>
-                        <Transitions>
-                            <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
-                        </Transitions>
-                    </Button.Transitions>
-                    <PathIcon
-                        Width="15"
-                        Height="15"
-                        Data="{StaticResource Close}"
-                        Foreground="{DynamicResource TextColor}" />
-                </Button>
-            </Canvas>
-        </Grid>
+            <ScrollViewer
+                Grid.Row="1"
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Grid
+                        Grid.Row="1"
+                        Margin="4"
+                        ClipToBounds="True"
+                        ColumnDefinitions="100,Auto"
+                        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
-        <ScrollViewer
-            Grid.Row="1"
-            HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <Grid
-                    Grid.Row="1"
-                    Margin="4"
-                    ClipToBounds="True"
-                    ColumnDefinitions="100,Auto"
-                    RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Margin="1"
-                        xml:space="preserve"
-                        Foreground="{DynamicResource TextColor}">
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="1"
+                            xml:space="preserve"
+                            Foreground="{DynamicResource TextColor}">
                 •Select in the Presets your scenarios, 
                  that are created in the Asset Manager
                 </TextBlock>
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Margin="1"
-                        xml:space="preserve"
-                        Foreground="{DynamicResource TextColor}">
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="1"
+                            xml:space="preserve"
+                            Foreground="{DynamicResource TextColor}">
                 •In the Source Data you can toggle
                 between the Summer and Winter Data. 
                 </TextBlock>
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        Margin="1"
-                        xml:space="preserve"
-                        Foreground="{DynamicResource TextColor}">
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="1"
+                            xml:space="preserve"
+                            Foreground="{DynamicResource TextColor}">
                 •Select the optimization goal, 
                 either prioritize the optimal cost 
                 or the least CO2 Emmissions
                 </TextBlock>
 
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        Margin="2"
-                        Text=" " />
-                    <Image
-                        Grid.Row="0"
-                        Grid.RowSpan="3"
-                        Grid.Column="0"
-                        Width="150"
-                        Height="300"
-                        Margin="1"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Source="/Assets/OPTHelp1.png"
-                        Stretch="Uniform" />
-                </Grid>
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Margin="2"
+                            Text=" " />
+                        <Image
+                            Grid.Row="0"
+                            Grid.RowSpan="3"
+                            Grid.Column="0"
+                            Width="150"
+                            Height="300"
+                            Margin="1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Source="/Assets/OPTHelp1.png"
+                            Stretch="Uniform" />
+                    </Grid>
 
-                <!-- <TextBlock Margin="0 5" xml:space="preserve" Grid.Row="4" Grid.Column="0">
+                    <!-- <TextBlock Margin="0 5" xml:space="preserve" Grid.Row="4" Grid.Column="0">
                 From Top to Bottom:
                 •Change the type of graph to be displayed
                 •Select the days to view in the graph
@@ -144,63 +149,64 @@
                 •Export the optimized data to a CSV file
                 •More Help
               </TextBlock>
-                -->
+                    -->
 
-                <Grid
-                    Grid.Row="2"
-                    Margin="4"
-                    ClipToBounds="True"
-                    ColumnDefinitions="Auto,Auto"
-                    RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Margin="1,9"
-                        Foreground="{DynamicResource TextColor}"
-                        Text="•Change the type of graph to be displayed" />
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Margin="1,9"
-                        Foreground="{DynamicResource TextColor}"
-                        Text="•Select the days to view in the graph" />
-                    <TextBlock
+                    <Grid
                         Grid.Row="2"
-                        Grid.Column="0"
-                        Margin="1,9"
-                        Foreground="{DynamicResource TextColor}"
-                        Text="•Restore the View to default settings" />
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="0"
-                        Margin="1,9"
-                        Foreground="{DynamicResource TextColor}"
-                        Text="•Enable the Pointer plus a window with details" />
-                    <TextBlock
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        Margin="1,9"
-                        Foreground="{DynamicResource TextColor}"
-                        Text="•Export the optimized data to a CSV file" />
-                    <TextBlock
-                        Grid.Row="5"
-                        Grid.Column="0"
-                        Margin="1,9"
-                        Foreground="{DynamicResource TextColor}"
-                        Text="•More Help" />
-                    <Image
-                        Grid.Row="0"
-                        Grid.RowSpan="6"
-                        Grid.Column="1"
-                        Width="40"
-                        Height="290"
-                        Margin="2"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Source="/Assets/OPTHelp3.png"
-                        Stretch="Uniform" />
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+                        Margin="4"
+                        ClipToBounds="True"
+                        ColumnDefinitions="Auto,Auto"
+                        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="1,9"
+                            Foreground="{DynamicResource TextColor}"
+                            Text="•Change the type of graph to be displayed" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="1,9"
+                            Foreground="{DynamicResource TextColor}"
+                            Text="•Select the days to view in the graph" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="1,9"
+                            Foreground="{DynamicResource TextColor}"
+                            Text="•Restore the View to default settings" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Margin="1,9"
+                            Foreground="{DynamicResource TextColor}"
+                            Text="•Enable the Pointer plus a window with details" />
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="0"
+                            Margin="1,9"
+                            Foreground="{DynamicResource TextColor}"
+                            Text="•Export the optimized data to a CSV file" />
+                        <TextBlock
+                            Grid.Row="5"
+                            Grid.Column="0"
+                            Margin="1,9"
+                            Foreground="{DynamicResource TextColor}"
+                            Text="•More Help" />
+                        <Image
+                            Grid.Row="0"
+                            Grid.RowSpan="6"
+                            Grid.Column="1"
+                            Width="40"
+                            Height="290"
+                            Margin="2"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Source="/Assets/OPTHelp3.png"
+                            Stretch="Uniform" />
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
 </UserControl>
