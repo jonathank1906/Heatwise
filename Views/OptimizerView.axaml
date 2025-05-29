@@ -529,15 +529,7 @@
                             <PathIcon Data="{StaticResource Export}" Foreground="{DynamicResource TextColor}" />
                         </Button>
 
-                           <Button
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Background="Transparent"
-                            Classes="close"
-                            Command="{Binding ShowToolTip}"
-                            ToolTip.Tip="Export optimized results to a CSV file">
-                            <PathIcon Data="{StaticResource Export}" Foreground="{DynamicResource TextColor}" />
-                        </Button>
+                          
 
                         <Button
                             HorizontalAlignment="Center"

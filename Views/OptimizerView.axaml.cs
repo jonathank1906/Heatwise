@@ -19,7 +19,7 @@ public partial class OptimizerView : UserControl
     private Window? _mainWindow;
     private CalendarWindow? _calendarWindow;
     private Flyout? _calendarFlyout;
-    private TooltipWindow? _tooltipWindow;
+    private ToolTipView? _tooltipWindow;
     private bool _hasAutoOpenedWindow = false;
     private string? _lastTooltipContent;
     private ScottPlot.Plottables.Scatter? _heatDemandPlot;
@@ -173,7 +173,7 @@ public partial class OptimizerView : UserControl
             _mainWindow = TopLevel.GetTopLevel(this) as Window;
             if (_mainWindow != null)
             {
-                _mainWindow.PropertyChanged += MainWindow_PropertyChanged;
+               // _mainWindow.PropertyChanged += MainWindow_PropertyChanged;
             }
         };
 
@@ -181,7 +181,7 @@ public partial class OptimizerView : UserControl
         {
             if (_mainWindow != null)
             {
-                _mainWindow.PropertyChanged -= MainWindow_PropertyChanged;
+               // _mainWindow.PropertyChanged -= MainWindow_PropertyChanged;
                 _mainWindow = null;
             }
         };
@@ -406,7 +406,7 @@ public partial class OptimizerView : UserControl
                 _hoverCrosshair.IsVisible = true;
                 _lastTooltipContent = tooltip;
 
-                if (!_hasAutoOpenedWindow && (_tooltipWindow == null || _tooltipWindow.IsClosed))
+                if (!_hasAutoOpenedWindow && (_tooltipWindow == null))
                 {
                     ShowTooltipWindow();
                     _hasAutoOpenedWindow = true;
@@ -423,26 +423,26 @@ public partial class OptimizerView : UserControl
         };
     }
 
-    private void MainWindow_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-    {
-        if (e.Property == Window.WindowStateProperty)
-        {
-            if (_mainWindow?.WindowState == WindowState.Minimized)
-            {
-                _tooltipWindow?.MinimizeWithMainWindow();
-                _calendarWindow?.MinimizeWithMainWindow();
-            }
-            else
-            {
-                _tooltipWindow?.RestoreWithMainWindow();
-                _calendarWindow?.RestoreWithMainWindow();
-            }
-        }
-    }
+    // private void MainWindow_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    // {
+    //     if (e.Property == Window.WindowStateProperty)
+    //     {
+    //         if (_mainWindow?.WindowState == WindowState.Minimized)
+    //         {
+    //             _tooltipWindow?.MinimizeWithMainWindow();
+    //             _calendarWindow?.MinimizeWithMainWindow();
+    //         }
+    //         else
+    //         {
+    //             _tooltipWindow?.RestoreWithMainWindow();
+    //             _calendarWindow?.RestoreWithMainWindow();
+    //         }
+    //     }
+    // }
 
     private void InitializeTooltipWindow()
     {
-        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        if (_tooltipWindow == null)
         {
             if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService != null)
             {
@@ -464,7 +464,7 @@ public partial class OptimizerView : UserControl
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         base.OnUnloaded(e);
-        _tooltipWindow?.Close();
+       // _tooltipWindow?.Close();
         _tooltipWindow = null;
         _calendarWindow?.Close();
         _calendarWindow = null;
@@ -487,14 +487,14 @@ public partial class OptimizerView : UserControl
             return;
         }
 
-        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        if (_tooltipWindow == null)
         {
             ShowTooltipWindow();
             _tooltipsEnabled = true;
         }
         else
         {
-            _tooltipWindow.Close();
+           // _tooltipWindow.Close();
             _tooltipsEnabled = false;
             if (_hoverCrosshair != null)
             {
