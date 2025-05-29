@@ -8,7 +8,6 @@ using Heatwise.Models;
 using System.Diagnostics;
 using Avalonia.Controls;
 using System.Collections.ObjectModel;
-using Heatwise.Services;
 using Heatwise.Interfaces;
 
 

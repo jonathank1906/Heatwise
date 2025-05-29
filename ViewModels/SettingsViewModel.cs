@@ -11,7 +11,7 @@ namespace Heatwise.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
 {
-    private SourceDataManager _dataManager = new SourceDataManager(); // Use a default instance
+    private SourceDataManager _dataManager = new SourceDataManager();
 
     [ObservableProperty]
     private bool light_Mode_On_Toggle;
@@ -25,8 +25,8 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
     private bool developer_Mode_On_Toggle;
     public ICommand? CloseCommand { get; private set; }
     public ICommand RestoreDefaultsCommand { get; private set; }
-    public bool IsDraggable => true; // Set to true if the popup should be draggable
-    public bool ShowBackdrop => true; // Set to true if the popup should show a backdrop
+    public bool IsDraggable => true;
+    public bool ShowBackdrop => true;
     public PopupStartupLocation StartupLocation => IsDraggable ? PopupStartupLocation.Center : PopupStartupLocation.Custom;
 
     public SettingsViewModel()
@@ -71,9 +71,9 @@ public partial class SettingsViewModel : ViewModelBase, IPopupViewModel
 
     public void RestoreDefaults()
     {
-        Light_Mode_On_Toggle = true; // Dark theme
-        Developer_Mode_On_Toggle = false; // Off
-        Home_Screen_On_Startup_Toggle = true; // On
+        Light_Mode_On_Toggle = true; 
+        Developer_Mode_On_Toggle = false; 
+        Home_Screen_On_Startup_Toggle = true; 
     }
 
     public void SetCloseAction(Action closeCallback)

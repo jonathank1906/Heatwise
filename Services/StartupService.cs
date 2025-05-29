@@ -14,7 +14,7 @@ public class StartupService
         var sourceDataManager = new SourceDataManager();
         var popupService = new PopupService();
 
-        var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager, popupService));
+        var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager));
         var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager, new ResultDataManager(), popupService));
         var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());
 

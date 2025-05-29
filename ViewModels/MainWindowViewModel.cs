@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using Heatwise.Events;
 using Heatwise.Enums;
-using System;
 
 namespace Heatwise.ViewModels;
 

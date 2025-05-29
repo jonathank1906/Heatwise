@@ -12,7 +12,6 @@ using Avalonia.Controls;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Avalonia.Platform.Storage;
 using System.Diagnostics;
 
@@ -32,16 +31,20 @@ public partial class AssetManagerViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<Preset> _availablePresets = new();
+
     [ObservableProperty]
     private bool isConfiguring = false;
+
     [ObservableProperty]
     private ObservableCollection<AssetModel> _allAssets;
+
     [ObservableProperty]
     private ViewState _currentViewState = ViewState.ScenarioSelection;
+
     [ObservableProperty]
     private ICommand? _parentDeleteMachineCommand;
 
-    private readonly IPopupService _popupService;
+  
     [ObservableProperty]
     private ObservableCollection<AssetModel> _currentScenarioAssets = new();
     private readonly AssetManager _assetManager;
@@ -62,8 +65,6 @@ public partial class AssetManagerViewModel : ObservableObject
     [ObservableProperty]
     private Bitmap? _imageFromBinding;
 
-    public string ImageSource { get; set; }
-
     [ObservableProperty]
     private Bitmap? _gridImageFromBinding;
 
@@ -72,10 +73,6 @@ public partial class AssetManagerViewModel : ObservableObject
     public HeatingGrid? GridInfo => _assetManager.GridInfo;
 
     // ---------------------------------------------------------------------------------------------
-
-
-
-
     [ObservableProperty]
     private Preset? _selectedPreset;
 
@@ -83,9 +80,6 @@ public partial class AssetManagerViewModel : ObservableObject
     private string _presetName = string.Empty;
 
     public event Action? AssetCreatedSuccessfully;
-
-
-
 
     // Create - Form properties
     [ObservableProperty]
@@ -139,11 +133,9 @@ public partial class AssetManagerViewModel : ObservableObject
         }
     }
 
-
-    public AssetManagerViewModel(AssetManager assetManager, IPopupService popupService)
+    public AssetManagerViewModel(AssetManager assetManager)
     {
         _assetManager = assetManager;
-        _popupService = popupService;
 
         // First create the presets with their machine lists
         var presetTemplates = new ObservableCollection<Preset>(
@@ -205,7 +197,6 @@ public partial class AssetManagerViewModel : ObservableObject
         NavigateTo(presetName);
     }
 
-
     [RelayCommand]
     public void NavigateTo(string destination)
     {
@@ -261,15 +252,12 @@ public partial class AssetManagerViewModel : ObservableObject
     {
         if (value != null)
         {
-            Debug.WriteLine($"Selected asset changed to: {value.Name}");
             LoadImageFromSource(value.ImageSource);
         }
     }
 
     partial void OnSelectedScenarioChanged(string? value)
     {
-
-
         var preset = _assetManager.Presets.FirstOrDefault(p => p.Name == value);
         CurrentScenarioAssets = preset != null
             ? new ObservableCollection<AssetModel>(
@@ -291,10 +279,6 @@ public partial class AssetManagerViewModel : ObservableObject
                 })
             )
             : new ObservableCollection<AssetModel>();
-
-
-        Debug.WriteLine($"Selected Scenario: {value}");
-        Debug.WriteLine($"CurrentScenarioAssets Count: {CurrentScenarioAssets.Count}");
     }
 
     private Bitmap? LoadImageFromSource(string imageSource)
@@ -356,6 +340,7 @@ public partial class AssetManagerViewModel : ObservableObject
             GridImageFromBinding = null;
         }
     }
+
     [RelayCommand]
     public void ShowSettings()
     {
@@ -385,6 +370,7 @@ public partial class AssetManagerViewModel : ObservableObject
     {
         Debug.WriteLine($"Color property changed to: {value}");
     }
+
     [RelayCommand]
     private void Delete(int machineId)
     {
@@ -575,19 +561,16 @@ public partial class AssetManagerViewModel : ObservableObject
             }
 
             NavigateTo("PresetNavigation");
-            Debug.WriteLine("=== Configuration save completed successfully ===");
             Events.Notification.Invoke("Configuration saved successfully!", NotificationType.Confirmation);
         }
-        catch (Exception ex)
+        catch
         {
-            Debug.WriteLine($"Error saving configuration: {ex.Message}");
             Events.Notification.Invoke("Failed to save configuration!", NotificationType.Error);
         }
     }
 
     partial void OnAvailablePresetsChanged(ObservableCollection<Preset> value)
     {
-        // Notify UI when presets change
         OnPropertyChanged(nameof(AvailablePresets));
     }
 
@@ -625,20 +608,8 @@ public partial class AssetManagerViewModel : ObservableObject
                )
            })
        );
-
-        Debug.WriteLine($"Refreshed presets. Now have {AvailablePresets.Count} presets.");
-        foreach (var preset in AvailablePresets)
-        {
-            Debug.WriteLine($"Preset: {preset.Name}, Machines: {preset.MachineModels.Count}");
-            foreach (var machine in preset.MachineModels)
-            {
-                Debug.WriteLine($"  - Machine: {machine.Name}");
-            }
-        }
     }
 
-
-    //------------------------------------------------------------------------------------------------------------------------
     [RelayCommand]
     public async Task BrowseImage(Control view)
     {
@@ -688,10 +659,9 @@ public partial class AssetManagerViewModel : ObservableObject
                 Debug.WriteLine($"ImagePath set to: {ImagePath}");
             }
         }
-        catch (Exception ex)
+        catch
         {
-            Debug.WriteLine($"Image selection error: {ex.Message}");
-            Events.Notification.Invoke("Failed to select image", Enums.NotificationType.Error);
+            Events.Notification.Invoke("Failed to select image", NotificationType.Error);
         }
     }
 
@@ -706,7 +676,6 @@ public partial class AssetManagerViewModel : ObservableObject
             !double.TryParse(GasConsumption, out double gasConsumption) ||
             !double.TryParse(OilConsumption, out double oilConsumption))
         {
-            Debug.WriteLine("Invalid numeric input values");
             Events.Notification.Invoke("Invalid numeric input values.", NotificationType.Error);
             return;
         }
@@ -737,8 +706,6 @@ public partial class AssetManagerViewModel : ObservableObject
                 Color = $"#{random.Next(0x1000000):X6}";
             }
 
-
-            Debug.WriteLine($"[CreateMachine] Params: Name='{MachineName}', ImagePath='{ImagePath}', MaxHeat={maxHeat}, MaxElectricity={maxElectricity}, ProductionCost={productionCost}, Emissions={emissions}, GasConsumption={gasConsumption}, OilConsumption={oilConsumption}, PresetId={presetId}, Color='{Color}'");
             bool success = _assetManager.CreateNewMachine(
                 MachineName,
                 ImagePath ?? string.Empty,
@@ -830,8 +797,6 @@ public partial class AssetManagerViewModel : ObservableObject
         {
             SelectedPreset = AvailablePresets[0];
         }
-
-        Debug.WriteLine($"Refreshed presets list. Now contains: {string.Join(", ", AvailablePresets.Select(p => p.Name))}");
     }
 
 
@@ -914,8 +879,6 @@ public partial class AssetManagerViewModel : ObservableObject
         Events.Notification.Invoke("Defaults restored successfully!", NotificationType.Confirmation);
     }
 }
-
-
 
 public enum ViewState
 {

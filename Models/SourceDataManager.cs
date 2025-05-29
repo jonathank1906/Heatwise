@@ -159,18 +159,7 @@ public class SourceDataManager
             return null;
         }
     }
-
-    // You can keep these convenience methods for backward compatibility
-    public List<(DateTime timestamp, double value)> GetWinterHeatDemandData()
-    {
-        return GetData(DataType.WinterHeatDemand);
-    }
-
-    public List<(DateTime timestamp, double value)> GetSummerHeatDemandData()
-    {
-        return GetData(DataType.SummerHeatDemand);
-    }
-
+    
     public List<(DateTime timestamp, double value)> GetWinterElectricityPriceData()
     {
         return GetData(DataType.WinterElectricityPrice);

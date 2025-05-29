@@ -1,21 +1,10 @@
-﻿using System.Collections.ObjectModel;
-using Avalonia.Media.Imaging;
-using Avalonia.Visuals;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System;
-using System.IO;
-using Heatwise.Models;
-using System.Linq;
-using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia;
 using Avalonia.Media;
-using Heatwise.Interfaces;
-using Heatwise.Views;
-
-using Heatwise.Services;
 
 namespace Heatwise.ViewModels;
 
@@ -66,9 +55,7 @@ public partial class LoadingWindowViewModel : ViewModelBase
                 await Task.Delay(delay);
             }
         }
-
         await Task.Delay(50);
-
         Finished?.Invoke();
     }
 }

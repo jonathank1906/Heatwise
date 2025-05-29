@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Threading.Tasks;
 
 namespace Heatwise.ViewModels;
 
@@ -25,8 +24,6 @@ public partial class SourceDataManagerViewModel : ViewModelBase
         IsPaneOpen = !IsPaneOpen;
         PaneWidth = IsPaneOpen ? OpenWidth : ClosedWidth;
     }
-
-
 
     public SourceDataManagerViewModel()
     {
