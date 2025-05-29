@@ -1,7 +1,8 @@
-<Window
+<UserControl
     x:Class="Heatwise.Views.TooltipWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:vm="using:Heatwise.ViewModels"
     Width="300"
     Height="300"
     Background="Transparent"
@@ -10,7 +11,8 @@
     SizeToContent="Height"
     SystemDecorations="None"
     Topmost="True"
-    WindowStartupLocation="Manual">
+    WindowStartupLocation="Manual"
+    x:DataType="vm:ToolTipViewModel">
 
     <Grid>
         <!--  Transparent background with reduced opacity  -->
@@ -53,11 +55,12 @@
             </Grid>
 
             <TextBlock
-                x:Name="TooltipText"
+           
                 Grid.Row="1"
                 Margin="10"
                 Foreground="White"
-                TextWrapping="Wrap" />
+                TextWrapping="Wrap"
+                Text="{Binding TooltipText}" />
         </Grid>
     </Grid>
-</Window>
+</UserControl>

@@ -444,20 +444,15 @@ public partial class OptimizerView : UserControl
     {
         if (_tooltipWindow == null || _tooltipWindow.IsClosed)
         {
-            _tooltipWindow = new TooltipWindow();
-            _tooltipWindow.Position = new PixelPoint(100, 100);
-            _tooltipWindow.WindowClosed += (s, e) =>
+            if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService != null)
             {
-                _tooltipWindow = null;
-                _tooltipsEnabled = false;
-                if (_hoverCrosshair != null)
-                {
-                    _hoverCrosshair.IsVisible = false;
-                    OptimizationPlot.Refresh();
-                }
-            };
-            _tooltipWindow.Show();
-            _tooltipsEnabled = true;
+                // Use the PopupService to show the TooltipWindow
+                viewModel.PopupService.ShowPopup<ToolTipViewModel>();
+            }
+            else
+            {
+                Debug.WriteLine("PopupService is not available in the DataContext.");
+            }
         }
     }
 
@@ -478,11 +473,10 @@ public partial class OptimizerView : UserControl
 
     private void UpdateTooltipContent(string text)
     {
-        if (_tooltipWindow == null || _tooltipWindow.IsClosed)
+        if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService.PopupContent is ToolTipViewModel tooltipViewModel)
         {
-            return;
+            tooltipViewModel.TooltipText = text;
         }
-        _tooltipWindow?.UpdateContent(text);
     }
 
     private void ToggleTooltip_Click(object sender, RoutedEventArgs e)
