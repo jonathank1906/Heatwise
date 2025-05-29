@@ -11,28 +11,6 @@ public class ResultDataManager
 {
     private readonly string dbPath = "Data Source=Data/heat_optimization.db;";
 
-    // Clears ALL data from the RDM table before saving new results
-    public void ClearAllResults()
-    {
-        try
-        {
-            using (var conn = new SqliteConnection(dbPath))
-            {
-                conn.Open();
-                using (var cmd = new SqliteCommand("DELETE FROM RDM", conn))
-                {
-                    cmd.ExecuteNonQuery();
-                    Debug.WriteLine("RDM table cleared successfully.");
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error clearing RDM table: {ex.Message}");
-        }
-    }
-
-    // Saves new results (after clearing old data)
     public void SaveResultsToDatabase(List<HeatProductionResult> results)
     {
         try
@@ -75,9 +53,9 @@ public class ResultDataManager
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            Debug.WriteLine($"Error saving results to DB: {ex.Message}");
+           
         }
     }
 
@@ -118,9 +96,9 @@ public class ResultDataManager
                 }
             }
         }
-        catch (Exception ex)
+        catch 
         {
-            Debug.WriteLine($"Error loading results from RDM: {ex.Message}");
+            
         }
         return results;
     }
@@ -150,13 +128,10 @@ public class ResultDataManager
                 );
                 }
             }
-
-            Debug.WriteLine($"Successfully exported results to {filePath}");
         }
-        catch (Exception ex)
+        catch 
         {
-            Debug.WriteLine($"Error exporting to CSV: {ex.Message}");
-            throw; // Re-throw to handle in UI
+           
         }
     }
 
@@ -169,6 +144,7 @@ public class ResultDataManager
         return field;
     }
 }
+
 public class HeatProductionResult
 {
     public string AssetName { get; set; } = string.Empty;
@@ -182,6 +158,7 @@ public class HeatProductionResult
     public double OilConsumption { get; set; }
     public double GasConsumption { get; set; }
 }
+
 public enum OptimisationMode
 {
     CO2,

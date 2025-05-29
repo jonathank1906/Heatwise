@@ -5,13 +5,10 @@ using Avalonia.Markup.Xaml;
 using Heatwise.Views;
 using Heatwise.ViewModels;
 using System.Linq;
-using Avalonia.Styling;  // For ThemeVariant
-using Avalonia.Controls; // For FindResource
-using System.Diagnostics;
+using Avalonia.Styling;  
+using Avalonia.Controls;
 using System;
 using Heatwise.Services;
-using System.Threading.Tasks;
-using FluentAvalonia.Styling;
 
 namespace Heatwise;
 
@@ -66,7 +63,6 @@ public partial class App : Application
 
                 loginViewModel.Success += () =>
                 {
-
                     desktop.MainWindow = mainWindow;
                     mainWindow.Show();
                     mainWindow.Activate();
@@ -82,24 +78,12 @@ public partial class App : Application
     {
         if (Application.Current == null) return;
         
-        
-
-        // Get the merged dictionaries
         var mergedDictionaries = Application.Current.Resources.MergedDictionaries;
         var themeColors = mergedDictionaries.FirstOrDefault() as ResourceDictionary;
 
         if (themeColors == null)
         {
-            Debug.WriteLine("ThemeColors dictionary not found!");
             return;
-        }
-
-        // Debug: Print all available keys and their values
-        Debug.WriteLine("Available resource keys and values:");
-        foreach (var key in themeColors.Keys)
-        {
-            var value = themeColors[key];
-            Debug.WriteLine($"{key}: {value}");
         }
 
         try
@@ -133,11 +117,10 @@ public partial class App : Application
                 Application.Current.RequestedThemeVariant = ThemeVariant.Dark;
             }
             ThemeChanged?.Invoke();
-            Debug.WriteLine($"Theme updated to {(Light_Mode_On_Toggle ? "Light" : "Dark")} mode");
         }
-        catch (Exception ex)
+        catch 
         {
-            Debug.WriteLine($"Error updating theme: {ex.Message}");
+          return; 
         }
 
         // Force UI update

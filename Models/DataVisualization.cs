@@ -606,7 +606,6 @@ public class DataVisualization
         plt.HideGrid();
     }
 
-
     public void SetXAxisTicks(Plot plt, List<DateTime> timestamps)
     {
         string[] labels = new string[timestamps.Count];
@@ -627,7 +626,6 @@ public class DataVisualization
             }
             tickPositions[i] = i;
         }
-
         plt.Axes.Bottom.SetTicks(tickPositions, labels);
     }
 }

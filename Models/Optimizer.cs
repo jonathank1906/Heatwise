@@ -14,7 +14,6 @@ public class Optimizer
     {
         _assetManager = assetManager;
         _sourceDataManager = sourceDataManager;
-        Debug.WriteLine($"Optimizer initialized with scenario: {_assetManager.CurrentScenarioName}");
     }
 
     public List<HeatProductionResult> CalculateOptimalHeatProduction(
@@ -22,50 +21,34 @@ public class Optimizer
        OptimisationMode optimisationMode,
        List<(DateTime timestamp, double value)> electricityPriceData)
     {
-        Debug.WriteLine($"Optimizing with {_assetManager.CurrentAssets.Count} assets in current scenario");
-        LogOptimizationStart(optimisationMode, heatDemandIntervals.Count);
 
         var results = heatDemandIntervals
             .SelectMany(interval => ProcessInterval(interval, optimisationMode, electricityPriceData))
             .ToList();
 
-        LogOptimizationCompletion(results.Count);
         return results;
     }
 
     private double CalculateNetCost(AssetModel asset, double electricityPrice)
     {
         double netCost;
-
         if (asset.ProducesElectricity)
         {
             double electricityPerMWhHeat = asset.MaxElectricity / asset.MaxHeat; // 0.743 
             netCost = asset.CostPerMW - (electricityPrice * electricityPerMWhHeat);
-
-            Debug.WriteLine($"[Net Cost Calculation] Asset: {asset.Name}, Produces Electricity");
-            Debug.WriteLine($"  CostPerMW: {asset.CostPerMW}, ElectricityPrice: {electricityPrice}, ElectricityPerMWhHeat: {electricityPerMWhHeat}");
-            Debug.WriteLine($"  NetCost: {netCost:F2} DKK/MWh");
         }
         else if (asset.ConsumesElectricity)
         {
             double electricityPerMWhHeat = Math.Abs(asset.MaxElectricity / asset.MaxHeat); // 1
             netCost = asset.CostPerMW + electricityPrice * electricityPerMWhHeat;
-
-            Debug.WriteLine($"[Net Cost Calculation] Asset: {asset.Name}, Consumes Electricity");
-            Debug.WriteLine($"  CostPerMW: {asset.CostPerMW}, ElectricityPrice: {electricityPrice}");
-            Debug.WriteLine($"  NetCost: {netCost:F2} DKK/MWh");
         }
         else
         {
             netCost = asset.CostPerMW;
-
-            Debug.WriteLine($"[Net Cost Calculation] Asset: {asset.Name}, No Electricity Interaction");
-            Debug.WriteLine($"  CostPerMW: {asset.CostPerMW}");
-            Debug.WriteLine($"  NetCost: {netCost:F2} DKK/MWh");
         }
-
         return netCost;
     }
+    
     private List<AssetModel> SortByPriority(List<AssetModel> assets, double electricityPrice, OptimisationMode optimisationMode)
     {
         if (optimisationMode == OptimisationMode.CO2)
@@ -97,11 +80,6 @@ public class Optimizer
             Debug.WriteLine($"WARNING: No electricity price found for timestamp {timestamp}. Defaulting to 0.");
             electricityPrice = 0.0;
         }
-
-        // Debug statements
-        Debug.WriteLine($"\nProcessing interval: {timestamp}");
-        Debug.WriteLine($"Initial demand: {heatDemand} MW");
-        Debug.WriteLine($"Electricity price: {electricityPrice} DKK/MWh");
 
         // Sort assets by priority based on the electricity price
         var prioritizedAssets = SortByPriority(_assetManager.CurrentAssets, electricityPrice, optimisationMode);
@@ -151,17 +129,13 @@ public class Optimizer
                 PresetId = asset.PresetId,
                 ElectricityConsumption = electricityConsumption,
                 ElectricityProduction = electricityProduction,
-                OilConsumption = oilConsumption, // Added
-                GasConsumption = gasConsumption  // Added
+                OilConsumption = oilConsumption, 
+                GasConsumption = gasConsumption 
             });
-
-            Debug.WriteLine($"- Allocated {allocation} MW from {asset.Name} (Net Cost: {netCostPerMWh:F2} DKK/MWh, Total Cost: {productionCost:F2} DKK, Electricity Consumption: {electricityConsumption:F2} MWh, Oil Consumption: {oilConsumption:F2} MWh, Gas Consumption: {gasConsumption:F2} MWh)");
         }
 
         if (remainingDemand > 0)
         {
-            // Debug.WriteLine($"WARNING: Unmet demand of {remainingDemand} MW");
-
             results.Add(new HeatProductionResult
             {
                 AssetName = "Unmet Demand",
@@ -172,39 +146,10 @@ public class Optimizer
                 PresetId = -1,
                 ElectricityConsumption = 0,
                 ElectricityProduction = 0,
-                OilConsumption = 0, // Added
-                GasConsumption = 0  // Added
+                OilConsumption = 0, 
+                GasConsumption = 0  
             });
         }
-
         return results;
-    }
-
-    private void LogCurrentAssets()
-    {
-        Debug.WriteLine($"Current Assets ({_assetManager.CurrentAssets.Count}):");
-        foreach (var asset in _assetManager.CurrentAssets)
-        {
-            Debug.WriteLine($"[{asset.Name}] " +
-                            $"MaxHeat: {asset.MaxHeat} MW, " +
-                            $"Cost: {asset.ProductionCosts:C}/MWh, " +
-                            $"Emissions: {asset.Emissions} kg/MWh, " +
-                            $"Electricity: {(asset.ConsumesElectricity ? "Consumer" : asset.ProducesElectricity ? "Producer" : "None")}");
-        }
-    }
-
-    private void LogOptimizationStart(OptimisationMode optimisationMode, int intervalCount)
-    {
-        Debug.WriteLine($"\n=== Starting optimization ===");
-        Debug.WriteLine($"Mode: {optimisationMode}");
-        Debug.WriteLine($"Time intervals: {intervalCount}");
-        Debug.WriteLine($"Available assets: {_assetManager.CurrentAssets.Count}");
-        LogCurrentAssets();
-    }
-
-    private void LogOptimizationCompletion(int resultCount)
-    {
-        Debug.WriteLine($"\n=== Optimization completed ===");
-        Debug.WriteLine($"Total results: {resultCount}");
     }
 }
