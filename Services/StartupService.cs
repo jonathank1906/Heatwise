@@ -15,7 +15,7 @@ public class StartupService
         var popupService = new PopupService();
 
         var assetManagerViewModel = await Task.Run(() => new AssetManagerViewModel(assetManager, popupService));
-        var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager, new ResultDataManager()));
+       var optimizerViewModel = await Task.Run(() => new OptimizerViewModel(assetManager, sourceDataManager, new ResultDataManager(), popupService));
         var sourceDataManagerViewModel = await Task.Run(() => new SourceDataManagerViewModel());
 
         bool showHomeScreen = sourceDataManager.GetSetting("Home_Screen_On_Startup") == "On" && sourceDataManager.GetSetting("Developer_Mode") == "Off";

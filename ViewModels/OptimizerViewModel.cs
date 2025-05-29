@@ -8,12 +8,17 @@ using Heatwise.Models;
 using System.Diagnostics;
 using Avalonia.Controls;
 using System.Collections.ObjectModel;
+using Heatwise.Services;
+using Heatwise.Interfaces;
 
 
 namespace Heatwise.ViewModels;
 
 public partial class OptimizerViewModel : ViewModelBase
 {
+    public IPopupService PopupService { get; }
+    [RelayCommand]
+    public void ShowToolTip() => PopupService.ShowPopup<ToolTipViewModel>();
     public AssetManager AssetManager => _assetManager;
     [ObservableProperty]
     private bool _hasOptimized = false;
@@ -123,12 +128,13 @@ public partial class OptimizerViewModel : ViewModelBase
         SwitchGraph(value);
     }
 
-    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager)
+      public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager, IPopupService popupService)
     {
         _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
         _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
         _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
         _optimizer = new Optimizer(_assetManager, _sourceDataManager);
+        PopupService = popupService;
 
         // Set up the selection callback for each preset
         foreach (var preset in _assetManager.Presets)
