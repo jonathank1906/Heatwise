@@ -1,5 +1,3 @@
-using System;
-
 namespace Heatwise.Enums;
 
 public enum NotificationType
