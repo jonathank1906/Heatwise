@@ -440,21 +440,47 @@ public partial class OptimizerView : UserControl
     //     }
     // }
 
-    private void InitializeTooltipWindow()
+private void InitializeTooltipWindow()
+{
+    if (_tooltipWindow == null)
     {
-        if (_tooltipWindow == null)
+        if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService != null)
         {
-            if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService != null)
+            // Store reference to the popup service
+            var popupService = viewModel.PopupService;
+            
+            // Show the popup
+            popupService.ShowPopup<ToolTipViewModel>();
+            
+            // Subscribe to property changes
+            popupService.PropertyChanged += (sender, e) =>
             {
-                // Use the PopupService to show the TooltipWindow
-                viewModel.PopupService.ShowPopup<ToolTipViewModel>();
-            }
-            else
-            {
-                Debug.WriteLine("PopupService is not available in the DataContext.");
-            }
+                if (e.PropertyName == nameof(popupService.IsPopupVisible))
+                {
+                    if (!popupService.IsPopupVisible)
+                    {
+                        // Hide crosshair when popup closes
+                        _tooltipsEnabled = false;
+                        if (_hoverCrosshair != null)
+                        {
+                            _hoverCrosshair.IsVisible = false;
+                            OptimizationPlot.Refresh();
+                        }
+                    }
+                    else
+                    {
+                        // Show crosshair when popup opens
+                        _tooltipsEnabled = true;
+                    }
+                }
+            };
+        }
+        else
+        {
+            Debug.WriteLine("PopupService is not available in the DataContext.");
         }
     }
+}
 
     private void ShowTooltipWindow()
     {
@@ -479,30 +505,27 @@ public partial class OptimizerView : UserControl
         }
     }
 
-    private void ToggleTooltip_Click(object sender, RoutedEventArgs e)
-    {
-        var viewModel = DataContext as OptimizerViewModel;
-        if (viewModel == null || !viewModel.HasOptimized)
-        {
-            return;
-        }
+   private void ToggleTooltip_Click(object sender, RoutedEventArgs e)
+{
+    var viewModel = DataContext as OptimizerViewModel;
+    if (viewModel == null || !viewModel.HasOptimized) return;
 
-        if (_tooltipWindow == null)
+    if (viewModel.PopupService?.IsPopupVisible != true)
+    {
+        ShowTooltipWindow();
+        _tooltipsEnabled = true;
+    }
+    else
+    {
+        viewModel.PopupService.ClosePopup();
+        _tooltipsEnabled = false;
+        if (_hoverCrosshair != null)
         {
-            ShowTooltipWindow();
-            _tooltipsEnabled = true;
-        }
-        else
-        {
-           // _tooltipWindow.Close();
-            _tooltipsEnabled = false;
-            if (_hoverCrosshair != null)
-            {
-                _hoverCrosshair.IsVisible = false;
-                OptimizationPlot.Refresh();
-            }
+            _hoverCrosshair.IsVisible = false;
+            OptimizationPlot.Refresh();
         }
     }
+}
 
     // Calendar
     // -------------------------------------------------
