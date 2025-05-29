@@ -22,13 +22,12 @@ public partial class OptimizerView : UserControl
     private ToolTipView? _tooltipWindow;
     private bool _hasAutoOpenedWindow = false;
     private string? _lastTooltipContent;
-    private ScottPlot.Plottables.Scatter? _heatDemandPlot;
     private ScottPlot.Plottables.Crosshair? _hoverCrosshair;
     private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
     private List<HeatProductionResult>? _currentOptimizationResults;
     private List<HeatProductionResult>? _currentFilteredResults;
-    private DataVisualization _dataVisualization;
-    public AssetManager AssetManager { get; }
+    private DataVisualization? _dataVisualization;
+    public AssetManager? AssetManager { get; }
     public OptimizerView()
     {
         InitializeComponent();
@@ -162,7 +161,9 @@ public partial class OptimizerView : UserControl
 
              _currentFilteredResults = results;
              var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
+#pragma warning disable CS0612 // Type or member is obsolete
              _dataVisualization.PlotFuelConsumption(OptimizationPlot, results);
+#pragma warning restore CS0612 // Type or member is obsolete
              PlotCrosshair(results, dummyDemand);
          };
      }
@@ -555,7 +556,7 @@ public partial class OptimizerView : UserControl
         SetRangeFromCalendar(OptimizationCalendar.SelectedDates);
 
         // Close the flyout after applying
-        _calendarFlyout.Hide();
+        _calendarFlyout?.Hide();
         OptimizationPlot.Refresh();
     }
 
@@ -599,7 +600,7 @@ public partial class OptimizerView : UserControl
                     .OrderBy(t => t)
                     .ToList();
 
-                _dataVisualization.SetXAxisTicks(OptimizationPlot.Plot, filteredTimestamps);
+                _dataVisualization?.SetXAxisTicks(OptimizationPlot.Plot, filteredTimestamps);
             }
 
             OptimizationPlot.Refresh();

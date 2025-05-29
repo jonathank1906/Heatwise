@@ -11,7 +11,7 @@ namespace Heatwise.Models;
 public class DataVisualization
 {
     private readonly AssetManager _assetManager;
-    private Dictionary<string, Color> _machineColors;
+    private Dictionary<string, Color>? _machineColors;
 
     public DataVisualization(AssetManager assetManager)
     {
@@ -36,7 +36,9 @@ public class DataVisualization
             try
             {
                 // Convert the color string from the database to a ScottPlot.Color object
+#pragma warning disable CS8604 // Possible null reference argument.
                 var color = System.Drawing.ColorTranslator.FromHtml(machine.Color);
+#pragma warning restore CS8604 // Possible null reference argument.
                 var uniqueKey = $"{machine.Name} (ID: {machine.PresetId})";
                 _machineColors[uniqueKey] = new ScottPlot.Color(color.R, color.G, color.B, color.A);
                 Debug.WriteLine($"[InitializeMachineColors] Machine: {uniqueKey}, Color: {machine.Color}");
@@ -143,6 +145,7 @@ public class DataVisualization
             foreach (var result in orderedAssets)
             {
                 var possibleKey = $"{result.AssetName} (ID: {result.PresetId})";
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (_machineColors.TryGetValue(possibleKey, out var color))
                 {
                     plt.Add.Bar(new Bar
@@ -165,6 +168,7 @@ public class DataVisualization
                         });
                     }
                 }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             }
 
             // Add unmet demand on very top if it exists
@@ -533,6 +537,7 @@ public class DataVisualization
         optimizationPlot.Refresh();
     }
 
+    [Obsolete]
     public void PlotFuelConsumption(AvaPlot optimizationPlot, List<HeatProductionResult> results)
     {
         optimizationPlot.UserInputProcessor.DoubleLeftClickBenchmark(false);

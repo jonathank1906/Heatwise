@@ -36,7 +36,7 @@ public partial class AssetManagerViewModel : ObservableObject
     private bool isConfiguring = false;
 
     [ObservableProperty]
-    private ObservableCollection<AssetModel> _allAssets;
+    private ObservableCollection<AssetModel>? _allAssets;
 
     [ObservableProperty]
     private ViewState _currentViewState = ViewState.ScenarioSelection;
@@ -53,7 +53,7 @@ public partial class AssetManagerViewModel : ObservableObject
     private bool _showAssetDetails = true;
 
     [ObservableProperty]
-    private ObservableCollection<AssetModel> _displayedAssets;
+    private ObservableCollection<AssetModel>? _displayedAssets;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(DisplayedAssets))]
@@ -107,7 +107,7 @@ public partial class AssetManagerViewModel : ObservableObject
     private string _oilConsumption = "";
 
     [ObservableProperty]
-    private string color;
+    private string? color;
 
     private bool _isProductionUnitSelected = true;
     public bool IsProductionUnitSelected
@@ -209,7 +209,8 @@ public partial class AssetManagerViewModel : ObservableObject
                 AvailablePresets[0].IsPresetSelected = true;
             }
         }
-        else if (_availablePresets.Any(p => p.Name == destination))
+        //-------------!
+        else if (AvailablePresets.Any(p => p.Name == destination))
         {
             if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
             {
@@ -366,7 +367,7 @@ public partial class AssetManagerViewModel : ObservableObject
             Debug.WriteLine($"Machine {machineName} not found in the current configuration.");
         }
     }
-    partial void OnColorChanged(string value)
+    partial void OnColorChanged(string? value)
     {
         Debug.WriteLine($"Color property changed to: {value}");
     }
@@ -376,16 +377,16 @@ public partial class AssetManagerViewModel : ObservableObject
     {
         bool success = _assetManager.DeleteMachineFromPreset(
     SelectedPresetForConfiguration?.Id ?? -1, // Use the selected preset ID
-    AllAssets.FirstOrDefault(a => a.Id == machineId)?.Name ?? string.Empty // Find the machine name by ID
+    AllAssets?.FirstOrDefault(a => a.Id == machineId)?.Name ?? string.Empty // Find the machine name by ID
 );
 
         if (success)
         {
             // Refresh the UI
-            var machine = AllAssets.FirstOrDefault(a => a.Id == machineId);
+            var machine = AllAssets?.FirstOrDefault(a => a.Id == machineId);
             if (machine != null)
             {
-                AllAssets.Remove(machine);
+                AllAssets?.Remove(machine);
                 Events.Notification.Invoke("Machine deleted successfully", NotificationType.Confirmation);
             }
         }
@@ -474,6 +475,7 @@ public partial class AssetManagerViewModel : ObservableObject
             {
                 Debug.WriteLine($"Updating machine: {machine.Name} (ID: {machine.Id}) in preset: {currentPresetId}");
 
+#pragma warning disable CS8604 // Possible null reference argument.
                 bool success = _assetManager.UpdateMachineInPreset(
                     machine.Id,
                     machine.Name,
@@ -487,6 +489,7 @@ public partial class AssetManagerViewModel : ObservableObject
                     machine.HeatProduction,
                     machine.Color
                 );
+#pragma warning restore CS8604 // Possible null reference argument.
 
                 if (!success)
                 {
@@ -666,7 +669,7 @@ public partial class AssetManagerViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task CreateMachine(Control view)
+    public void CreateMachine(Control view)
     {
         // Validate numeric inputs
         if (!double.TryParse(MaxHeatOutput, out double maxHeat) ||

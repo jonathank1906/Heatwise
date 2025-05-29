@@ -126,7 +126,7 @@ public partial class OptimizerViewModel : ViewModelBase
         SwitchGraph(value);
     }
 
-      public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager, IPopupService popupService)
+    public OptimizerViewModel(AssetManager assetManager, SourceDataManager sourceDataManager, ResultDataManager resultDataManager, IPopupService popupService)
     {
         _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
         _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
@@ -202,6 +202,7 @@ public partial class OptimizerViewModel : ViewModelBase
             HasOptimized = false;
 
             // Clear all plots by invoking them with null data
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             PlotOptimizationResults?.Invoke(null, null);
             PlotElectricityPrices?.Invoke(null);
             PlotExpenses?.Invoke(null);
@@ -209,7 +210,7 @@ public partial class OptimizerViewModel : ViewModelBase
             PlotElectricityConsumption?.Invoke(null);
             PlotElectricityProduction?.Invoke(null);
             PlotFuelConsumption?.Invoke(null);
-
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             return;
         }
         // Fetch all required data
@@ -386,7 +387,9 @@ public partial class OptimizerViewModel : ViewModelBase
             case GraphType.ElectricityConsumption:
                 if (OptimizationResults != null)
                 {
+#pragma warning disable CS8604 // Possible null reference argument.
                     PlotElectricityConsumption?.Invoke(FilteredOptimizationResults);
+#pragma warning restore CS8604 // Possible null reference argument.
                 }
                 break;
 
@@ -525,6 +528,7 @@ public partial class OptimizerViewModel : ViewModelBase
     {
         try
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             var dialog = new SaveFileDialog
             {
                 Title = "Export Optimization Results",
@@ -536,6 +540,7 @@ public partial class OptimizerViewModel : ViewModelBase
                 DefaultExtension = "csv",
                 InitialFileName = $"optimization_results_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
             };
+#pragma warning restore CS0618 // Type or member is obsolete
 
             var result = await dialog.ShowAsync(parentWindow);
             if (result != null)
