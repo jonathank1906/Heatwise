@@ -89,8 +89,9 @@
     </UserControl.Styles>
 
 
-    <Grid Background="{DynamicResource BackgroundColor}" RowDefinitions="Auto,Auto,*,Auto">
+    <Grid Background="{DynamicResource BackgroundColor}" RowDefinitions="Auto,Auto,*">
         <Button
+            ZIndex="100"
             Grid.Row="3"
             Width="170"
             Height="50"
