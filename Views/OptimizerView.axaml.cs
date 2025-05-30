@@ -16,13 +16,10 @@ public partial class OptimizerView : UserControl
 {
     private AvaPlot _plot;
     private bool _tooltipsEnabled = true;
-    private Window? _mainWindow;
-    private CalendarWindow? _calendarWindow;
     private Flyout? _calendarFlyout;
     private Flyout? _plotTypeFlyout;
     private ToolTipView? _tooltipWindow;
     private bool _hasAutoOpenedWindow = false;
-    private string? _lastTooltipContent;
     private ScottPlot.Plottables.Crosshair? _hoverCrosshair;
     private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
     private List<HeatProductionResult>? _currentFilteredResults;
@@ -313,7 +310,6 @@ public partial class OptimizerView : UserControl
                 }
 
                 _hoverCrosshair.IsVisible = true;
-                _lastTooltipContent = tooltip;
 
                 if (!_hasAutoOpenedWindow && (_tooltipWindow == null))
                 {
