@@ -31,11 +31,6 @@ public class AssetManager
     {
         LoadAssetsAndPresetsFromDatabase();
 
-        if (Presets.Count > 0)
-        {
-            SetScenario(0);
-        }
-
         RestoreDefaultsCommand = new RelayCommand(() =>
         {
             RestoreDefaults();
@@ -65,7 +60,6 @@ public class AssetManager
 
     private void LoadAllPresets(SqliteConnection conn)
     {
-        // Load preset definitions
         const string presetQuery = "SELECT * FROM AM_Presets";
         using (var presetCmd = new SqliteCommand(presetQuery, conn))
         using (var presetReader = presetCmd.ExecuteReader())
@@ -77,13 +71,13 @@ public class AssetManager
                 {
                     Id = Convert.ToInt32(presetReader["Id"]),
                     Name = presetReader["Name"].ToString() ?? string.Empty,
-                    IsPresetSelected = isFirstPreset // Set first preset as selected
+                    IsPresetSelected = isFirstPreset
                 };
                 Presets.Add(preset);
                 isFirstPreset = false;
             }
         }
-        // Load machines for each preset
+
         foreach (var preset in Presets)
         {
             const string machineQuery = @"
@@ -117,8 +111,6 @@ public class AssetManager
                                 HeatProduction = machineReader["HeatProduction"] != DBNull.Value ? Convert.ToDouble(machineReader["HeatProduction"]) : 0,
                                 Color = machineReader["Color"].ToString() ?? "#FFFFFF"
                             };
-
-                            Debug.WriteLine($"Loaded Image: {machine.ImageSource}");
                             preset.MachineModels.Add(machine);
                         }
                         catch (Exception ex)
@@ -129,8 +121,6 @@ public class AssetManager
                 }
             }
         }
-
-        Debug.WriteLine($"Loaded {Presets.Count} presets from database.");
     }
 
     private void LoadHeatingGridInfo(SqliteConnection conn)
@@ -148,8 +138,6 @@ public class AssetManager
                     Architecture = reader["Architecture"].ToString() ?? string.Empty,
                     Size = reader["Size"].ToString() ?? string.Empty
                 };
-                Debug.WriteLine($"Loaded heating grid image: {GridInfo.ImageSource}");
-                Debug.WriteLine($"Loaded heating grid: {GridInfo.Name}");
             }
         }
     }
@@ -164,7 +152,6 @@ public class AssetManager
 
         var preset = Presets[scenarioIndex];
 
-        // Convert ObservableCollection to List
         CurrentAssets = preset.MachineModels.ToList();
 
         SelectedScenarioIndex = scenarioIndex;

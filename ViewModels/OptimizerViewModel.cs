@@ -191,6 +191,8 @@ public partial class OptimizerViewModel : ViewModelBase
     [RelayCommand]
     private void OptimizeAndPlot()
     {
+        // This is important to ensure a preset is always selected
+        _assetManager.SetScenario(_assetManager.SelectedScenarioIndex);
         // Check if the selected preset has any active machines
         var activeMachines = _assetManager.GetActiveMachinesForCurrentPreset();
 
@@ -304,6 +306,7 @@ public partial class OptimizerViewModel : ViewModelBase
             // Use filtered data if dates are selected
             RefreshCurrentView();
         }
+
     }
 
     [RelayCommand]

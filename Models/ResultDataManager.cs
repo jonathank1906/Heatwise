@@ -18,6 +18,12 @@ public class ResultDataManager
             using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
+
+                using (var disableFKCmd = new SqliteCommand("PRAGMA foreign_keys = OFF;", conn))
+                {
+                    disableFKCmd.ExecuteNonQuery();
+                }
+
                 using (var transaction = conn.BeginTransaction())
                 {
                     // 1. Clear old data
@@ -25,10 +31,10 @@ public class ResultDataManager
 
                     // 2. Insert new results with ElectricityConsumption
                     string insertQuery = @"
-                    INSERT INTO RDM 
-                    (Timestamp, AssetName, ProducedHeat, ProductionCost, Emissions, PresetId, ElectricityConsumption, ElectricityProduction, OilConsumption, GasConsumption)
-                    VALUES 
-                    (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions, @PresetId, @ElectricityConsumption, @ElectricityProduction, @OilConsumption, @GasConsumption)";
+                INSERT INTO RDM 
+                (Timestamp, AssetName, ProducedHeat, ProductionCost, Emissions, PresetId, ElectricityConsumption, ElectricityProduction, OilConsumption, GasConsumption)
+                VALUES 
+                (@Timestamp, @AssetName, @HeatProduced, @ProductionCost, @Emissions, @PresetId, @ElectricityConsumption, @ElectricityProduction, @OilConsumption, @GasConsumption)";
 
                     using (var cmd = new SqliteCommand(insertQuery, conn, transaction))
                     {
@@ -49,13 +55,16 @@ public class ResultDataManager
                         }
                     }
                     transaction.Commit();
-                    Debug.WriteLine("New results with ElectricityConsumption saved to RDM after clearing old data.");
+                }
+                using (var enableFKCmd = new SqliteCommand("PRAGMA foreign_keys = ON;", conn))
+                {
+                    enableFKCmd.ExecuteNonQuery();
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
-           
+            Debug.WriteLine($"Error saving results to DB: {ex.Message}");
         }
     }
 
@@ -96,9 +105,9 @@ public class ResultDataManager
                 }
             }
         }
-        catch 
+        catch
         {
-            
+
         }
         return results;
     }
@@ -129,9 +138,9 @@ public class ResultDataManager
                 }
             }
         }
-        catch 
+        catch
         {
-           
+
         }
     }
 
