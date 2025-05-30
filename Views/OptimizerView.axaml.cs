@@ -8,7 +8,6 @@ using System;
 using Heatwise.Models;
 using Avalonia;
 using ScottPlot.Avalonia;
-using System.Diagnostics;
 
 namespace Heatwise.Views;
 
@@ -18,13 +17,11 @@ public partial class OptimizerView : UserControl
     private bool _tooltipsEnabled = true;
     private Flyout? _calendarFlyout;
     private Flyout? _plotTypeFlyout;
-    private ToolTipView? _tooltipWindow;
     private bool _hasAutoOpenedWindow = false;
     private ScottPlot.Plottables.Crosshair? _hoverCrosshair;
     private List<(DateTime timestamp, double value)>? _currentHeatDemandData;
     private List<HeatProductionResult>? _currentFilteredResults;
     private DataVisualization? _dataVisualization;
-    public AssetManager? AssetManager { get; }
     public OptimizerView()
     {
         InitializeComponent();
@@ -145,9 +142,9 @@ public partial class OptimizerView : UserControl
 
                     _currentFilteredResults = results;
                     var dummyDemand = results.Select(r => (r.Timestamp, 0.0)).ToList();
-        #pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0612 // Type or member is obsolete
                     _dataVisualization.PlotFuelConsumption(OptimizationPlot, results);
-        #pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0612 // Type or member is obsolete
                     PlotCrosshair(results, dummyDemand);
                 };
             }
@@ -162,6 +159,7 @@ public partial class OptimizerView : UserControl
             .Where(r => r.AssetName != "Interval Summary")
             .All(r => r.HeatProduced <= 0);
     }
+    
     private void OnThemeChanged()
     {
         if (_dataVisualization != null && OptimizationPlot != null)
@@ -174,7 +172,6 @@ public partial class OptimizerView : UserControl
             OptimizationPlot.Refresh();
         }
     }
-
 
     private void PlotCrosshair(List<HeatProductionResult> results, List<(DateTime timestamp, double value)> heatDemandData)
     {
@@ -311,7 +308,7 @@ public partial class OptimizerView : UserControl
 
                 _hoverCrosshair.IsVisible = true;
 
-                if (!_hasAutoOpenedWindow && (_tooltipWindow == null))
+                if (!_hasAutoOpenedWindow)
                 {
                     ShowTooltipWindow();
                     _hasAutoOpenedWindow = true;
@@ -330,33 +327,30 @@ public partial class OptimizerView : UserControl
 
     private void InitializeTooltipWindow()
     {
-        if (_tooltipWindow == null)
+        if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService != null)
         {
-            if (DataContext is OptimizerViewModel viewModel && viewModel.PopupService != null)
-            {
-                var popupService = viewModel.PopupService;
-                popupService.ShowPopup<ToolTipViewModel>();
+            var popupService = viewModel.PopupService;
+            popupService.ShowPopup<ToolTipViewModel>();
 
-                popupService.PropertyChanged += (sender, e) =>
+            popupService.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName == nameof(popupService.IsPopupVisible))
                 {
-                    if (e.PropertyName == nameof(popupService.IsPopupVisible))
+                    if (!popupService.IsPopupVisible)
                     {
-                        if (!popupService.IsPopupVisible)
+                        _tooltipsEnabled = false;
+                        if (_hoverCrosshair != null)
                         {
-                            _tooltipsEnabled = false;
-                            if (_hoverCrosshair != null)
-                            {
-                                _hoverCrosshair.IsVisible = false;
-                                OptimizationPlot.Refresh();
-                            }
-                        }
-                        else
-                        {
-                            _tooltipsEnabled = true;
+                            _hoverCrosshair.IsVisible = false;
+                            OptimizationPlot.Refresh();
                         }
                     }
-                };
-            }
+                    else
+                    {
+                        _tooltipsEnabled = true;
+                    }
+                }
+            };
         }
     }
 
@@ -541,11 +535,9 @@ public partial class OptimizerView : UserControl
     {
         if (DataContext is OptimizerViewModel viewModel)
         {
-            Debug.WriteLine("Export button clicked.outer");
             var parentWindow = TopLevel.GetTopLevel(this) as Window;
             if (parentWindow != null)
             {
-                Debug.WriteLine("Export button clicked.inner");
                 await viewModel.ExportToCsv(parentWindow);
             }
         }
