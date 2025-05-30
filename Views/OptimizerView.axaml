@@ -14,10 +14,6 @@
     Background="{DynamicResource BackgroundColor}"
     mc:Ignorable="d">
 
-    <Design.DataContext>
-        <vm:OptimizerViewModel />
-    </Design.DataContext>
-
     <UserControl.Resources>
         <conv:EnumToBoolConverter x:Key="EnumToBoolConverter" />
     </UserControl.Resources>
@@ -164,7 +160,6 @@
             <PathIcon Data="{StaticResource RightArrow}" />
         </Button>
 
-        <!--  Side Panel  -->
         <Border
             Grid.Column="0"
             Width="{Binding PaneWidth}"
@@ -199,7 +194,6 @@
             </Border.Styles>
 
             <Grid>
-                <!--  Wrap the StackPanel with a ScrollViewer  -->
                 <ScrollViewer
                     Margin="0,50,0,0"
                     HorizontalScrollBarVisibility="Disabled"
@@ -344,7 +338,6 @@
             </Grid>
         </Border>
 
-        <!--  Main Content Area  -->
         <Border Grid.Column="1" Background="{DynamicResource BackgroundColor}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -362,7 +355,6 @@
                     </Grid>
                 </Grid>
 
-                <!--  Vertical Toolbar  -->
                 <Border
                     Grid.Column="1"
                     Width="40"
@@ -373,8 +365,8 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
                         Spacing="25">
-
                         <Button
+                            x:Name="PlotTypeButton"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Background="Transparent"
@@ -390,50 +382,50 @@
                                             Text="Select Graph Type" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Heat Production"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.HeatProduction}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Production Costs"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ProductionCosts}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Electricity Prices"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityPrices}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Electricity Production"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityProduction}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Electricity Consumption"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityConsumption}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="Fuel Consumption"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.FuelConsumption}}" />
 
                                         <RadioButton
-                                            Classes="fancy"
                                             Width="200"
+                                            Classes="fancy"
                                             Content="CO₂ Emissions"
                                             GroupName="GraphTypeGroup"
                                             IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.CO2Emissions}}" />
@@ -528,8 +520,6 @@
                             ToolTip.Tip="Export optimized results to a CSV file">
                             <PathIcon Data="{StaticResource Export}" Foreground="{DynamicResource TextColor}" />
                         </Button>
-
-                          
 
                         <Button
                             HorizontalAlignment="Center"
