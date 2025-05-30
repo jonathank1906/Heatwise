@@ -344,12 +344,6 @@ public class AssetManager
             {
                 conn.Open();
 
-                // Temporarily disable foreign key enforcement
-                using (var disableFKCmd = new SqliteCommand("PRAGMA foreign_keys = OFF;", conn))
-                {
-                    disableFKCmd.ExecuteNonQuery();
-                }
-
                 // Delete all machines associated with this preset
                 const string deleteMachinesQuery = "DELETE FROM PresetMachines WHERE PresetId = @presetId";
                 using (var cmd = new SqliteCommand(deleteMachinesQuery, conn))
@@ -375,13 +369,6 @@ public class AssetManager
                         }
                     }
                 }
-
-                // Re-enable foreign key enforcement
-                using (var enableFKCmd = new SqliteCommand("PRAGMA foreign_keys = ON;", conn))
-                {
-                    enableFKCmd.ExecuteNonQuery();
-                }
-
                 return true;
             }
         }
@@ -530,19 +517,10 @@ public class AssetManager
             Debug.WriteLine($"Using database file: {dbPath}");
             conn.Open();
 
-            // Temporarily disable foreign key enforcement
-            Debug.WriteLine("Disabling foreign key enforcement...");
-            using (var disableForeignKeysCmd = new SqliteCommand("PRAGMA foreign_keys = OFF;", conn))
-            {
-                disableForeignKeysCmd.ExecuteNonQuery();
-                Debug.WriteLine("Foreign key enforcement disabled.");
-            }
-
             using (var transaction = conn.BeginTransaction())
             {
                 try
                 {
-                    // Step 1: Clear the PresetMachines table to avoid foreign key violations
                     Debug.WriteLine("Clearing PresetMachines table...");
                     const string clearPresetMachinesQuery = "DELETE FROM PresetMachines";
                     using (var cmd = new SqliteCommand(clearPresetMachinesQuery, conn))
@@ -637,26 +615,13 @@ public class AssetManager
 
                         // Insert or update the machine in the database
                         Debug.WriteLine($"Inserting or updating machine with Id: {machineId}, PresetId: {presetId}");
-                        const string insertMachineQuery = @"
+                      const string insertMachineQuery = @"
                         INSERT INTO PresetMachines (Id, PresetId, Name, ImageSource, MaxHeat,  
                                                     ProductionCosts, Emissions, GasConsumption, OilConsumption, MaxElectricity,
                                                     IsActive, HeatProduction, Color)
                         VALUES (@machineId, @presetId, @name, @imageSource, @maxHeat, @maxElectricity, 
                                 @productionCosts, @emissions, @gasConsumption, @oilConsumption, 
-                                @isActive, @heatProduction, @color)
-                        ON CONFLICT(Id) DO UPDATE SET
-                            PresetId = excluded.PresetId,
-                            Name = excluded.Name,
-                            ImageSource = excluded.ImageSource,
-                            MaxHeat = excluded.MaxHeat,
-                            MaxElectricity = excluded.MaxElectricity,
-                            ProductionCosts = excluded.ProductionCosts,
-                            Emissions = excluded.Emissions,
-                            GasConsumption = excluded.GasConsumption,
-                            OilConsumption = excluded.OilConsumption,
-                            IsActive = excluded.IsActive,
-                            HeatProduction = excluded.HeatProduction,
-                            Color = excluded.Color;";
+                                @isActive, @heatProduction, @color);";
 
                         using (var cmd = new SqliteCommand(insertMachineQuery, conn))
                         {
@@ -692,14 +657,6 @@ public class AssetManager
                     transaction.Rollback();
                     Debug.WriteLine("Transaction rolled back.");
                 }
-            }
-
-            // Re-enable foreign key enforcement
-            Debug.WriteLine("Re-enabling foreign key enforcement...");
-            using (var enableForeignKeysCmd = new SqliteCommand("PRAGMA foreign_keys = ON;", conn))
-            {
-                enableForeignKeysCmd.ExecuteNonQuery();
-                Debug.WriteLine("Foreign key enforcement re-enabled.");
             }
         }
 

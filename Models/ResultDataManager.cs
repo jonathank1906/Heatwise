@@ -19,10 +19,6 @@ public class ResultDataManager
             {
                 conn.Open();
 
-                using (var disableFKCmd = new SqliteCommand("PRAGMA foreign_keys = OFF;", conn))
-                {
-                    disableFKCmd.ExecuteNonQuery();
-                }
 
                 using (var transaction = conn.BeginTransaction())
                 {
@@ -56,10 +52,7 @@ public class ResultDataManager
                     }
                     transaction.Commit();
                 }
-                using (var enableFKCmd = new SqliteCommand("PRAGMA foreign_keys = ON;", conn))
-                {
-                    enableFKCmd.ExecuteNonQuery();
-                }
+                
             }
         }
         catch (Exception ex)

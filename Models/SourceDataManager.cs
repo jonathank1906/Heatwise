@@ -118,9 +118,9 @@ public class SourceDataManager
             {
                 conn.Open();
                 const string query = @"
-                    INSERT INTO UserSettings (Key, Value)
-                    VALUES (@key, @value)
-                    ON CONFLICT(Key) DO UPDATE SET Value = @value";
+                DELETE FROM UserSettings WHERE Key = @key;
+                INSERT INTO UserSettings (Key, Value)
+                VALUES (@key, @value)";
 
                 using (var cmd = new SqliteCommand(query, conn))
                 {
@@ -159,7 +159,7 @@ public class SourceDataManager
             return null;
         }
     }
-    
+
     public List<(DateTime timestamp, double value)> GetWinterElectricityPriceData()
     {
         return GetData(DataType.WinterElectricityPrice);
