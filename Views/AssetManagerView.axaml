@@ -332,8 +332,6 @@
                         Text="Back" />
                 </Button>
 
-
-
                 <Button
                     Grid.Column="2"
                     Width="110"
@@ -342,7 +340,8 @@
                     HorizontalAlignment="Center"
                     Background="{DynamicResource IconColor}"
                     Classes="close"
-                    Command="{Binding ShowSettingsCommand}"
+                    Command="{Binding NavigateToCommand}"
+                    CommandParameter="Create"
                     CornerRadius="10"
                     IsVisible="{Binding CurrentViewState, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=PresetNavigation}">
                     <Button.Content>

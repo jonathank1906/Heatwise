@@ -6,7 +6,6 @@ using System.IO;
 using Heatwise.Models;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
-using Heatwise.Interfaces;
 using Heatwise.Enums;
 using Avalonia.Controls;
 using System.Windows.Input;
@@ -39,7 +38,7 @@ public partial class AssetManagerViewModel : ObservableObject
     private ObservableCollection<AssetModel>? _allAssets;
 
     [ObservableProperty]
-    private ViewState _currentViewState = ViewState.ScenarioSelection;
+    private ViewState _currentViewState = ViewState.PresetNavigation;
 
     [ObservableProperty]
     private ICommand? _parentDeleteMachineCommand;
@@ -192,59 +191,34 @@ public partial class AssetManagerViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void NavigateToPreset(string presetName)
-    {
-        NavigateTo(presetName);
-    }
-
-    [RelayCommand]
     public void NavigateTo(string destination)
     {
         if (destination == "All Assets")
         {
             CurrentViewState = ViewState.AssetDetails;
             SelectedScenario = "All Assets";
-            if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
-            {
-                AvailablePresets[0].IsPresetSelected = true;
-            }
         }
-        //-------------!
-        else if (AvailablePresets.Any(p => p.Name == destination))
+        else if (_availablePresets.Any(p => p.Name == destination))
         {
-            if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
-            {
-                AvailablePresets[0].IsPresetSelected = true;
-            }
             CurrentViewState = ViewState.AssetDetails;
             SelectedScenario = destination;
         }
         else if (destination == "PresetNavigation")
         {
+
             CurrentViewState = ViewState.PresetNavigation;
             SelectedScenario = null;
             RefreshPresetList();
-            if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
-            {
-                AvailablePresets[0].IsPresetSelected = true;
-            }
         }
         else if (destination == "Presets")
         {
-            if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
-            {
-                AvailablePresets[0].IsPresetSelected = true;
-            }
+
             CurrentViewState = ViewState.PresetNavigation;
             SelectedScenario = null;
         }
         else
         {
-            if (AvailablePresets.Count > 0 && !AvailablePresets.Any(p => p.IsPresetSelected))
-            {
-                AvailablePresets[0].IsPresetSelected = true;
-            }
-            CurrentViewState = ViewState.ScenarioSelection;
+            CurrentViewState = ViewState.Create;
             SelectedScenario = null;
         }
     }
@@ -350,14 +324,6 @@ public partial class AssetManagerViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void ShowSettings()
-    {
-        CurrentViewState = ViewState.Create;
-
-        RefreshPresets();
-    }
-
-    [RelayCommand]
     private void DeleteMachine(string machineName)
     {
         if (SelectedPresetForConfiguration == null) return;
@@ -456,7 +422,6 @@ public partial class AssetManagerViewModel : ObservableObject
 
     partial void OnCurrentViewStateChanged(ViewState value)
     {
-        // Set IsConfiguring to false only for PresetNavigation and AssetDetails
         IsConfiguring = !(value == ViewState.PresetNavigation || value == ViewState.AssetDetails);
     }
 
@@ -465,8 +430,6 @@ public partial class AssetManagerViewModel : ObservableObject
     {
         try
         {
-            Debug.WriteLine("=== Starting configuration save ===");
-
             if (SelectedPresetForConfiguration == null)
             {
                 Debug.WriteLine("Error: No preset selected for configuration.");
@@ -678,7 +641,6 @@ public partial class AssetManagerViewModel : ObservableObject
     [RelayCommand]
     public void CreateMachine(Control view)
     {
-        // Validate numeric inputs
         if (!double.TryParse(MaxHeatOutput, out double maxHeat) ||
             !double.TryParse(MaxElectricityOutput, out double maxElectricity) ||
             !double.TryParse(ProductionCost, out double productionCost) ||
@@ -692,21 +654,17 @@ public partial class AssetManagerViewModel : ObservableObject
 
         if (string.IsNullOrWhiteSpace(MachineName))
         {
-            Debug.WriteLine("Machine name cannot be empty");
             Events.Notification.Invoke("Machine name cannot be empty.", NotificationType.Error);
             return;
         }
 
-        // Get selected preset IDs
         var selectedPresetIds = GetSelectedPresetIds();
         if (!selectedPresetIds.Any())
         {
-            Debug.WriteLine("No presets selected for the machine.");
             Events.Notification.Invoke("Please select at least one preset.", NotificationType.Error);
             return;
         }
 
-        // Create the machine for each selected preset
         foreach (var presetId in selectedPresetIds)
         {
             // Set a random color if not provided
@@ -729,14 +687,9 @@ public partial class AssetManagerViewModel : ObservableObject
                 Color
             );
 
-            if (success)
+            if (!success)
             {
-                Debug.WriteLine($"Successfully created new machine '{MachineName}' in PresetId {presetId}");
-            }
-            else
-            {
-                Debug.WriteLine($"Failed to create new machine '{MachineName}' in PresetId {presetId}");
-                Events.Notification.Invoke($"Failed to create machine '{MachineName}' in preset.", NotificationType.Error);
+               Events.Notification.Invoke($"Failed to create machine '{MachineName}' in preset.", NotificationType.Error);
             }
         }
 
@@ -777,7 +730,6 @@ public partial class AssetManagerViewModel : ObservableObject
         }
         else
         {
-            Debug.WriteLine("Failed to create new preset");
             Events.Notification.Invoke("Failed to create new preset.", Enums.NotificationType.Error);
         }
         CurrentViewState = ViewState.PresetNavigation;
@@ -890,11 +842,3 @@ public partial class AssetManagerViewModel : ObservableObject
     }
 }
 
-public enum ViewState
-{
-    ScenarioSelection,
-    AssetDetails,
-    Configure,
-    PresetNavigation,
-    Create
-}
