@@ -753,8 +753,6 @@ public partial class AssetModel : ObservableObject
     public double CostPerMW => ProductionCosts;
     public double EmissionsPerMW => MaxHeat > 0 ? Emissions / MaxHeat : 0;
 
-    [ObservableProperty]
-    private ObservableCollection<PresetSelectionItem> _presetSelections = new();
 
     [ObservableProperty]
     private bool isActive;
@@ -766,17 +764,7 @@ public partial class AssetModel : ObservableObject
     private ObservableCollection<AssetModel> machineModels = new();
 }
 
-public class PresetSelectionItem : ObservableObject
-{
-    public string PresetName { get; }
-    public bool IsSelected { get; set; }
 
-    public PresetSelectionItem(string presetName, bool isSelected)
-    {
-        PresetName = presetName;
-        IsSelected = isSelected;
-    }
-}
 
 public partial class HeatingGrid : ObservableObject
 {
