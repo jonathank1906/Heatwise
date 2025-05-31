@@ -9,6 +9,7 @@ using System.Diagnostics;
 using Avalonia.Controls;
 using System.Collections.ObjectModel;
 using Heatwise.Interfaces;
+using Heatwise.Enums;
 
 
 namespace Heatwise.ViewModels;
@@ -108,18 +109,7 @@ public partial class OptimizerViewModel : ViewModelBase
     public Action<List<HeatProductionResult>>? PlotElectricityProduction { get; set; }
     public Action<List<HeatProductionResult>>? PlotFuelConsumption { get; set; }
 
-    public enum GraphType
-    {
-        HeatProduction,
-        HeatDemand,
-        ProductionCosts,
-        ElectricityPrices,
-        ElectricityProduction,
-        ElectricityConsumption,
-        FuelConsumption,
-        CO2Emissions,
-        ExpensesAndProfit
-    }
+
 
     partial void OnSelectedGraphTypeChanged(GraphType value)
     {
@@ -131,7 +121,7 @@ public partial class OptimizerViewModel : ViewModelBase
         _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
         _sourceDataManager = sourceDataManager ?? throw new ArgumentNullException(nameof(sourceDataManager));
         _resultDataManager = resultDataManager ?? throw new ArgumentNullException(nameof(resultDataManager));
-        _optimizer = new Optimizer(_assetManager, _sourceDataManager);
+        _optimizer = new Optimizer(_assetManager);
         PopupService = popupService;
 
         // Set up the selection callback for each preset

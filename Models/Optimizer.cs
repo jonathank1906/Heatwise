@@ -8,20 +8,14 @@ namespace Heatwise.Models;
 public class Optimizer
 {
     private readonly AssetManager _assetManager;
-    private readonly SourceDataManager _sourceDataManager;
-
-    public Optimizer(AssetManager assetManager, SourceDataManager sourceDataManager)
+   
+    public Optimizer(AssetManager assetManager)
     {
         _assetManager = assetManager;
-        _sourceDataManager = sourceDataManager;
     }
 
-    public List<HeatProductionResult> CalculateOptimalHeatProduction(
-       List<(DateTime timestamp, double heatDemand)> heatDemandIntervals,
-       OptimisationMode optimisationMode,
-       List<(DateTime timestamp, double value)> electricityPriceData)
+    public List<HeatProductionResult> CalculateOptimalHeatProduction(List<(DateTime timestamp, double heatDemand)> heatDemandIntervals, OptimisationMode optimisationMode, List<(DateTime timestamp, double value)> electricityPriceData)
     {
-
         var results = heatDemandIntervals
             .SelectMany(interval => ProcessInterval(interval, optimisationMode, electricityPriceData))
             .ToList();

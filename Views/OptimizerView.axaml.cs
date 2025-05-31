@@ -8,6 +8,7 @@ using System;
 using Heatwise.Models;
 using Avalonia;
 using ScottPlot.Avalonia;
+using Heatwise.Enums;
 
 namespace Heatwise.Views;
 
@@ -215,7 +216,7 @@ public partial class OptimizerView : UserControl
 
                 switch ((DataContext as OptimizerViewModel)?.SelectedGraphType)
                 {
-                    case OptimizerViewModel.GraphType.HeatProduction:
+                    case GraphType.HeatProduction:
                         var resultsAtTime = _currentFilteredResults
                             .Where(r => r.Timestamp == timestamp && r.AssetName != "Interval Summary")
                             .ToList();
@@ -235,7 +236,7 @@ public partial class OptimizerView : UserControl
                         _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
-                    case OptimizerViewModel.GraphType.ElectricityPrices:
+                    case GraphType.ElectricityPrices:
                         var electricityPrice = _currentHeatDemandData
                             .FirstOrDefault(h => h.timestamp == timestamp).value;
 
@@ -244,7 +245,7 @@ public partial class OptimizerView : UserControl
                         _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
-                    case OptimizerViewModel.GraphType.ProductionCosts:
+                    case GraphType.ProductionCosts:
                         var productionCost = _currentFilteredResults
                             .Where(r => r.Timestamp == timestamp)
                             .Sum(r => r.ProductionCost);
@@ -254,7 +255,7 @@ public partial class OptimizerView : UserControl
                         _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
-                    case OptimizerViewModel.GraphType.CO2Emissions:
+                    case GraphType.CO2Emissions:
                         var emissions = _currentFilteredResults
                             .Where(r => r.Timestamp == timestamp)
                             .Sum(r => r.Emissions);
@@ -264,7 +265,7 @@ public partial class OptimizerView : UserControl
                         _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
-                    case OptimizerViewModel.GraphType.ElectricityConsumption:
+                    case GraphType.ElectricityConsumption:
                         var electricityConsumption = _currentFilteredResults
                             .Where(r => r.Timestamp == timestamp)
                             .Sum(r => r.ElectricityConsumption);
@@ -274,7 +275,7 @@ public partial class OptimizerView : UserControl
                         _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
-                    case OptimizerViewModel.GraphType.ElectricityProduction:
+                    case GraphType.ElectricityProduction:
                         var electricityProduction = _currentFilteredResults
                             .Where(r => r.Timestamp == timestamp)
                             .Sum(r => r.ElectricityProduction);
@@ -284,7 +285,7 @@ public partial class OptimizerView : UserControl
                         _hoverCrosshair.VerticalLine.Position = barIndex;
                         break;
 
-                    case OptimizerViewModel.GraphType.FuelConsumption:
+                    case GraphType.FuelConsumption:
                         var oilConsumption = _currentFilteredResults
                             .Where(r => r.Timestamp == timestamp)
                             .Sum(r => r.OilConsumption);

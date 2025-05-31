@@ -11,6 +11,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:OptimizerViewModel"
+    xmlns:enums="clr-namespace:Heatwise.Enums"
     Background="{DynamicResource BackgroundColor}"
     mc:Ignorable="d">
 
@@ -386,49 +387,49 @@
                                             Classes="fancy"
                                             Content="Heat Production"
                                             GroupName="GraphTypeGroup"
-                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.HeatProduction}}" />
+                                           IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static enums:GraphType.HeatProduction}}"/>
 
                                         <RadioButton
                                             Width="200"
                                             Classes="fancy"
                                             Content="Production Costs"
                                             GroupName="GraphTypeGroup"
-                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ProductionCosts}}" />
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static enums:GraphType.ProductionCosts}}" />
 
                                         <RadioButton
                                             Width="200"
                                             Classes="fancy"
                                             Content="Electricity Prices"
                                             GroupName="GraphTypeGroup"
-                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityPrices}}" />
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static enums:GraphType.ElectricityPrices}}" />
 
                                         <RadioButton
                                             Width="200"
                                             Classes="fancy"
                                             Content="Electricity Production"
                                             GroupName="GraphTypeGroup"
-                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityProduction}}" />
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static enums:GraphType.ElectricityProduction}}" />
 
                                         <RadioButton
                                             Width="200"
                                             Classes="fancy"
                                             Content="Electricity Consumption"
                                             GroupName="GraphTypeGroup"
-                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.ElectricityConsumption}}" />
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static enums:GraphType.ElectricityConsumption}}" />
 
                                         <RadioButton
                                             Width="200"
                                             Classes="fancy"
                                             Content="Fuel Consumption"
                                             GroupName="GraphTypeGroup"
-                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.FuelConsumption}}" />
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static enums:GraphType.FuelConsumption}}" />
 
                                         <RadioButton
                                             Width="200"
                                             Classes="fancy"
                                             Content="CO₂ Emissions"
                                             GroupName="GraphTypeGroup"
-                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:OptimizerViewModel+GraphType.CO2Emissions}}" />
+                                            IsChecked="{Binding SelectedGraphType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static enums:GraphType.CO2Emissions}}" />
                                     </StackPanel>
                                 </Flyout>
                             </Button.Flyout>
