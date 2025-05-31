@@ -160,9 +160,3 @@ public class HeatProductionResult
     public double OilConsumption { get; set; }
     public double GasConsumption { get; set; }
 }
-
-public enum OptimisationMode
-{
-    CO2,
-    Cost
-}
