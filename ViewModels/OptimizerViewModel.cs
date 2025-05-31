@@ -143,7 +143,6 @@ public partial class OptimizerViewModel : ViewModelBase
         // Select first preset by default if available
         if (_assetManager.Presets.Count > 0)
         {
-            _assetManager.Presets[0].SetIsSelectedInternal(true);
             _assetManager.SetScenario(0);
         }
 

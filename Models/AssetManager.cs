@@ -675,7 +675,6 @@ public partial class Preset : ObservableObject
     public ObservableCollection<AssetModel> MachineModels { get; set; } = new();
     public ICommand? NavigateToPresetCommand { get; set; }
     public ICommand? DeletePresetCommand { get; set; }
-    private bool _isInternalUpdate;
     public string PresetName => Name;
     public bool IsSelected { get; set; } = false;
 
@@ -706,27 +705,6 @@ public partial class Preset : ObservableObject
     private void FinishRenaming()
     {
         IsRenaming = false;
-    }
-
-    public Preset()
-    {
-    }
-    public void SetIsSelectedInternal(bool value)
-    {
-        _isInternalUpdate = true;
-        IsPresetSelected = value;
-        _isInternalUpdate = false;
-    }
-    partial void OnIsPresetSelectedChanged(bool value)
-    {
-        if (!_isInternalUpdate && value) // Only trigger if not an internal update and value is true
-        {
-            _selectPresetAction?.Invoke(this);
-        }
-    }
-    public void UpdateSelectionForMachine(string machineName)
-    {
-        IsSelected = Machines.Contains(machineName);
     }
 }
 
