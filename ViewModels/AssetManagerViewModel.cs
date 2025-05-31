@@ -144,8 +144,8 @@ public bool IsPresetSelected
 
     public AssetManagerViewModel(AssetManager assetManager, IPopupService popupService)
     {
-        _assetManager = assetManager;
-        _popupService = popupService;
+        _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
+        _popupService = popupService ?? throw new ArgumentNullException(nameof(popupService));
 
         // First create the presets with their machine lists
         var presetTemplates = new ObservableCollection<Preset>(
@@ -359,11 +359,40 @@ public bool IsPresetSelected
         }
     }
     [RelayCommand]
-    public void ShowSettings()
+    public void ShowConfiguration()
     {
-        CurrentViewState = ViewState.Create;
+        if (SelectedScenario == null) return;
 
-        RefreshPresets();
+        // Find the selected preset
+        var preset = _assetManager.Presets.FirstOrDefault(p => p.Name == SelectedScenario);
+        if (preset == null) return;
+
+        // Set the selected preset for configuration
+        SelectedPresetForConfiguration = preset;
+
+        // Populate the assets specific to the selected preset
+        AssetsForSelectedPreset = new ObservableCollection<AssetModel>(
+            preset.MachineModels.Select(m => new AssetModel
+            {
+                Id = m.Id,
+                Name = m.Name,
+                OriginalName = m.Name,
+                MaxHeat = m.MaxHeat,
+                ProductionCosts = m.ProductionCosts,
+                Emissions = m.Emissions,
+                GasConsumption = m.GasConsumption,
+                OilConsumption = m.OilConsumption,
+                MaxElectricity = m.MaxElectricity,
+                ImageFromBinding = LoadImageFromSource(m.ImageSource),
+                IsActive = m.IsActive,
+                HeatProduction = m.HeatProduction,
+                DeleteMachineCommand = DeleteMachineCommand,
+                Color = m.Color
+            })
+        );
+
+        IsConfiguring = true;
+        CurrentViewState = ViewState.Configure;
     }
 
     [RelayCommand]
@@ -420,45 +449,9 @@ public bool IsPresetSelected
     }
 
     [RelayCommand]
-    private void ShowConfiguration()
+    public void CancelConfiguration()
     {
-        if (SelectedScenario == null) return;
-
-        // Find the selected preset
-        var preset = _assetManager.Presets.FirstOrDefault(p => p.Name == SelectedScenario);
-        if (preset == null) return;
-
-        // Set the selected preset for configuration
-        SelectedPresetForConfiguration = preset;
-
-        // Populate the assets specific to the selected preset
-        AssetsForSelectedPreset = new ObservableCollection<AssetModel>(
-            preset.MachineModels.Select(m => new AssetModel
-            {
-                Id = m.Id,
-                Name = m.Name,
-                OriginalName = m.Name,
-                MaxHeat = m.MaxHeat,
-                ProductionCosts = m.ProductionCosts,
-                Emissions = m.Emissions,
-                GasConsumption = m.GasConsumption,
-                OilConsumption = m.OilConsumption,
-                MaxElectricity = m.MaxElectricity,
-                ImageFromBinding = LoadImageFromSource(m.ImageSource),
-                IsActive = m.IsActive,
-                HeatProduction = m.HeatProduction,
-                DeleteMachineCommand = DeleteMachineCommand,
-                Color = m.Color
-
-            })
-        );
-
-        CurrentViewState = ViewState.Configure;
-    }
-
-    [RelayCommand]
-    private void CancelConfiguration()
-    {
+        IsConfiguring = false;
         CurrentViewState = ViewState.PresetNavigation;
     }
 
@@ -914,6 +907,13 @@ public bool IsPresetSelected
         _assetManager.RestoreDefaults();
         RefreshPresetList();
         Events.Notification.Invoke("Defaults restored successfully!", NotificationType.Confirmation);
+    }
+
+    [RelayCommand]
+    public void ShowSettings()
+    {
+        CurrentViewState = ViewState.Create;
+        RefreshPresets();
     }
 }
 

@@ -9,7 +9,7 @@ using System.Windows.Input;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using System.IO;
-
+using Sem2Proj.Interfaces;
 
 namespace Sem2Proj.Models;
 
