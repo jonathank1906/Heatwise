@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 using System.Diagnostics;
-using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Avalonia.Media.Imaging;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
-using System.IO;
 
 namespace Heatwise.Models;
 
@@ -30,6 +26,11 @@ public class AssetManager
     public AssetManager()
     {
         LoadAssetsAndPresetsFromDatabase();
+
+        if (Presets.Count > 0)
+        {
+            SetScenario(0);
+        }
 
         RestoreDefaultsCommand = new RelayCommand(() =>
         {
@@ -243,7 +244,7 @@ public class AssetManager
         }
     }
 
-    public bool RemoveMachineFromPreset(int machineId) 
+    public bool RemoveMachineFromPreset(int machineId)
     {
         try
         {
@@ -418,7 +419,7 @@ public class AssetManager
         }
     }
 
-    public bool UpdateMachineInPreset(int machineId, string newName, double maxHeat, double maxElectricity, double productionCosts, double emissions, double gasConsumption, double oilConsumption, bool isActive, double heatProduction, string color) 
+    public bool UpdateMachineInPreset(int machineId, string newName, double maxHeat, double maxElectricity, double productionCosts, double emissions, double gasConsumption, double oilConsumption, bool isActive, double heatProduction, string color)
     {
         try
         {
@@ -615,7 +616,7 @@ public class AssetManager
 
                         // Insert or update the machine in the database
                         Debug.WriteLine($"Inserting or updating machine with Id: {machineId}, PresetId: {presetId}");
-                      const string insertMachineQuery = @"
+                        const string insertMachineQuery = @"
                         INSERT INTO PresetMachines (Id, PresetId, Name, ImageSource, MaxHeat,  
                                                     ProductionCosts, Emissions, GasConsumption, OilConsumption, MaxElectricity,
                                                     IsActive, HeatProduction, Color)
@@ -724,7 +725,7 @@ public partial class AssetModel : ObservableObject
     [ObservableProperty] private ICommand? deleteMachineCommand;
     [ObservableProperty] private string originalName = string.Empty;
     [ObservableProperty] public double netCost;
-    [ObservableProperty] private string ?color;
+    [ObservableProperty] private string? color;
     public ObservableCollection<Preset> AvailablePresets { get; set; } = new();
     public bool ConsumesElectricity => MaxElectricity < 0;
     public bool ProducesElectricity => MaxElectricity > 0;

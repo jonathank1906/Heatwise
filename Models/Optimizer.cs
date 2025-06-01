@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Heatwise.Models;
 
@@ -14,7 +11,7 @@ public class Optimizer
         _assetManager = assetManager;
     }
 
-    public List<HeatProductionResult> CalculateOptimalHeatProduction(List<(DateTime timestamp, double heatDemand)> heatDemandIntervals, OptimizationMode optimisationMode, List<(DateTime timestamp, double value)> electricityPriceData)
+    public List<HeatProductionResult> CalculateOptimalHeatProduction(List<(DateTime timestamp, double heatDemand)> heatDemandIntervals, OptimizationMode optimizationMode, List<(DateTime timestamp, double value)> electricityPriceData)
     {
         var results = heatDemandIntervals
             .SelectMany(interval => ProcessInterval(interval, optimizationMode, electricityPriceData))

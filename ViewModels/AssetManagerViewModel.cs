@@ -134,7 +134,7 @@ public partial class AssetManagerViewModel : ObservableObject
 
     public AssetManagerViewModel(AssetManager assetManager)
     {
-        _assetManager = assetManager;
+        _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
 
         // First create the presets with their machine lists
         var presetTemplates = new ObservableCollection<Preset>(
@@ -378,7 +378,7 @@ public partial class AssetManagerViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ShowConfiguration()
+    public void ShowConfiguration()
     {
         if (SelectedScenario == null) return;
 
