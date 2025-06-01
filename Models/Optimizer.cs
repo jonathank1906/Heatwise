@@ -14,10 +14,10 @@ public class Optimizer
         _assetManager = assetManager;
     }
 
-    public List<HeatProductionResult> CalculateOptimalHeatProduction(List<(DateTime timestamp, double heatDemand)> heatDemandIntervals, OptimisationMode optimisationMode, List<(DateTime timestamp, double value)> electricityPriceData)
+    public List<HeatProductionResult> CalculateOptimalHeatProduction(List<(DateTime timestamp, double heatDemand)> heatDemandIntervals, OptimizationMode optimisationMode, List<(DateTime timestamp, double value)> electricityPriceData)
     {
         var results = heatDemandIntervals
-            .SelectMany(interval => ProcessInterval(interval, optimisationMode, electricityPriceData))
+            .SelectMany(interval => ProcessInterval(interval, optimizationMode, electricityPriceData))
             .ToList();
 
         return results;
@@ -43,9 +43,9 @@ public class Optimizer
         return netCost;
     }
     
-    private List<AssetModel> SortByPriority(List<AssetModel> assets, double electricityPrice, OptimisationMode optimisationMode)
+    private List<AssetModel> SortByPriority(List<AssetModel> assets, double electricityPrice, OptimizationMode optimisationMode)
     {
-        if (optimisationMode == OptimisationMode.CO2)
+        if (optimisationMode == OptimizationMode.CO2)
         {
             return assets
                 .Where(a => a.IsActive && a.HeatProduction > 0)
@@ -60,7 +60,7 @@ public class Optimizer
             .ToList();
     }
 
-    private List<HeatProductionResult> ProcessInterval((DateTime timestamp, double heatDemand) interval, OptimisationMode optimisationMode, List<(DateTime timestamp, double value)> electricityPriceData)
+    private List<HeatProductionResult> ProcessInterval((DateTime timestamp, double heatDemand) interval, OptimizationMode optimisationMode, List<(DateTime timestamp, double value)> electricityPriceData)
     {
         var timestamp = interval.timestamp;
         var heatDemand = interval.heatDemand;

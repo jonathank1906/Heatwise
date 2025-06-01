@@ -37,11 +37,7 @@ public partial class OptimizerViewModel : ViewModelBase
     private readonly ResultDataManager _resultDataManager;
 
     public event Action<List<DateTime>>? UpdateXAxisTicks;
-    [RelayCommand]
-    private void ApplyDateRange()
-    {
-        SetDateRange(); // Reuse the existing SetDateRange logic
-    }
+
 
     [ObservableProperty]
     private List<HeatProductionResult>? _filteredOptimizationResults;
@@ -63,7 +59,7 @@ public partial class OptimizerViewModel : ViewModelBase
     private double _heatDemand = 0.0;
 
     [ObservableProperty]
-    private OptimisationMode _optimisationMode = OptimisationMode.Cost;
+    private OptimizationMode _optimizationMode = OptimizationMode.Cost;
 
     // Side pane properties -------------------------------
     private const int OpenWidth = 275;
@@ -153,22 +149,13 @@ public partial class OptimizerViewModel : ViewModelBase
     [RelayCommand]
     private void SelectPreset(Preset preset)
     {
-        //if (preset == null) return;
-
-        // Find the index of the selected preset
         var presetIndex = _assetManager.Presets.IndexOf(preset);
         if (presetIndex >= 0)
         {
             _assetManager.SetScenario(presetIndex);
-
-            // // Update selection states using internal method to prevent loops
-            // foreach (var p in _assetManager.Presets)
-            // {
-            //     p.SetIsSelectedInternal(false);
-            // }
-            // preset.SetIsSelectedInternal(true);
         }
     }
+
     [RelayCommand]
     private void TriggerPane()
     {
@@ -220,7 +207,7 @@ public partial class OptimizerViewModel : ViewModelBase
             : _sourceDataManager.GetSummerElectricityPriceData();
 
         // Perform optimization
-        OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimisationMode, selectedElectricityPriceData);
+        OptimizationResults = _optimizer.CalculateOptimalHeatProduction(HeatDemandData, OptimizationMode, selectedElectricityPriceData);
 
         // Save and fetch results
         _resultDataManager.SaveResultsToDatabase(
@@ -296,6 +283,12 @@ public partial class OptimizerViewModel : ViewModelBase
             RefreshCurrentView();
         }
 
+    }
+
+    [RelayCommand]
+    private void ApplyDateRange()
+    {
+        SetDateRange();
     }
 
     [RelayCommand]
@@ -503,7 +496,7 @@ public partial class OptimizerViewModel : ViewModelBase
     {
         if (value)
         {
-            OptimisationMode = OptimisationMode.Cost;
+            OptimizationMode = OptimizationMode.Cost;
         }
     }
 
@@ -511,7 +504,7 @@ public partial class OptimizerViewModel : ViewModelBase
     {
         if (value)
         {
-            OptimisationMode = OptimisationMode.CO2;
+            OptimizationMode = OptimizationMode.CO2;
         }
     }
 

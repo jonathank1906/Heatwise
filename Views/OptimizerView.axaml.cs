@@ -14,7 +14,7 @@ namespace Heatwise.Views;
 
 public partial class OptimizerView : UserControl
 {
-    private AvaPlot _plot;
+    private readonly AvaPlot _plot;
     private bool _tooltipsEnabled = true;
     private Flyout? _calendarFlyout;
     private Flyout? _plotTypeFlyout;

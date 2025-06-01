@@ -1,6 +1,6 @@
 namespace Heatwise.Models;
 
-public enum OptimisationMode
+public enum OptimizationMode
 {
     CO2,
     Cost
