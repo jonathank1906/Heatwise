@@ -1,6 +1,8 @@
 using Xunit;
 using Heatwise.Models;
 using Microsoft.Data.Sqlite;
+using System;
+using System.Linq;
 
 namespace Heatwise.Tests
 {

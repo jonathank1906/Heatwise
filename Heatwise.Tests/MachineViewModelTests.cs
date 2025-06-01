@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Heatwise.Interfaces;
+using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Heatwise.Tests
 {
