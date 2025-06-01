@@ -1,5 +1,7 @@
-<img src="Assets/Heat%20Logo.svg" alt="Logo" width="50" height="100" style="margin-right: 10px;">
-<img src="Assets/Heatwise%20Logo.svg" alt="Logo" width="100" height="100">
+<div style="display: flex; align-items: center;">
+  <img src="Assets/Heat%20Logo.svg" alt="Logo" width="50" height="100" style="margin-right: 10px;">
+  <img src="Assets/Heatwise%20Logo.svg" alt="Logo" width="100" height="100">
+</div>
 
 Group 21, Semester 2 Project
 
