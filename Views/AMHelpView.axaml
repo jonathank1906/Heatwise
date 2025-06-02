@@ -77,18 +77,19 @@
                 HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto">
                 <StackPanel Spacing="16">
-                    <TextBlock
-                        Margin="0,0,0,12"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        xml:space="preserve"
-                        FontSize="16"
-                        FontWeight="Bold"
-                        Foreground="{DynamicResource TextColor}"
-                        TextAlignment="Center">
-                        The most powerful tool in the Asset Manager Tab
-                        is the Preset Explorer. It allows you to:
-                    </TextBlock>
+                    <!-- Centered TextBlock with proper line breaks -->
+                    <Grid HorizontalAlignment="Center" Margin="0,0,0,12">
+                        <TextBlock
+                            TextAlignment="Center"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource TextColor}"
+                            TextWrapping="Wrap"
+                            MaxWidth="400">
+                            The most powerful tool in the Asset Manager Tab
+                            is the Preset Explorer. It allows you to:
+                        </TextBlock>
+                    </Grid>
 
                     <Grid
                         Margin="0,0,0,8"
@@ -103,9 +104,8 @@
                         </TextBlock>
                         <Image
                             Grid.Column="1"
-                            Width="80"
-                            Height="80"
-                            Margin="16,0,0,0"
+                            Height="25"
+                            Margin="16,15,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Source="/Assets/AMHelp1.png"
@@ -125,7 +125,6 @@
                         </TextBlock>
                         <Image
                             Grid.Column="1"
-                            Width="80"
                             Height="80"
                             Margin="16,0,0,0"
                             HorizontalAlignment="Center"
@@ -143,13 +142,12 @@
                             Margin="0,16,0,0"
                             VerticalAlignment="Center"
                             Foreground="{DynamicResource TextColor}">
-                            • Create your own custom Scenarios
+                            • Create your own custom scenarios
                         </TextBlock>
                         <Image
                             Grid.Column="1"
-                            Width="80"
-                            Height="80"
-                            Margin="16,0,0,0"
+                            Height="25"
+                            Margin="16,15,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Source="/Assets/AMHelp3.png"
