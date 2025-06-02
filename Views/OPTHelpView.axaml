@@ -90,8 +90,8 @@
                             Margin="1"
                             xml:space="preserve"
                             Foreground="{DynamicResource TextColor}">
-                •Select in the Presets your scenarios, 
-                 that are created in the Asset Manager
+                • Select your scenarios, that are 
+                  created in the Asset Manager
                 </TextBlock>
                         <TextBlock
                             Grid.Row="1"
@@ -99,8 +99,8 @@
                             Margin="1"
                             xml:space="preserve"
                             Foreground="{DynamicResource TextColor}">
-                •In the Source Data you can toggle
-                between the Summer and Winter Data. 
+                • Toggle between the 
+                  Summer and Winter data 
                 </TextBlock>
                         <TextBlock
                             Grid.Row="2"
@@ -108,9 +108,9 @@
                             Margin="1"
                             xml:space="preserve"
                             Foreground="{DynamicResource TextColor}">
-                •Select the optimization goal, 
-                either prioritize the optimal cost 
-                or the least CO2 Emmissions
+                • Select the optimization goal, 
+                  either prioritize the optimal cost 
+                  or the least CO₂ emissions
                 </TextBlock>
 
                         <TextBlock
@@ -131,26 +131,6 @@
                             Stretch="Uniform" />
                     </Grid>
 
-                    <!-- <TextBlock Margin="0 5" xml:space="preserve" Grid.Row="4" Grid.Column="0">
-                From Top to Bottom:
-                •Change the type of graph to be displayed
-                •Select the days to view in the graph
-                </TextBlock>
-
-                <TextBlock Text="•In the Presets you can select your scenarios, that are created in the Asset Manager" Grid.Row="0" Grid.Column="1"/>
-                <TextBlock Text="•Choose in the Source Data, if you want to see the Summer or the Winter Data" Grid.Row="1" Grid.Column="1" Margin="2"/>
-              <TextBlock Text="•Select the optimization method, select between optimal cost or least CO2 Emmissions" Grid.Row="2" Grid.Column="1" Margin="2"/>
-
-              <TextBlock Margin="0 5" xml:space="preserve" Grid.Row="5" Grid.Column="0">
-                •Restore the View to default settings
-                •Enable the Pointer plus a window with details
-              </TextBlock>
-              <TextBlock Margin="0 5" xml:space="preserve" Grid.Row="6" Grid.Column="0">
-                •Export the optimized data to a CSV file
-                •More Help
-              </TextBlock>
-                    -->
-
                     <Grid
                         Grid.Row="2"
                         Margin="4"
@@ -162,37 +142,37 @@
                             Grid.Column="0"
                             Margin="1,9"
                             Foreground="{DynamicResource TextColor}"
-                            Text="•Change the type of graph to be displayed" />
+                            Text="• Change the type of graph to be displayed" />
                         <TextBlock
                             Grid.Row="1"
                             Grid.Column="0"
                             Margin="1,9"
                             Foreground="{DynamicResource TextColor}"
-                            Text="•Select the days to view in the graph" />
+                            Text="• Select the days to view in the graph" />
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="0"
                             Margin="1,9"
                             Foreground="{DynamicResource TextColor}"
-                            Text="•Restore the View to default settings" />
+                            Text="• Restore the view to default settings" />
                         <TextBlock
                             Grid.Row="3"
                             Grid.Column="0"
                             Margin="1,9"
                             Foreground="{DynamicResource TextColor}"
-                            Text="•Enable the Pointer plus a window with details" />
+                            Text="• Enable the pointer and window with details" />
                         <TextBlock
                             Grid.Row="4"
                             Grid.Column="0"
                             Margin="1,9"
                             Foreground="{DynamicResource TextColor}"
-                            Text="•Export the optimized data to a CSV file" />
+                            Text="• Export the optimized data to a CSV file" />
                         <TextBlock
                             Grid.Row="5"
                             Grid.Column="0"
                             Margin="1,9"
                             Foreground="{DynamicResource TextColor}"
-                            Text="•More Help" />
+                            Text="• More Help" />
                         <Image
                             Grid.Row="0"
                             Grid.RowSpan="6"

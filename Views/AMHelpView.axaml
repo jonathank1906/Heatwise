@@ -76,83 +76,80 @@
                 Grid.Row="1"
                 HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto">
-                <StackPanel>
-
-                    <Image
-                        Width="500"
-                        Height="150"
-                        Margin="0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Bottom"
-                        Source="/Assets/AMHelp4.png"
-                        Stretch="Uniform" />
-
+                <StackPanel Spacing="16">
                     <TextBlock
-                        Grid.Column="1"
-                        Margin="0"
-                        VerticalAlignment="Top"
+                        Margin="0,0,0,12"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
                         xml:space="preserve"
                         FontSize="16"
                         FontWeight="Bold"
-                        Foreground="{DynamicResource TextColor}">
-                The most powerful tool in the Asset Manager Tab
-                is the Preset Explorer. It allows you to:
-                </TextBlock>
-
+                        Foreground="{DynamicResource TextColor}"
+                        TextAlignment="Center">
+                        The most powerful tool in the Asset Manager Tab
+                        is the Preset Explorer. It allows you to:
+                    </TextBlock>
 
                     <Grid
-                        Grid.Row="3"
-                        Margin="2"
-                        ClipToBounds="True"
-                        ColumnDefinitions="80,Auto"
-                        RowDefinitions="Auto,Auto">
-
+                        Margin="0,0,0,8"
+                        VerticalAlignment="Center"
+                        ColumnDefinitions="Auto,Auto">
                         <TextBlock
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Margin="1"
-                            xml:space="preserve"
-                            Foreground="{DynamicResource TextColor}">
-                •observe or edit your different scanarios and...
-                </TextBlock>
-
-
-                        <Image
-                            Grid.Row="0"
                             Grid.Column="0"
-                            Width="100"
+                            Margin="0,16,0,0"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextColor}">
+                            • Restore the database to the original state
+                        </TextBlock>
+                        <Image
+                            Grid.Column="1"
+                            Width="80"
                             Height="80"
-                            Margin="1"
-                            HorizontalAlignment="Left"
+                            Margin="16,0,0,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Source="/Assets/AMHelp1.png"
+                            Stretch="Uniform" />
+                    </Grid>
+
+                    <Grid
+                        Margin="0,0,0,8"
+                        VerticalAlignment="Center"
+                        ColumnDefinitions="Auto,Auto">
+                        <TextBlock
+                            Grid.Column="0"
+                            Margin="0,16,0,0"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextColor}">
+                            • Observe or edit your different scenarios and...
+                        </TextBlock>
+                        <Image
+                            Grid.Column="1"
+                            Width="80"
+                            Height="80"
+                            Margin="16,0,0,0"
+                            HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Source="/Assets/AMHelp2.png"
                             Stretch="Uniform" />
                     </Grid>
-                    <TextBlock
-                        Grid.Row="3"
-                        Grid.Column="1"
-                        Margin="2"
-                        Text=" " />
 
                     <Grid
-                        Grid.Row="4"
-                        Margin="2"
-                        ClipToBounds="True"
-                        ColumnDefinitions="Auto,Auto"
-                        RowDefinitions="Auto,Auto">
+                        Margin="0,0,0,8"
+                        VerticalAlignment="Center"
+                        ColumnDefinitions="Auto,Auto">
                         <TextBlock
-                            Grid.Row="0"
                             Grid.Column="0"
-                            Margin="1,9"
-                            Foreground="{DynamicResource TextColor}"
-                            Text="... create your own custom Scenarios" />
-
+                            Margin="0,16,0,0"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextColor}">
+                            • Create your own custom Scenarios
+                        </TextBlock>
                         <Image
-                            Grid.Row="0"
                             Grid.Column="1"
                             Width="80"
                             Height="80"
-                            Margin="2"
+                            Margin="16,0,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Source="/Assets/AMHelp3.png"
